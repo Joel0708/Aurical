@@ -282,6 +282,14 @@
     </div>
 
     <script>
+        // Suppress Tailwind CDN warning for development
+        console.warn = function(message) {
+            if (message.includes('cdn.tailwindcss.com should not be used in production')) {
+                return;
+            }
+            console.log(message);
+        };
+
         // Caisy Configuration
         const CAISY_CONFIG = {
             projectId: 'd5020874-9338-4ce1-9f01-872741713f01',
@@ -398,8 +406,31 @@
                 const data = await makeGraphQLRequest(GET_PRODUCTS_QUERY);
                 console.log('📦 Respuesta de Caisy:', data);
                 
-                // Check if we have products
-                if (!data.Producto || data.Producto.length === 0) {
+                // Handle different response formats from Caisy
+                let productosArray = [];
+                
+                if (data && data.Producto) {
+                    // If it's already an array
+                    if (Array.isArray(data.Producto)) {
+                        productosArray = data.Producto;
+                    }
+                    // If it's an object with edges (GraphQL connection)
+                    else if (data.Producto.edges && Array.isArray(data.Producto.edges)) {
+                        productosArray = data.Producto.edges.map(edge => edge.node);
+                    }
+                    // If it's an object with items
+                    else if (data.Producto.items && Array.isArray(data.Producto.items)) {
+                        productosArray = data.Producto.items;
+                    }
+                    // If it's a single object, wrap in array
+                    else if (typeof data.Producto === 'object' && data.Producto.id) {
+                        productosArray = [data.Producto];
+                    }
+                }
+                
+                console.log('📋 Productos encontrados:', productosArray);
+                
+                if (productosArray.length === 0) {
                     console.log('⚠️ No se encontraron productos en Caisy');
                     showNotification('No hay productos creados aún. Ve al admin para crear algunos.', 'info');
                     
@@ -412,16 +443,18 @@
                 }
                 
                 // Transform Caisy data to match our component structure
-                products = data.Producto.filter(product => product.disponible).map(product => ({
-                    id: product.id,
-                    name: product.nombre,
-                    price: product.precio,
-                    image: product.imagen_principal?.src || 'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=400',
-                    category: product.categoria,
-                    description: extractTextFromDescription(product.descripcion),
-                    available: product.disponible,
-                    gallery: product.imagenes_galeria?.map(img => img.src) || [product.imagen_principal?.src].filter(Boolean)
-                }));
+                products = productosArray
+                    .filter(product => product && product.disponible)
+                    .map(product => ({
+                        id: product.id,
+                        name: product.nombre || 'Sin nombre',
+                        price: product.precio || 0,
+                        image: product.imagen_principal?.src || 'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=400',
+                        category: product.categoria || 'Sin categoría',
+                        description: extractTextFromDescription(product.descripcion) || 'Sin descripción',
+                        available: product.disponible,
+                        gallery: product.imagenes_galeria?.map(img => img.src) || [product.imagen_principal?.src].filter(Boolean)
+                    }));
 
                 console.log(`✅ ${products.length} productos cargados exitosamente`);
                 
@@ -763,5 +796,5 @@
             updateCartUI();
         });
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98e0c114c738a538',t:'MTc2MDM3ODYxMi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98e0c79db68ea538',t:'MTc2MDM3ODg3OS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
