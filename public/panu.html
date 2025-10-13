@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panu - Sublimación y Personalización</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'celeste': '#87CEEB',
+                        'rosa-pastel': '#F8BBD9',
+                        'negro-mate': '#1a1a1a',
+                        'dorado': '#FFD700'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            box-sizing: border-box;
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #1a1a1a 0%, #87CEEB 50%, #F8BBD9 100%);
+        }
+        
+        .glass-effect {
+            backdrop-filter: blur(15px);
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .hover-lift {
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        
+        .hover-lift:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        }
+        
+        .text-gradient {
+            background: linear-gradient(45deg, #87CEEB, #FFD700, #F8BBD9);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            background-size: 200% 200%;
+            animation: gradientShift 3s ease-in-out infinite;
+        }
+        
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+        
+        .floating {
+            animation: floating 3s ease-in-out infinite;
+        }
+        
+        @keyframes floating {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeIn 0.8s ease forwards;
+        }
+        
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .product-card {
+            background: linear-gradient(145deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
+            border: 1px solid rgba(255,255,255,0.2);
+            backdrop-filter: blur(20px);
+            transition: all 0.3s ease;
+        }
+        
+        .product-card:hover {
+            background: linear-gradient(145deg, rgba(255,255,255,0.2), rgba(255,255,255,0.1));
+            border: 1px solid rgba(255,215,0,0.5);
+            transform: translateY(-5px);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(45deg, #87CEEB, #FFD700);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            background: linear-gradient(45deg, #FFD700, #F8BBD9);
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body class="bg-negro-mate text-white font-sans">
+    <!-- Navigation -->
+    <nav class="fixed top-0 w-full z-50 glass-effect">
+        <div class="max-w-7xl mx-auto px-6 py-4">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center space-x-3">
+                    <div class="text-3xl">🤓</div>
+                    <div class="text-2xl font-bold text-gradient">Panu</div>
+                </div>
+                <div class="hidden md:flex space-x-8">
+                    <a href="#inicio" class="hover:text-celeste transition-colors">Inicio</a>
+                    <a href="#productos" class="hover:text-celeste transition-colors">Productos</a>
+                    <a href="#empresas" class="hover:text-celeste transition-colors">Empresas</a>
+                    <a href="#proceso" class="hover:text-celeste transition-colors">Proceso</a>
+                    <a href="#contacto" class="hover:text-celeste transition-colors">Contacto</a>
+                </div>
+                <a href="index.html" class="bg-dorado text-negro-mate px-4 py-2 rounded-full font-bold hover:bg-opacity-80 transition-all">
+                    🏠 Inicio
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="inicio" class="min-h-full gradient-bg flex items-center justify-center relative overflow-hidden">
+        <div class="absolute inset-0 opacity-10">
+            <div class="floating absolute top-20 left-10 w-20 h-20 bg-dorado rounded-full"></div>
+            <div class="floating absolute top-40 right-20 w-16 h-16 bg-rosa-pastel rounded-full" style="animation-delay: 1s;"></div>
+            <div class="floating absolute bottom-20 left-1/4 w-12 h-12 bg-celeste rounded-full" style="animation-delay: 2s;"></div>
+        </div>
+        
+        <div class="text-center z-10 px-6 max-w-5xl mx-auto">
+            <div class="text-8xl mb-6 floating">🤓</div>
+            <h1 class="text-5xl md:text-7xl font-bold mb-6 fade-in">
+                <span class="text-dorado">Personaliza</span><br>
+                <span class="text-white">Todo lo que Imagines</span>
+            </h1>
+            <p class="text-xl md:text-2xl mb-8 text-white opacity-90 fade-in" style="animation-delay: 0.3s;">
+                Sublimaciones y personalización de productos con diseñadores profesionales
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center fade-in" style="animation-delay: 0.6s;">
+                <button onclick="document.getElementById('productos').scrollIntoView({behavior: 'smooth'})" 
+                        class="btn-primary text-negro-mate px-8 py-4 rounded-full font-bold hover-lift">
+                    Ver Productos
+                </button>
+                <button onclick="document.getElementById('empresas').scrollIntoView({behavior: 'smooth'})" 
+                        class="border-2 border-dorado text-dorado px-8 py-4 rounded-full hover:bg-dorado hover:text-negro-mate transition-all hover-lift">
+                    Soluciones Empresariales
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Products Section -->
+    <section id="productos" class="py-20 px-6">
+        <div class="max-w-7xl mx-auto">
+            <h2 class="text-4xl md:text-5xl font-bold text-center mb-4 text-gradient">Productos Populares</h2>
+            <p class="text-center text-gray-300 mb-16 text-lg">Para personas que buscan algo único y especial</p>
+            
+            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <!-- Tazas -->
+                <div class="product-card rounded-3xl p-6 text-center">
+                    <div class="text-6xl mb-4">☕</div>
+                    <h3 class="text-xl font-bold mb-3 text-celeste">Tazas Personalizadas</h3>
+                    <p class="text-gray-300 text-sm mb-4">Sublimación de alta calidad en tazas de cerámica</p>
+                    <div class="text-2xl font-bold text-dorado mb-4">Desde $15</div>
+                    <button class="w-full bg-celeste text-negro-mate py-2 rounded-full font-bold hover:bg-opacity-80 transition-all">
+                        Personalizar
+                    </button>
+                </div>
+
+                <!-- Remeras -->
+                <div class="product-card rounded-3xl p-6 text-center">
+                    <div class="text-6xl mb-4">👕</div>
+                    <h3 class="text-xl font-bold mb-3 text-rosa-pastel">Remeras & Polos</h3>
+                    <p class="text-gray-300 text-sm mb-4">Estampado en vinilo y sublimación textil</p>
+                    <div class="text-2xl font-bold text-dorado mb-4">Desde $25</div>
+                    <button class="w-full bg-rosa-pastel text-negro-mate py-2 rounded-full font-bold hover:bg-opacity-80 transition-all">
+                        Personalizar
+                    </button>
+                </div>
+
+                <!-- Agendas -->
+                <div class="product-card rounded-3xl p-6 text-center">
+                    <div class="text-6xl mb-4">📓</div>
+                    <h3 class="text-xl font-bold mb-3 text-dorado">Agendas & Cuadernos</h3>
+                    <p class="text-gray-300 text-sm mb-4">Portadas personalizadas con tu diseño</p>
+                    <div class="text-2xl font-bold text-dorado mb-4">Desde $20</div>
+                    <button class="w-full bg-dorado text-negro-mate py-2 rounded-full font-bold hover:bg-opacity-80 transition-all">
+                        Personalizar
+                    </button>
+                </div>
+
+                <!-- Accesorios -->
+                <div class="product-card rounded-3xl p-6 text-center">
+                    <div class="text-6xl mb-4">🎒</div>
+                    <h3 class="text-xl font-bold mb-3 text-celeste">Accesorios</h3>
+                    <p class="text-gray-300 text-sm mb-4">Mochilas, gorras, llaveros y más</p>
+                    <div class="text-2xl font-bold text-dorado mb-4">Desde $10</div>
+                    <button class="w-full bg-celeste text-negro-mate py-2 rounded-full font-bold hover:bg-opacity-80 transition-all">
+                        Personalizar
+                    </button>
+                </div>
+            </div>
+
+            <!-- More Products -->
+            <div class="mt-16">
+                <h3 class="text-2xl font-bold text-center mb-8 text-white">Y mucho más...</h3>
+                <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                    <div class="glass-effect rounded-2xl p-4 text-center hover-lift">
+                        <div class="text-3xl mb-2">🖼️</div>
+                        <p class="text-sm text-gray-300">Cuadros</p>
+                    </div>
+                    <div class="glass-effect rounded-2xl p-4 text-center hover-lift">
+                        <div class="text-3xl mb-2">🧩</div>
+                        <p class="text-sm text-gray-300">Puzzles</p>
+                    </div>
+                    <div class="glass-effect rounded-2xl p-4 text-center hover-lift">
+                        <div class="text-3xl mb-2">📱</div>
+                        <p class="text-sm text-gray-300">Fundas</p>
+                    </div>
+                    <div class="glass-effect rounded-2xl p-4 text-center hover-lift">
+                        <div class="text-3xl mb-2">🕯️</div>
+                        <p class="text-sm text-gray-300">Velas</p>
+                    </div>
+                    <div class="glass-effect rounded-2xl p-4 text-center hover-lift">
+                        <div class="text-3xl mb-2">🏆</div>
+                        <p class="text-sm text-gray-300">Trofeos</p>
+                    </div>
+                    <div class="glass-effect rounded-2xl p-4 text-center hover-lift">
+                        <div class="text-3xl mb-2">🎁</div>
+                        <p class="text-sm text-gray-300">Regalos</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Business Section -->
+    <section id="empresas" class="py-20 px-6 bg-gradient-to-r from-negro-mate to-gray-900">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl md:text-5xl font-bold mb-4 text-gradient">Soluciones Empresariales</h2>
+                <p class="text-xl text-gray-300">Fortalece tu marca con productos personalizados de calidad</p>
+            </div>
+            
+            <div class="grid md:grid-cols-2 gap-12 items-center">
+                <div>
+                    <h3 class="text-3xl font-bold mb-6 text-dorado">¿Por qué elegirnos para tu empresa?</h3>
+                    <div class="space-y-4">
+                        <div class="flex items-start space-x-4">
+                            <div class="w-8 h-8 bg-celeste rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                                <span class="text-negro-mate font-bold text-sm">✓</span>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-celeste mb-1">Diseñadores Profesionales</h4>
+                                <p class="text-gray-300 text-sm">Equipo especializado en branding corporativo</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start space-x-4">
+                            <div class="w-8 h-8 bg-rosa-pastel rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                                <span class="text-negro-mate font-bold text-sm">✓</span>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-rosa-pastel mb-1">Grandes Volúmenes</h4>
+                                <p class="text-gray-300 text-sm">Descuentos especiales para pedidos corporativos</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start space-x-4">
+                            <div class="w-8 h-8 bg-dorado rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                                <span class="text-negro-mate font-bold text-sm">✓</span>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-dorado mb-1">Entrega Garantizada</h4>
+                                <p class="text-gray-300 text-sm">Cumplimos con los tiempos acordados</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="glass-effect rounded-2xl p-6 text-center">
+                        <div class="text-4xl mb-3">🏢</div>
+                        <h4 class="font-bold text-celeste mb-2">Merchandising</h4>
+                        <p class="text-gray-300 text-sm">Productos promocionales para eventos</p>
+                    </div>
+                    
+                    <div class="glass-effect rounded-2xl p-6 text-center">
+                        <div class="text-4xl mb-3">👔</div>
+                        <h4 class="font-bold text-rosa-pastel mb-2">Uniformes</h4>
+                        <p class="text-gray-300 text-sm">Ropa corporativa personalizada</p>
+                    </div>
+                    
+                    <div class="glass-effect rounded-2xl p-6 text-center">
+                        <div class="text-4xl mb-3">🎯</div>
+                        <h4 class="font-bold text-dorado mb-2">Campañas</h4>
+                        <p class="text-gray-300 text-sm">Material para marketing directo</p>
+                    </div>
+                    
+                    <div class="glass-effect rounded-2xl p-6 text-center">
+                        <div class="text-4xl mb-3">🏆</div>
+                        <h4 class="font-bold text-celeste mb-2">Reconocimientos</h4>
+                        <p class="text-gray-300 text-sm">Trofeos y placas corporativas</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Process Section -->
+    <section id="proceso" class="py-20 px-6">
+        <div class="max-w-7xl mx-auto">
+            <h2 class="text-4xl md:text-5xl font-bold text-center mb-16 text-gradient">Nuestro Proceso</h2>
+            
+            <div class="grid md:grid-cols-4 gap-8">
+                <div class="text-center">
+                    <div class="w-20 h-20 bg-gradient-to-br from-celeste to-rosa-pastel rounded-full flex items-center justify-center mx-auto mb-6">
+                        <span class="text-2xl font-bold text-white">1</span>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3 text-celeste">Consulta</h3>
+                    <p class="text-gray-300 text-sm">Nos cuentas tu idea y te asesoramos sobre el mejor producto</p>
+                </div>
+                
+                <div class="text-center">
+                    <div class="w-20 h-20 bg-gradient-to-br from-rosa-pastel to-dorado rounded-full flex items-center justify-center mx-auto mb-6">
+                        <span class="text-2xl font-bold text-white">2</span>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3 text-rosa-pastel">Diseño</h3>
+                    <p class="text-gray-300 text-sm">Nuestros diseñadores crean o adaptan tu diseño profesionalmente</p>
+                </div>
+                
+                <div class="text-center">
+                    <div class="w-20 h-20 bg-gradient-to-br from-dorado to-celeste rounded-full flex items-center justify-center mx-auto mb-6">
+                        <span class="text-2xl font-bold text-white">3</span>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3 text-dorado">Producción</h3>
+                    <p class="text-gray-300 text-sm">Sublimamos o estampamos con la más alta calidad</p>
+                </div>
+                
+                <div class="text-center">
+                    <div class="w-20 h-20 bg-gradient-to-br from-celeste to-rosa-pastel rounded-full flex items-center justify-center mx-auto mb-6">
+                        <span class="text-2xl font-bold text-white">4</span>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3 text-celeste">Entrega</h3>
+                    <p class="text-gray-300 text-sm">Recibís tu producto personalizado en tiempo y forma</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials -->
+    <section class="py-20 px-6 bg-gradient-to-r from-negro-mate to-gray-900">
+        <div class="max-w-6xl mx-auto">
+            <h2 class="text-4xl font-bold text-center mb-16 text-gradient">Lo que dicen nuestros clientes</h2>
+            
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="glass-effect rounded-2xl p-6">
+                    <div class="flex items-center mb-4">
+                        <div class="w-12 h-12 bg-celeste rounded-full flex items-center justify-center mr-4">
+                            <span class="text-negro-mate font-bold">M</span>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-celeste">María González</h4>
+                            <p class="text-gray-400 text-sm">Cliente particular</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-300 text-sm">"Increíble calidad en las tazas personalizadas. El diseño quedó exactamente como lo imaginé. ¡Súper recomendado!"</p>
+                </div>
+                
+                <div class="glass-effect rounded-2xl p-6">
+                    <div class="flex items-center mb-4">
+                        <div class="w-12 h-12 bg-rosa-pastel rounded-full flex items-center justify-center mr-4">
+                            <span class="text-negro-mate font-bold">C</span>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-rosa-pastel">Carlos Empresa SRL</h4>
+                            <p class="text-gray-400 text-sm">Cliente corporativo</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-300 text-sm">"Excelente servicio para nuestro merchandising corporativo. Cumplieron con los tiempos y la calidad es impecable."</p>
+                </div>
+                
+                <div class="glass-effect rounded-2xl p-6">
+                    <div class="flex items-center mb-4">
+                        <div class="w-12 h-12 bg-dorado rounded-full flex items-center justify-center mr-4">
+                            <span class="text-negro-mate font-bold">A</span>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-dorado">Ana Rodríguez</h4>
+                            <p class="text-gray-400 text-sm">Cliente particular</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-300 text-sm">"Los diseñadores son geniales. Me ayudaron a crear el regalo perfecto para mi familia. ¡Volveré seguro!"</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contacto" class="py-20 px-6">
+        <div class="max-w-4xl mx-auto">
+            <h2 class="text-4xl md:text-5xl font-bold text-center mb-8 text-gradient">¿Listo para personalizar?</h2>
+            <p class="text-xl text-gray-300 text-center mb-12">Solicita tu cotización gratuita y sin compromiso</p>
+            
+            <div class="grid md:grid-cols-2 gap-12">
+                <!-- Contact Form -->
+                <div class="glass-effect rounded-3xl p-8">
+                    <h3 class="text-2xl font-bold mb-6 text-dorado">Solicitar Cotización</h3>
+                    <form id="cotizacionForm" class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-bold mb-2 text-celeste">Nombre Completo</label>
+                            <input type="text" required class="w-full bg-negro-mate border border-gray-600 rounded-lg px-4 py-3 text-white focus:border-celeste focus:outline-none">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-bold mb-2 text-celeste">Email</label>
+                            <input type="email" required class="w-full bg-negro-mate border border-gray-600 rounded-lg px-4 py-3 text-white focus:border-celeste focus:outline-none">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-bold mb-2 text-celeste">Teléfono</label>
+                            <input type="tel" class="w-full bg-negro-mate border border-gray-600 rounded-lg px-4 py-3 text-white focus:border-celeste focus:outline-none">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-bold mb-2 text-celeste">Tipo de Cliente</label>
+                            <select class="w-full bg-negro-mate border border-gray-600 rounded-lg px-4 py-3 text-white focus:border-celeste focus:outline-none">
+                                <option>Particular</option>
+                                <option>Empresa</option>
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-bold mb-2 text-celeste">Producto de Interés</label>
+                            <select class="w-full bg-negro-mate border border-gray-600 rounded-lg px-4 py-3 text-white focus:border-celeste focus:outline-none">
+                                <option>Tazas</option>
+                                <option>Remeras/Polos</option>
+                                <option>Agendas/Cuadernos</option>
+                                <option>Accesorios</option>
+                                <option>Merchandising Corporativo</option>
+                                <option>Otro</option>
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-bold mb-2 text-celeste">Cantidad Aproximada</label>
+                            <input type="number" min="1" class="w-full bg-negro-mate border border-gray-600 rounded-lg px-4 py-3 text-white focus:border-celeste focus:outline-none">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-bold mb-2 text-celeste">Descripción del Proyecto</label>
+                            <textarea rows="4" class="w-full bg-negro-mate border border-gray-600 rounded-lg px-4 py-3 text-white focus:border-celeste focus:outline-none" placeholder="Cuéntanos tu idea..."></textarea>
+                        </div>
+                        
+                        <button type="submit" class="w-full btn-primary text-negro-mate py-4 rounded-full font-bold text-lg hover-lift">
+                            Enviar Cotización 🚀
+                        </button>
+                    </form>
+                </div>
+                
+                <!-- Contact Info -->
+                <div class="space-y-8">
+                    <div class="glass-effect rounded-2xl p-6">
+                        <h3 class="text-xl font-bold mb-4 text-rosa-pastel">Contacto Directo</h3>
+                        <div class="space-y-3">
+                            <div class="flex items-center space-x-3">
+                                <span class="text-2xl">📱</span>
+                                <span class="text-gray-300">+595 XXX XXX XXX</span>
+                            </div>
+                            <div class="flex items-center space-x-3">
+                                <span class="text-2xl">📧</span>
+                                <span class="text-gray-300">panu@auricalfamily.com</span>
+                            </div>
+                            <div class="flex items-center space-x-3">
+                                <span class="text-2xl">📍</span>
+                                <span class="text-gray-300">Asunción, Paraguay</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="glass-effect rounded-2xl p-6">
+                        <h3 class="text-xl font-bold mb-4 text-dorado">Horarios de Atención</h3>
+                        <div class="space-y-2 text-gray-300">
+                            <p><strong>Lunes a Viernes:</strong> 8:00 - 18:00</p>
+                            <p><strong>Sábados:</strong> 8:00 - 12:00</p>
+                            <p><strong>Domingos:</strong> Cerrado</p>
+                        </div>
+                    </div>
+                    
+                    <div class="glass-effect rounded-2xl p-6">
+                        <h3 class="text-xl font-bold mb-4 text-celeste">Síguenos</h3>
+                        <div class="flex space-x-4">
+                            <a href="#" class="w-12 h-12 bg-celeste rounded-full flex items-center justify-center hover-lift">
+                                <span class="text-negro-mate font-bold">IG</span>
+                            </a>
+                            <a href="#" class="w-12 h-12 bg-rosa-pastel rounded-full flex items-center justify-center hover-lift">
+                                <span class="text-negro-mate font-bold">FB</span>
+                            </a>
+                            <a href="#" class="w-12 h-12 bg-dorado rounded-full flex items-center justify-center hover-lift">
+                                <span class="text-negro-mate font-bold">WA</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gradient-to-r from-negro-mate to-gray-900 py-12 px-6">
+        <div class="max-w-7xl mx-auto text-center">
+            <div class="flex items-center justify-center space-x-3 mb-4">
+                <div class="text-3xl">🤓</div>
+                <div class="text-3xl font-bold text-gradient">Panu</div>
+            </div>
+            <p class="text-gray-400 mb-8">Sublimaciones y personalización con diseñadores profesionales</p>
+            <div class="flex justify-center space-x-6 mb-8">
+                <a href="index.html" class="text-dorado hover:text-white transition-colors">🏠 Aurical Family</a>
+                <a href="aurical_art.html" class="text-celeste hover:text-white transition-colors">🎵 Aurical Art</a>
+            </div>
+            <p class="text-gray-500 text-sm">© 2024 Panu - Aurical Family. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Add scroll effect to navigation
+        window.addEventListener('scroll', () => {
+            const nav = document.querySelector('nav');
+            if (window.scrollY > 100) {
+                nav.style.background = 'rgba(26, 26, 26, 0.9)';
+            } else {
+                nav.style.background = 'rgba(255, 255, 255, 0.1)';
+            }
+        });
+
+        // Form submission
+        document.getElementById('cotizacionForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Show success message
+            const button = this.querySelector('button[type="submit"]');
+            const originalText = button.innerHTML;
+            
+            button.innerHTML = '¡Enviado! ✅';
+            button.style.background = 'linear-gradient(45deg, #90EE90, #32CD32)';
+            
+            setTimeout(() => {
+                button.innerHTML = originalText;
+                button.style.background = 'linear-gradient(45deg, #87CEEB, #FFD700)';
+                this.reset();
+            }, 3000);
+        });
+
+        // Animate elements on scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        // Observe all sections for animation
+        document.querySelectorAll('section > div').forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(30px)';
+            el.style.transition = 'opacity 0.8s ease, transform 0.8s ease';
+            observer.observe(el);
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98dfc13140c3116e',t:'MTc2MDM2ODEzMS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
