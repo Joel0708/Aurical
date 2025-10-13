@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Panel de Administración Panu</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'rosa-pastel': '#F8BBD9',
+                        'negro-mate': '#1a1a1a',
+                        'dorado': '#FFD700'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            box-sizing: border-box;
+            background: linear-gradient(135deg, #3d3426 0%, #2d2419 100%);
+            min-height: 100vh;
+        }
+        
+        .glass-effect {
+            backdrop-filter: blur(15px);
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .text-gradient {
+            background: linear-gradient(45deg, #F8BBD9, #FFD700);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(45deg, #F8BBD9, #FFD700);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            background: linear-gradient(45deg, #FFD700, #F8BBD9);
+            transform: translateY(-2px);
+        }
+        
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .shake {
+            animation: shake 0.5s ease-in-out;
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+        
+        .loading-spinner {
+            border: 2px solid rgba(248, 187, 217, 0.3);
+            border-top: 2px solid #F8BBD9;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="text-white font-sans flex items-center justify-center min-h-screen p-4">
+    <div class="w-full max-w-md">
+        <!-- Logo Section -->
+        <div class="text-center mb-8">
+            <div class="text-6xl mb-4">🎨</div>
+            <h1 class="text-4xl font-bold text-gradient mb-2">Panu Admin</h1>
+            <p class="text-gray-300">Panel de Administración</p>
+        </div>
+
+        <!-- Login Form -->
+        <div class="glass-effect rounded-3xl p-8">
+            <form id="loginForm" class="space-y-6">
+                <div>
+                    <label for="username" class="block text-sm font-medium text-gray-300 mb-2">
+                        Usuario
+                    </label>
+                    <input type="text" id="username" name="username" required
+                           class="w-full bg-negro-mate border border-gray-600 rounded-lg px-4 py-3 text-white focus:border-rosa-pastel focus:outline-none transition-colors"
+                           placeholder="Ingresa tu usuario">
+                </div>
+
+                <div>
+                    <label for="password" class="block text-sm font-medium text-gray-300 mb-2">
+                        Contraseña
+                    </label>
+                    <div class="relative">
+                        <input type="password" id="password" name="password" required
+                               class="w-full bg-negro-mate border border-gray-600 rounded-lg px-4 py-3 text-white focus:border-rosa-pastel focus:outline-none transition-colors pr-12"
+                               placeholder="Ingresa tu contraseña">
+                        <button type="button" onclick="togglePassword()" 
+                                class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white">
+                            <span id="eyeIcon">👁️</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-between">
+                    <label class="flex items-center">
+                        <input type="checkbox" id="rememberMe" 
+                               class="w-4 h-4 text-rosa-pastel bg-negro-mate border-gray-600 rounded focus:ring-rosa-pastel">
+                        <span class="ml-2 text-sm text-gray-300">Recordarme</span>
+                    </label>
+                </div>
+
+                <button type="submit" id="loginBtn" 
+                        class="w-full btn-primary text-negro-mate py-3 rounded-lg font-bold text-lg flex items-center justify-center">
+                    <span id="loginText">Iniciar Sesión</span>
+                    <div id="loginSpinner" class="loading-spinner ml-2 hidden"></div>
+                </button>
+
+                <div id="errorMessage" class="text-red-400 text-sm text-center hidden"></div>
+            </form>
+        </div>
+
+        <!-- Security Info -->
+        <div class="text-center mt-6 text-gray-400 text-xs">
+            <p>🔒 Conexión segura • Solo administradores autorizados</p>
+        </div>
+    </div>
+
+    <script>
+        // Caisy Configuration
+        const CAISY_CONFIG = {
+            projectId: 'd5020874-9338-4ce1-9f01-872741713f01',
+            apiKey: 'DR4cQSjCXwdqZDs20vuKsPmGreNnSu4T',
+            endpoint: 'https://cloud.caisy.io/api/v3/e/d5020874-9338-4ce1-9f01-872741713f01/graphql'
+        };
+
+        // Check if already logged in
+        document.addEventListener('DOMContentLoaded', () => {
+            if (isAuthenticated()) {
+                window.location.href = 'admin.html';
+            }
+        });
+
+        // GraphQL Query for authentication
+        const GET_ADMIN_USER_QUERY = `
+            query GetAdminUser($username: String!) {
+                AdminUser(where: { username: { eq: $username }, active: { eq: true } }) {
+                    id
+                    username
+                    password_hash
+                    salt
+                    active
+                }
+            }
+        `;
+
+        const UPDATE_LAST_LOGIN_MUTATION = `
+            mutation UpdateLastLogin($id: ID!) {
+                updateAdminUser(id: $id, input: { last_login: "${new Date().toISOString()}" }) {
+                    id
+                    last_login
+                }
+            }
+        `;
+
+        // Secure password hashing function
+        async function hashPassword(password, salt) {
+            const encoder = new TextEncoder();
+            const data = encoder.encode(password + salt);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        }
+
+        // Generate salt
+        function generateSalt() {
+            const array = new Uint8Array(16);
+            crypto.getRandomValues(array);
+            return Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('');
+        }
+
+        // API request function
+        async function makeGraphQLRequest(query, variables = {}) {
+            try {
+                const response = await fetch(CAISY_CONFIG.endpoint, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-caisy-apikey': CAISY_CONFIG.apiKey
+                    },
+                    body: JSON.stringify({
+                        query,
+                        variables
+                    })
+                });
+
+                const data = await response.json();
+                
+                if (data.errors) {
+                    throw new Error(data.errors[0].message);
+                }
+                
+                return data.data;
+            } catch (error) {
+                console.error('GraphQL Error:', error);
+                throw error;
+            }
+        }
+
+        // Authentication functions
+        function isAuthenticated() {
+            const session = localStorage.getItem('panuAdminSession');
+            if (!session) return false;
+            
+            try {
+                const sessionData = JSON.parse(session);
+                const now = new Date().getTime();
+                
+                // Check if session is expired (24 hours or 7 days if remember me)
+                if (now > sessionData.expires) {
+                    localStorage.removeItem('panuAdminSession');
+                    return false;
+                }
+                
+                return sessionData.authenticated === true;
+            } catch (e) {
+                localStorage.removeItem('panuAdminSession');
+                return false;
+            }
+        }
+
+        function createSession(username, rememberMe = false) {
+            const now = new Date().getTime();
+            const expirationTime = rememberMe ? 7 * 24 * 60 * 60 * 1000 : 24 * 60 * 60 * 1000; // 7 days or 24 hours
+            
+            const sessionData = {
+                authenticated: true,
+                username: username,
+                loginTime: now,
+                expires: now + expirationTime
+            };
+            
+            localStorage.setItem('panuAdminSession', JSON.stringify(sessionData));
+        }
+
+        // Login form handler
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value;
+            const rememberMe = document.getElementById('rememberMe').checked;
+            
+            if (!username || !password) {
+                showError('Por favor completa todos los campos');
+                return;
+            }
+            
+            setLoading(true);
+            
+            try {
+                // Get user from Caisy
+                const data = await makeGraphQLRequest(GET_ADMIN_USER_QUERY, { username });
+                
+                if (!data.AdminUser || data.AdminUser.length === 0) {
+                    throw new Error('Usuario no encontrado');
+                }
+                
+                const user = data.AdminUser[0];
+                
+                // Verify password
+                const hashedPassword = await hashPassword(password, user.salt);
+                
+                if (hashedPassword !== user.password_hash) {
+                    throw new Error('Contraseña incorrecta');
+                }
+                
+                // Update last login
+                await makeGraphQLRequest(UPDATE_LAST_LOGIN_MUTATION, { id: user.id });
+                
+                // Create session
+                createSession(username, rememberMe);
+                
+                // Show success and redirect
+                showSuccess('¡Bienvenido! Redirigiendo...');
+                
+                setTimeout(() => {
+                    window.location.href = 'admin.html';
+                }, 1500);
+                
+            } catch (error) {
+                console.error('Login error:', error);
+                showError(error.message || 'Error de autenticación');
+                shakeForm();
+            } finally {
+                setLoading(false);
+            }
+        });
+
+        // UI Helper functions
+        function setLoading(loading) {
+            const btn = document.getElementById('loginBtn');
+            const text = document.getElementById('loginText');
+            const spinner = document.getElementById('loginSpinner');
+            
+            if (loading) {
+                btn.disabled = true;
+                text.textContent = 'Verificando...';
+                spinner.classList.remove('hidden');
+            } else {
+                btn.disabled = false;
+                text.textContent = 'Iniciar Sesión';
+                spinner.classList.add('hidden');
+            }
+        }
+
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.textContent = message;
+            errorDiv.classList.remove('hidden');
+            
+            setTimeout(() => {
+                errorDiv.classList.add('hidden');
+            }, 5000);
+        }
+
+        function showSuccess(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.textContent = message;
+            errorDiv.className = 'text-green-400 text-sm text-center';
+            errorDiv.classList.remove('hidden');
+        }
+
+        function shakeForm() {
+            const form = document.getElementById('loginForm');
+            form.classList.add('shake');
+            setTimeout(() => {
+                form.classList.remove('shake');
+            }, 500);
+        }
+
+        function togglePassword() {
+            const passwordInput = document.getElementById('password');
+            const eyeIcon = document.getElementById('eyeIcon');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                eyeIcon.textContent = '🙈';
+            } else {
+                passwordInput.type = 'password';
+                eyeIcon.textContent = '👁️';
+            }
+        }
+
+        // Security: Clear form on page unload
+        window.addEventListener('beforeunload', () => {
+            document.getElementById('loginForm').reset();
+        });
+
+        // Demo credentials helper (remove in production)
+        console.log('🔐 Demo Credentials:');
+        console.log('Usuario: admin_panu');
+        console.log('Contraseña: Panu2024!Secure#');
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98e09f49467ba538',t:'MTc2MDM3NzIyNy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
