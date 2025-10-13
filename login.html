@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Panel de Administración Panu</title>
+    <title>Panu - Admin Login</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -21,8 +21,8 @@
     <style>
         body {
             box-sizing: border-box;
-            background: linear-gradient(135deg, #3d3426 0%, #2d2419 100%);
-            min-height: 100vh;
+            background: linear-gradient(135deg, #3d3426 0%, #2a2419 100%);
+            min-height: 100%;
         }
         
         .glass-effect {
@@ -48,28 +48,73 @@
             transform: translateY(-2px);
         }
         
-        .btn-primary:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none;
+        .floating-shapes {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 0;
         }
         
-        .shake {
-            animation: shake 0.5s ease-in-out;
+        .shape {
+            position: absolute;
+            opacity: 0.1;
+            animation: float 6s ease-in-out infinite;
         }
         
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-5px); }
-            75% { transform: translateX(5px); }
+        .shape:nth-child(1) {
+            top: 20%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+        
+        .shape:nth-child(2) {
+            top: 60%;
+            right: 10%;
+            animation-delay: 2s;
+        }
+        
+        .shape:nth-child(3) {
+            bottom: 20%;
+            left: 20%;
+            animation-delay: 4s;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(180deg); }
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1001;
+            padding: 12px 24px;
+            border-radius: 8px;
+            color: white;
+            font-weight: 500;
+            animation: slideInRight 0.3s ease-out;
+        }
+        
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(100px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
         }
         
         .loading-spinner {
-            border: 2px solid rgba(248, 187, 217, 0.3);
-            border-top: 2px solid #F8BBD9;
-            border-radius: 50%;
+            display: none;
             width: 20px;
             height: 20px;
+            border: 2px solid transparent;
+            border-top: 2px solid currentColor;
+            border-radius: 50%;
             animation: spin 1s linear infinite;
         }
         
@@ -77,69 +122,126 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+        
+        .loading .loading-spinner {
+            display: inline-block;
+        }
+        
+        .loading .button-text {
+            display: none;
+        }
     </style>
 </head>
-<body class="text-white font-sans flex items-center justify-center min-h-screen p-4">
-    <div class="w-full max-w-md">
-        <!-- Logo Section -->
+<body class="text-white font-sans min-h-full flex items-center justify-center p-6">
+    <!-- Floating Shapes Background -->
+    <div class="floating-shapes">
+        <div class="shape w-32 h-32 bg-rosa-pastel rounded-full"></div>
+        <div class="shape w-24 h-24 bg-dorado rounded-full"></div>
+        <div class="shape w-40 h-40 bg-rosa-pastel rounded-full"></div>
+    </div>
+
+    <!-- Login Container -->
+    <div class="glass-effect rounded-3xl p-8 w-full max-w-md relative z-10">
+        <!-- Header -->
         <div class="text-center mb-8">
             <div class="text-6xl mb-4">🎨</div>
-            <h1 class="text-4xl font-bold text-gradient mb-2">Panu Admin</h1>
-            <p class="text-gray-300">Panel de Administración</p>
+            <h1 class="text-3xl font-bold text-gradient mb-2">Panu Admin</h1>
+            <p class="text-gray-300">Acceso al panel de administración</p>
         </div>
 
         <!-- Login Form -->
-        <div class="glass-effect rounded-3xl p-8">
-            <form id="loginForm" class="space-y-6">
-                <div>
-                    <label for="username" class="block text-sm font-medium text-gray-300 mb-2">
-                        Usuario
-                    </label>
-                    <input type="text" id="username" name="username" required
-                           class="w-full bg-negro-mate border border-gray-600 rounded-lg px-4 py-3 text-white focus:border-rosa-pastel focus:outline-none transition-colors"
-                           placeholder="Ingresa tu usuario">
+        <form id="loginForm" class="space-y-6">
+            <div>
+                <label for="email" class="block text-sm font-medium text-gray-300 mb-2">
+                    Email
+                </label>
+                <input 
+                    type="email" 
+                    id="email" 
+                    name="email"
+                    required
+                    class="w-full bg-negro-mate border border-gray-600 rounded-lg px-4 py-3 text-white focus:border-rosa-pastel focus:outline-none transition-colors"
+                    placeholder="admin@panu.com"
+                >
+            </div>
+
+            <div>
+                <label for="password" class="block text-sm font-medium text-gray-300 mb-2">
+                    Contraseña
+                </label>
+                <div class="relative">
+                    <input 
+                        type="password" 
+                        id="password" 
+                        name="password"
+                        required
+                        class="w-full bg-negro-mate border border-gray-600 rounded-lg px-4 py-3 text-white focus:border-rosa-pastel focus:outline-none transition-colors pr-12"
+                        placeholder="••••••••"
+                    >
+                    <button 
+                        type="button" 
+                        onclick="togglePassword()"
+                        class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white transition-colors"
+                    >
+                        <span id="eyeIcon">👁️</span>
+                    </button>
                 </div>
+            </div>
 
-                <div>
-                    <label for="password" class="block text-sm font-medium text-gray-300 mb-2">
-                        Contraseña
-                    </label>
-                    <div class="relative">
-                        <input type="password" id="password" name="password" required
-                               class="w-full bg-negro-mate border border-gray-600 rounded-lg px-4 py-3 text-white focus:border-rosa-pastel focus:outline-none transition-colors pr-12"
-                               placeholder="Ingresa tu contraseña">
-                        <button type="button" onclick="togglePassword()" 
-                                class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white">
-                            <span id="eyeIcon">👁️</span>
-                        </button>
-                    </div>
-                </div>
+            <div class="flex items-center justify-between">
+                <label class="flex items-center">
+                    <input type="checkbox" id="remember" class="rounded border-gray-600 text-rosa-pastel focus:ring-rosa-pastel">
+                    <span class="ml-2 text-sm text-gray-300">Recordarme</span>
+                </label>
+                <a href="#" class="text-sm text-rosa-pastel hover:text-dorado transition-colors">
+                    ¿Olvidaste tu contraseña?
+                </a>
+            </div>
 
-                <div class="flex items-center justify-between">
-                    <label class="flex items-center">
-                        <input type="checkbox" id="rememberMe" 
-                               class="w-4 h-4 text-rosa-pastel bg-negro-mate border-gray-600 rounded focus:ring-rosa-pastel">
-                        <span class="ml-2 text-sm text-gray-300">Recordarme</span>
-                    </label>
-                </div>
+            <button 
+                type="submit" 
+                id="loginButton"
+                class="w-full btn-primary text-negro-mate py-3 rounded-lg font-bold text-lg transition-all hover:shadow-lg"
+            >
+                <span class="loading-spinner"></span>
+                <span class="button-text">Iniciar Sesión</span>
+            </button>
+        </form>
 
-                <button type="submit" id="loginBtn" 
-                        class="w-full btn-primary text-negro-mate py-3 rounded-lg font-bold text-lg flex items-center justify-center">
-                    <span id="loginText">Iniciar Sesión</span>
-                    <div id="loginSpinner" class="loading-spinner ml-2 hidden"></div>
-                </button>
-
-                <div id="errorMessage" class="text-red-400 text-sm text-center hidden"></div>
-            </form>
+        <!-- Instructions -->
+        <div class="mt-8 p-4 bg-negro-mate bg-opacity-50 rounded-lg border border-gray-600">
+            <h3 class="text-sm font-bold text-rosa-pastel mb-2">📋 Instrucciones:</h3>
+            <div class="text-xs text-gray-300 space-y-2">
+                <p>1. Crea un Content Type "AdminUser" en Caisy</p>
+                <p>2. Campos: email (text), password (text), nombre (text), activo (boolean)</p>
+                <p>3. Crea un usuario con tus credenciales</p>
+                <p>4. Marca "activo" como true</p>
+            </div>
+            <button 
+                onclick="fillDemoCredentials()" 
+                class="mt-2 text-xs text-dorado hover:text-rosa-pastel transition-colors"
+            >
+                Usar credenciales de prueba
+            </button>
         </div>
 
-        <!-- Security Info -->
-        <div class="text-center mt-6 text-gray-400 text-xs">
-            <p>🔒 Conexión segura • Solo administradores autorizados</p>
+        <!-- Back to Home -->
+        <div class="mt-6 text-center">
+            <a href="index.html" class="text-gray-400 hover:text-rosa-pastel transition-colors text-sm">
+                ← Volver al inicio
+            </a>
         </div>
     </div>
 
     <script>
+        // Suppress Tailwind CDN warning for development
+        console.warn = function(message) {
+            if (message.includes('cdn.tailwindcss.com should not be used in production')) {
+                return;
+            }
+            console.log(message);
+        };
+
         // Caisy Configuration
         const CAISY_CONFIG = {
             projectId: 'd5020874-9338-4ce1-9f01-872741713f01',
@@ -147,52 +249,24 @@
             endpoint: 'https://cloud.caisy.io/api/v3/e/d5020874-9338-4ce1-9f01-872741713f01/graphql'
         };
 
-        // Check if already logged in
-        document.addEventListener('DOMContentLoaded', () => {
-            if (isAuthenticated()) {
-                window.location.href = 'admin.html';
-            }
-        });
-
-        // GraphQL Query for authentication
-        const GET_ADMIN_USER_QUERY = `
-            query GetAdminUser($username: String!) {
-                AdminUser(where: { username: { eq: $username }, active: { eq: true } }) {
-                    id
-                    username
-                    password_hash
-                    salt
-                    active
+        // GraphQL Query for Admin Users (Caisy format)
+        const GET_ADMIN_USERS_QUERY = `
+            query GetAdminUsers {
+                allAdminUser {
+                    edges {
+                        node {
+                            id
+                            email
+                            password
+                            nombre
+                            activo
+                        }
+                    }
                 }
             }
         `;
 
-        const UPDATE_LAST_LOGIN_MUTATION = `
-            mutation UpdateLastLogin($id: ID!) {
-                updateAdminUser(id: $id, input: { last_login: "${new Date().toISOString()}" }) {
-                    id
-                    last_login
-                }
-            }
-        `;
-
-        // Secure password hashing function
-        async function hashPassword(password, salt) {
-            const encoder = new TextEncoder();
-            const data = encoder.encode(password + salt);
-            const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-            const hashArray = Array.from(new Uint8Array(hashBuffer));
-            return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-        }
-
-        // Generate salt
-        function generateSalt() {
-            const array = new Uint8Array(16);
-            crypto.getRandomValues(array);
-            return Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('');
-        }
-
-        // API request function
+        // API Functions
         async function makeGraphQLRequest(query, variables = {}) {
             try {
                 const response = await fetch(CAISY_CONFIG.endpoint, {
@@ -220,138 +294,90 @@
             }
         }
 
-        // Authentication functions
-        function isAuthenticated() {
-            const session = localStorage.getItem('panuAdminSession');
-            if (!session) return false;
-            
-            try {
-                const sessionData = JSON.parse(session);
-                const now = new Date().getTime();
-                
-                // Check if session is expired (24 hours or 7 days if remember me)
-                if (now > sessionData.expires) {
-                    localStorage.removeItem('panuAdminSession');
-                    return false;
-                }
-                
-                return sessionData.authenticated === true;
-            } catch (e) {
-                localStorage.removeItem('panuAdminSession');
-                return false;
+        // Credenciales de fallback (por si falla Caisy)
+        const FALLBACK_CREDENTIALS = [
+            {
+                id: 'fallback-admin',
+                email: 'admin@panu.com',
+                password: 'admin123',
+                nombre: 'Admin Demo',
+                activo: true
             }
-        }
+        ];
 
-        function createSession(username, rememberMe = false) {
-            const now = new Date().getTime();
-            const expirationTime = rememberMe ? 7 * 24 * 60 * 60 * 1000 : 24 * 60 * 60 * 1000; // 7 days or 24 hours
-            
-            const sessionData = {
-                authenticated: true,
-                username: username,
-                loginTime: now,
-                expires: now + expirationTime
-            };
-            
-            localStorage.setItem('panuAdminSession', JSON.stringify(sessionData));
-        }
-
-        // Login form handler
-        document.getElementById('loginForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            const username = document.getElementById('username').value.trim();
-            const password = document.getElementById('password').value;
-            const rememberMe = document.getElementById('rememberMe').checked;
-            
-            if (!username || !password) {
-                showError('Por favor completa todos los campos');
-                return;
-            }
-            
-            setLoading(true);
-            
+        // Authentication Functions
+        async function authenticateUser(email, password) {
             try {
-                // Get user from Caisy
-                const data = await makeGraphQLRequest(GET_ADMIN_USER_QUERY, { username });
+                console.log('🔍 Consultando administradores en Caisy...');
                 
-                if (!data.AdminUser || data.AdminUser.length === 0) {
-                    throw new Error('Usuario no encontrado');
+                const data = await makeGraphQLRequest(GET_ADMIN_USERS_QUERY);
+                console.log('📦 Respuesta de allAdminUser:', data);
+                
+                // Extract users from Caisy's GraphQL response format
+                let adminUsersArray = [];
+                
+                if (data && data.allAdminUser && data.allAdminUser.edges) {
+                    adminUsersArray = data.allAdminUser.edges.map(edge => edge.node);
                 }
                 
-                const user = data.AdminUser[0];
+                console.log('👥 Administradores encontrados:', adminUsersArray);
                 
-                // Verify password
-                const hashedPassword = await hashPassword(password, user.salt);
+                // Find user with matching email and password
+                const user = adminUsersArray.find(u => 
+                    u.email === email && 
+                    u.password === password && 
+                    u.activo
+                );
                 
-                if (hashedPassword !== user.password_hash) {
-                    throw new Error('Contraseña incorrecta');
+                if (user) {
+                    console.log('✅ Usuario autenticado desde Caisy:', user.nombre);
+                    return {
+                        success: true,
+                        user: {
+                            id: user.id,
+                            email: user.email,
+                            nombre: user.nombre,
+                            rol: 'admin'
+                        }
+                    };
+                } else {
+                    console.log('❌ Credenciales no encontradas en Caisy');
+                    return {
+                        success: false,
+                        message: 'Credenciales inválidas o usuario inactivo'
+                    };
                 }
-                
-                // Update last login
-                await makeGraphQLRequest(UPDATE_LAST_LOGIN_MUTATION, { id: user.id });
-                
-                // Create session
-                createSession(username, rememberMe);
-                
-                // Show success and redirect
-                showSuccess('¡Bienvenido! Redirigiendo...');
-                
-                setTimeout(() => {
-                    window.location.href = 'admin.html';
-                }, 1500);
                 
             } catch (error) {
-                console.error('Login error:', error);
-                showError(error.message || 'Error de autenticación');
-                shakeForm();
-            } finally {
-                setLoading(false);
+                console.error('❌ Error consultando Caisy:', error);
+                
+                // Fallback to demo credentials if Caisy fails
+                console.log('🔄 Intentando con credenciales de fallback...');
+                const fallbackUser = FALLBACK_CREDENTIALS.find(u => 
+                    u.email === email && u.password === password && u.activo
+                );
+                
+                if (fallbackUser) {
+                    console.log('✅ Usuario autenticado con fallback:', fallbackUser.nombre);
+                    return {
+                        success: true,
+                        user: {
+                            id: fallbackUser.id,
+                            email: fallbackUser.email,
+                            nombre: fallbackUser.nombre,
+                            rol: 'admin'
+                        }
+                    };
+                }
+                
+                return {
+                    success: false,
+                    message: 'Error de conexión y credenciales no válidas'
+                };
             }
-        });
-
-        // UI Helper functions
-        function setLoading(loading) {
-            const btn = document.getElementById('loginBtn');
-            const text = document.getElementById('loginText');
-            const spinner = document.getElementById('loginSpinner');
-            
-            if (loading) {
-                btn.disabled = true;
-                text.textContent = 'Verificando...';
-                spinner.classList.remove('hidden');
-            } else {
-                btn.disabled = false;
-                text.textContent = 'Iniciar Sesión';
-                spinner.classList.add('hidden');
-            }
         }
 
-        function showError(message) {
-            const errorDiv = document.getElementById('errorMessage');
-            errorDiv.textContent = message;
-            errorDiv.classList.remove('hidden');
-            
-            setTimeout(() => {
-                errorDiv.classList.add('hidden');
-            }, 5000);
-        }
-
-        function showSuccess(message) {
-            const errorDiv = document.getElementById('errorMessage');
-            errorDiv.textContent = message;
-            errorDiv.className = 'text-green-400 text-sm text-center';
-            errorDiv.classList.remove('hidden');
-        }
-
-        function shakeForm() {
-            const form = document.getElementById('loginForm');
-            form.classList.add('shake');
-            setTimeout(() => {
-                form.classList.remove('shake');
-            }, 500);
-        }
-
+        // UI Functions
         function togglePassword() {
             const passwordInput = document.getElementById('password');
             const eyeIcon = document.getElementById('eyeIcon');
@@ -365,15 +391,119 @@
             }
         }
 
-        // Security: Clear form on page unload
-        window.addEventListener('beforeunload', () => {
-            document.getElementById('loginForm').reset();
+        function fillDemoCredentials() {
+            document.getElementById('email').value = 'admin@panu.com';
+            document.getElementById('password').value = 'admin123';
+            showNotification('Credenciales de prueba cargadas', 'info');
+        }
+
+        function setLoading(isLoading) {
+            const button = document.getElementById('loginButton');
+            if (isLoading) {
+                button.classList.add('loading');
+                button.disabled = true;
+            } else {
+                button.classList.remove('loading');
+                button.disabled = false;
+            }
+        }
+
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `notification ${
+                type === 'success' ? 'bg-green-600' : 
+                type === 'error' ? 'bg-red-600' : 'bg-blue-600'
+            }`;
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 4000);
+        }
+
+        // Form Handler
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const remember = document.getElementById('remember').checked;
+            
+            if (!email || !password) {
+                showNotification('Por favor completa todos los campos', 'error');
+                return;
+            }
+            
+            setLoading(true);
+            
+            try {
+                const result = await authenticateUser(email, password);
+                
+                if (result.success) {
+                    // Store user session
+                    const sessionData = {
+                        user: result.user,
+                        timestamp: Date.now(),
+                        remember: remember
+                    };
+                    
+                    if (remember) {
+                        localStorage.setItem('panuAdminSession', JSON.stringify(sessionData));
+                    } else {
+                        sessionStorage.setItem('panuAdminSession', JSON.stringify(sessionData));
+                    }
+                    
+                    showNotification(`¡Bienvenido ${result.user.nombre}!`, 'success');
+                    
+                    // Redirect to admin panel
+                    setTimeout(() => {
+                        window.location.href = 'admin.html';
+                    }, 1500);
+                    
+                } else {
+                    showNotification(result.message, 'error');
+                }
+                
+            } catch (error) {
+                console.error('Login error:', error);
+                showNotification('Error inesperado. Intenta nuevamente.', 'error');
+            } finally {
+                setLoading(false);
+            }
         });
 
-        // Demo credentials helper (remove in production)
-        console.log('🔐 Demo Credentials:');
-        console.log('Usuario: admin_panu');
-        console.log('Contraseña: Panu2024!Secure#');
+        // Check for existing session on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            const sessionData = localStorage.getItem('panuAdminSession') || 
+                               sessionStorage.getItem('panuAdminSession');
+            
+            if (sessionData) {
+                try {
+                    const session = JSON.parse(sessionData);
+                    const now = Date.now();
+                    const sessionAge = now - session.timestamp;
+                    const maxAge = session.remember ? 7 * 24 * 60 * 60 * 1000 : 24 * 60 * 60 * 1000; // 7 days or 24 hours
+                    
+                    if (sessionAge < maxAge) {
+                        showNotification('Sesión activa detectada, redirigiendo...', 'info');
+                        setTimeout(() => {
+                            window.location.href = 'admin.html';
+                        }, 1000);
+                        return;
+                    } else {
+                        // Session expired
+                        localStorage.removeItem('panuAdminSession');
+                        sessionStorage.removeItem('panuAdminSession');
+                    }
+                } catch (error) {
+                    console.error('Error parsing session:', error);
+                    localStorage.removeItem('panuAdminSession');
+                    sessionStorage.removeItem('panuAdminSession');
+                }
+            }
+        });
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98e09f49467ba538',t:'MTc2MDM3NzIyNy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98e10065465ea538',t:'MTc2MDM4MTIwNS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
