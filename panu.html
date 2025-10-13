@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panu - Joyería Artesanal</title>
+    <title>Panu - Sublimaciones Personalizadas</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -164,6 +164,39 @@
         .gallery-thumbnail.active {
             border-color: #F5F5DC;
         }
+
+        /* Design Editor Styles */
+        .upload-area-active {
+            border-color: #F5F5DC !important;
+            background: rgba(245, 245, 220, 0.1);
+        }
+
+        .product-preview {
+            position: relative;
+            display: inline-block;
+        }
+
+        .design-overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            max-width: 60%;
+            max-height: 60%;
+            opacity: 0.9;
+            border-radius: 8px;
+        }
+
+        .preview-watermark {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 10px;
+        }
     </style>
 </head>
 <body class="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white font-sans">
@@ -187,15 +220,12 @@
                 </div>
                 <nav class="hidden md:flex space-x-8">
                     <a href="#inicio" class="hover:text-beige transition-colors">Inicio</a>
+                    <a href="#editor" class="hover:text-beige transition-colors">Editor</a>
                     <a href="#productos" class="hover:text-beige transition-colors">Productos</a>
                     <a href="#nosotros" class="hover:text-beige transition-colors">Nosotros</a>
                     <a href="#contacto" class="hover:text-beige transition-colors">Contacto</a>
                 </nav>
                 <div class="flex items-center space-x-4">
-                    <button id="cartBtn" class="relative p-2 hover:text-beige transition-colors">
-                        🛒
-                        <span id="cartCount" class="absolute -top-1 -right-1 bg-beige text-gris-oscuro text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold hidden">0</span>
-                    </button>
                     <a href="login.html" class="text-sm text-gray-400 hover:text-beige transition-colors">Admin</a>
                 </div>
             </div>
@@ -212,12 +242,82 @@
                 Transforma tus ideas en productos personalizados con la mejor calidad de sublimación
             </p>
             <div class="flex flex-col sm:flex-row gap-4 justify-center">
-                <button onclick="scrollToProducts()" class="btn-primary text-gris-oscuro px-8 py-4 rounded-full font-bold text-lg">
-                    Explorar Colección
+                <button onclick="scrollToEditor()" class="btn-primary text-gris-oscuro px-8 py-4 rounded-full font-bold text-lg">
+                    🎨 Crear Diseño
                 </button>
-                <button class="glass-effect px-8 py-4 rounded-full font-bold text-lg hover:bg-white hover:bg-opacity-20 transition-all">
-                    Conocer Historia
+                <button onclick="scrollToProducts()" class="glass-effect px-8 py-4 rounded-full font-bold text-lg hover:bg-white hover:bg-opacity-20 transition-all">
+                    Ver Productos
                 </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Design Editor Section -->
+    <section id="editor" class="relative z-10 py-20 px-6 bg-gradient-to-br from-gray-800 to-gray-900">
+        <div class="max-w-6xl mx-auto">
+            <div class="text-center mb-12">
+                <h2 class="text-4xl font-bold text-gradient mb-4">🎨 Editor de Diseños</h2>
+                <p class="text-xl text-gray-300">Sube tu imagen y visualiza cómo se vería en nuestros productos</p>
+                <p class="text-sm text-gray-400 mt-2">*Esta es solo una vista previa aproximada</p>
+            </div>
+
+            <div class="glass-effect rounded-2xl p-8">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <!-- Upload Area -->
+                    <div>
+                        <h3 class="text-xl font-bold text-beige mb-4">1. Sube tu diseño</h3>
+                        <div id="uploadArea" class="border-2 border-dashed border-gray-500 rounded-xl p-8 text-center hover:border-beige transition-colors cursor-pointer">
+                            <input type="file" id="designUpload" accept="image/*" class="hidden">
+                            <div id="uploadContent">
+                                <div class="text-4xl mb-4">📁</div>
+                                <p class="text-gray-300 mb-2">Haz clic o arrastra tu imagen aquí</p>
+                                <p class="text-sm text-gray-500">PNG, JPG hasta 5MB</p>
+                            </div>
+                        </div>
+                        
+                        <!-- Product Selection -->
+                        <div class="mt-6">
+                            <h3 class="text-xl font-bold text-beige mb-4">2. Elige el producto</h3>
+                            <select id="productSelect" class="w-full bg-gray-700 text-white p-3 rounded-lg border border-gray-600 focus:border-beige focus:outline-none">
+                                <option value="">Selecciona un producto...</option>
+                                <option value="taza">Taza Blanca</option>
+                                <option value="camiseta">Camiseta</option>
+                                <option value="mouse-pad">Mouse Pad</option>
+                                <option value="almohada">Almohada</option>
+                            </select>
+                        </div>
+
+                        <!-- Message Area -->
+                        <div class="mt-6">
+                            <h3 class="text-xl font-bold text-beige mb-4">3. Mensaje (opcional)</h3>
+                            <textarea id="clientMessage" placeholder="Cuéntanos detalles sobre tu diseño, colores preferidos, cantidad, etc..." 
+                                    class="w-full bg-gray-700 text-white p-3 rounded-lg border border-gray-600 focus:border-beige focus:outline-none h-24 resize-none"></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Preview Area -->
+                    <div>
+                        <h3 class="text-xl font-bold text-beige mb-4">Vista Previa</h3>
+                        <div id="previewArea" class="bg-gray-700 rounded-xl p-6 min-h-80 flex items-center justify-center">
+                            <div class="text-center text-gray-400">
+                                <div class="text-4xl mb-4">👁️</div>
+                                <p>Sube una imagen y selecciona un producto para ver la vista previa</p>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="mt-6 space-y-3">
+                            <button id="sendEmailBtn" onclick="sendDesignEmail()" 
+                                    class="w-full btn-primary text-gris-oscuro py-3 rounded-lg font-bold disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                                📧 Solicitar Cotización por Email
+                            </button>
+                            <button id="sendWhatsAppBtn" onclick="sendWhatsApp()" 
+                                    class="w-full glass-effect py-3 rounded-lg font-bold hover:bg-white hover:bg-opacity-20 transition-all disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                                💬 Consultar por WhatsApp
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
@@ -319,22 +419,22 @@
                 <div class="glass-effect rounded-xl p-6">
                     <div class="text-4xl mb-4">📧</div>
                     <h3 class="font-bold text-beige mb-2">Email</h3>
-                    <p class="text-gray-300">info@panu.com</p>
+                    <p class="text-gray-300">panu@aurical.org</p>
                 </div>
                 <div class="glass-effect rounded-xl p-6">
                     <div class="text-4xl mb-4">📱</div>
                     <h3 class="font-bold text-beige mb-2">WhatsApp</h3>
-                    <p class="text-gray-300">+1 234 567 8900</p>
+                    <p class="text-gray-300">+595 985 501 874</p>
                 </div>
                 <div class="glass-effect rounded-xl p-6">
                     <div class="text-4xl mb-4">📍</div>
                     <h3 class="font-bold text-beige mb-2">Ubicación</h3>
-                    <p class="text-gray-300">Ciudad, País</p>
+                    <p class="text-gray-300">Paraguay</p>
                 </div>
             </div>
 
-            <button class="btn-primary text-gris-oscuro px-8 py-4 rounded-full font-bold text-lg">
-                Enviar Mensaje
+            <button onclick="contactWhatsApp()" class="btn-primary text-gris-oscuro px-8 py-4 rounded-full font-bold text-lg">
+                💬 Enviar Mensaje por WhatsApp
             </button>
         </div>
     </section>
@@ -361,6 +461,7 @@
                     <h4 class="font-bold text-beige mb-4">Enlaces</h4>
                     <ul class="space-y-2 text-gray-300">
                         <li><a href="#inicio" class="hover:text-beige transition-colors">Inicio</a></li>
+                        <li><a href="#editor" class="hover:text-beige transition-colors">Editor</a></li>
                         <li><a href="#productos" class="hover:text-beige transition-colors">Productos</a></li>
                         <li><a href="#nosotros" class="hover:text-beige transition-colors">Nosotros</a></li>
                         <li><a href="#contacto" class="hover:text-beige transition-colors">Contacto</a></li>
@@ -406,14 +507,194 @@
         // Global variables
         let allProducts = [];
         let currentFilter = 'all';
-        let cart = [];
+        let uploadedImage = null;
+        let selectedProduct = '';
+
+        // Product templates for preview
+        const productTemplates = {
+            taza: {
+                name: 'Taza Blanca',
+                image: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjI1MCIgdmlld0JveD0iMCAwIDMwMCAyNTAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHg9IjUwIiB5PSI1MCIgd2lkdGg9IjE4MCIgaGVpZ2h0PSIxNTAiIHJ4PSIxMCIgZmlsbD0iI2ZmZmZmZiIgc3Ryb2tlPSIjZGRkZGRkIiBzdHJva2Utd2lkdGg9IjIiLz4KPHBhdGggZD0iTTIzMCAxMDBMMjcwIDEwMEMyODAgMTAwIDI5MCA5MCAyOTAgMTIwVjE0MEMyOTAgMTcwIDI4MCAyMDAgMjcwIDIwMEwyMzAgMjAwIiBzdHJva2U9IiNkZGRkZGQiIHN0cm9rZS13aWR0aD0iMiIgZmlsbD0ibm9uZSIvPgo8L3N2Zz4K'
+            },
+            camiseta: {
+                name: 'Camiseta',
+                image: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjI1MCIgdmlld0JveD0iMCAwIDMwMCAyNTAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxwYXRoIGQ9Ik04MCA1MEwxMDAgMzBMMjAwIDMwTDIyMCA1MEwyNTAgNzBMMjUwIDIyMEw1MCAyMjBMNTAgNzBMODAgNTBaIiBmaWxsPSIjZmZmZmZmIiBzdHJva2U9IiNkZGRkZGQiIHN0cm9rZS13aWR0aD0iMiIvPgo8L3N2Zz4K'
+            },
+            'mouse-pad': {
+                name: 'Mouse Pad',
+                image: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjI1MCIgdmlld0JveD0iMCAwIDMwMCAyNTAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHg9IjMwIiB5PSI3MCIgd2lkdGg9IjI0MCIgaGVpZ2h0PSIxODAiIHJ4PSIxNSIgZmlsbD0iI2ZmZmZmZiIgc3Ryb2tlPSIjZGRkZGRkIiBzdHJva2Utd2lkdGg9IjIiLz4KPC9zdmc+Cg=='
+            },
+            almohada: {
+                name: 'Almohada',
+                image: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjI1MCIgdmlld0JveD0iMCAwIDMwMCAyNTAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHg9IjQwIiB5PSI4MCIgd2lkdGg9IjIyMCIgaGVpZ2h0PSIxNDAiIHJ4PSIyMCIgZmlsbD0iI2ZmZmZmZiIgc3Ryb2tlPSIjZGRkZGRkIiBzdHJva2Utd2lkdGg9IjIiLz4KPC9zdmc+Cg=='
+            }
+        };
 
         // Initialize page
         document.addEventListener('DOMContentLoaded', function() {
             loadProducts();
-            loadCart();
-            updateCartDisplay();
+            initializeDesignEditor();
         });
+
+        // Initialize Design Editor
+        function initializeDesignEditor() {
+            const uploadArea = document.getElementById('uploadArea');
+            const fileInput = document.getElementById('designUpload');
+            const productSelect = document.getElementById('productSelect');
+
+            // Upload area click handler
+            uploadArea.addEventListener('click', () => fileInput.click());
+
+            // Drag and drop handlers
+            uploadArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                uploadArea.classList.add('upload-area-active');
+            });
+
+            uploadArea.addEventListener('dragleave', () => {
+                uploadArea.classList.remove('upload-area-active');
+            });
+
+            uploadArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                uploadArea.classList.remove('upload-area-active');
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    handleFileUpload(files[0]);
+                }
+            });
+
+            // File input change handler
+            fileInput.addEventListener('change', (e) => {
+                if (e.target.files.length > 0) {
+                    handleFileUpload(e.target.files[0]);
+                }
+            });
+
+            // Product selection handler
+            productSelect.addEventListener('change', updatePreview);
+        }
+
+        // Handle file upload
+        function handleFileUpload(file) {
+            if (file.size > 5 * 1024 * 1024) {
+                showNotification('El archivo es muy grande. Máximo 5MB.', 'error');
+                return;
+            }
+
+            if (!file.type.startsWith('image/')) {
+                showNotification('Por favor sube solo imágenes.', 'error');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                uploadedImage = e.target.result;
+                
+                // Update upload area
+                document.getElementById('uploadContent').innerHTML = `
+                    <img src="${uploadedImage}" alt="Diseño subido" class="w-24 h-24 object-cover rounded-lg mx-auto mb-2">
+                    <p class="text-green-400 font-medium">✅ Imagen cargada</p>
+                    <p class="text-sm text-gray-500">Haz clic para cambiar</p>
+                `;
+                
+                updatePreview();
+                showNotification('Imagen cargada correctamente', 'success');
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // Update preview
+        function updatePreview() {
+            const previewArea = document.getElementById('previewArea');
+            const productSelect = document.getElementById('productSelect');
+            selectedProduct = productSelect.value;
+
+            if (!uploadedImage || !selectedProduct) {
+                updateButtonStates();
+                return;
+            }
+
+            const template = productTemplates[selectedProduct];
+            if (!template) return;
+
+            previewArea.innerHTML = `
+                <div class="product-preview">
+                    <img src="${template.image}" alt="${template.name}" class="max-w-full h-auto">
+                    <img src="${uploadedImage}" alt="Tu diseño" class="design-overlay">
+                    <div class="preview-watermark">Vista previa</div>
+                </div>
+                <p class="text-center text-gray-300 mt-4">${template.name} con tu diseño</p>
+            `;
+
+            updateButtonStates();
+        }
+
+        // Update button states
+        function updateButtonStates() {
+            const emailBtn = document.getElementById('sendEmailBtn');
+            const whatsappBtn = document.getElementById('sendWhatsAppBtn');
+            const canSend = uploadedImage && selectedProduct;
+
+            emailBtn.disabled = !canSend;
+            whatsappBtn.disabled = !canSend;
+        }
+
+        // Send design via email
+        function sendDesignEmail() {
+            if (!uploadedImage || !selectedProduct) return;
+
+            const message = document.getElementById('clientMessage').value;
+            const template = productTemplates[selectedProduct];
+            
+            const subject = encodeURIComponent(`Cotización para ${template.name} personalizada`);
+            const body = encodeURIComponent(`Hola Panu,
+
+Me interesa una cotización para un ${template.name} personalizado.
+
+${message ? `Detalles adicionales: ${message}` : ''}
+
+He adjuntado mi diseño para que puedan revisarlo.
+
+¡Gracias!`);
+
+            // Create a temporary link to download the design
+            const link = document.createElement('a');
+            link.href = uploadedImage;
+            link.download = `diseño-${template.name.toLowerCase().replace(' ', '-')}.png`;
+            
+            // Open email client
+            window.open(`mailto:panu@aurical.org?subject=${subject}&body=${body}`, '_blank');
+            
+            // Trigger download
+            link.click();
+            
+            showNotification('Email preparado y diseño descargado. ¡Adjunta la imagen al email!', 'success');
+        }
+
+        // Send via WhatsApp
+        function sendWhatsApp() {
+            if (!uploadedImage || !selectedProduct) return;
+
+            const message = document.getElementById('clientMessage').value;
+            const template = productTemplates[selectedProduct];
+            
+            const whatsappMessage = encodeURIComponent(`Hola! Me interesa un ${template.name} personalizado.
+
+${message ? `Detalles: ${message}` : ''}
+
+¿Podrían ayudarme con una cotización?`);
+
+            window.open(`https://wa.me/595985501874?text=${whatsappMessage}`, '_blank');
+            
+            showNotification('Redirigiendo a WhatsApp...', 'success');
+        }
+
+        // Contact via WhatsApp (general)
+        function contactWhatsApp() {
+            const message = encodeURIComponent('Hola! Me gustaría conocer más sobre sus servicios de sublimación personalizada.');
+            window.open(`https://wa.me/595985501874?text=${message}`, '_blank');
+        }
 
         // Load products from Caisy CMS
         async function loadProducts() {
@@ -490,7 +771,7 @@
                         price: parseFloat(edge.node.precio) || 0,
                         description: edge.node.descripcion || '',
                         category: edge.node.categoria || 'Otros',
-                        stock: edge.node.disponible ? 10 : 0, // Simulate stock based on availability
+                        stock: edge.node.disponible ? 10 : 0,
                         images: images,
                         available: edge.node.disponible,
                         createdAt: edge.node.fecha_creacion || new Date().toISOString()
@@ -532,7 +813,7 @@
                         <div class="text-6xl mb-4">💎</div>
                         <h3 class="text-2xl font-bold text-gray-400 mb-2">No hay productos disponibles</h3>
                         <p class="text-gray-500">Los productos de sublimación se mostrarán aquí una vez que sean agregados desde el CMS</p>
-                        <a href="login.html" class="inline-block mt-4 text-rosa-pastel hover:text-dorado transition-colors">
+                        <a href="login.html" class="inline-block mt-4 text-beige hover:text-marron transition-colors">
                             Ir al Panel Admin →
                         </a>
                     </div>
@@ -546,11 +827,11 @@
                         ${product.images && product.images.length > 0 ? `
                             <img src="${product.images[0]}" alt="${product.name}" class="w-full h-64 object-cover">
                         ` : `
-                            <div class="w-full h-64 bg-gradient-to-br from-rosa-pastel to-dorado flex items-center justify-center">
-                                <div class="text-4xl text-negro-mate">💎</div>
+                            <div class="w-full h-64 bg-gradient-to-br from-beige to-marron flex items-center justify-center">
+                                <div class="text-4xl text-gris-oscuro">💎</div>
                             </div>
                         `}
-                        <div class="absolute top-4 right-4 bg-rosa-pastel text-negro-mate px-2 py-1 rounded-full text-xs font-bold">
+                        <div class="absolute top-4 right-4 bg-beige text-gris-oscuro px-2 py-1 rounded-full text-xs font-bold">
                             ${product.category}
                         </div>
                         ${product.stock <= 5 ? `
@@ -563,11 +844,10 @@
                         <h3 class="text-xl font-bold text-white mb-2">${product.name}</h3>
                         <p class="text-gray-300 text-sm mb-4 line-clamp-2">${product.description || 'Producto personalizado de alta calidad'}</p>
                         <div class="flex justify-between items-center">
-                            <span class="text-2xl font-bold text-dorado">$${product.price.toFixed(2)}</span>
-                            <button onclick="event.stopPropagation(); addToCart('${product.id}')" 
-                                    class="btn-primary text-negro-mate px-4 py-2 rounded-lg font-bold text-sm ${product.stock <= 0 ? 'opacity-50 cursor-not-allowed' : ''}"
-                                    ${product.stock <= 0 ? 'disabled' : ''}>
-                                ${product.stock <= 0 ? 'Agotado' : 'Agregar'}
+                            <span class="text-2xl font-bold text-marron">$${product.price.toFixed(2)}</span>
+                            <button onclick="event.stopPropagation(); showComingSoon()" 
+                                    class="btn-primary text-gris-oscuro px-4 py-2 rounded-lg font-bold text-sm">
+                                Próximamente
                             </button>
                         </div>
                     </div>
@@ -618,8 +898,8 @@
                             </div>
                         ` : ''}
                     ` : `
-                        <div class="gallery-main-image bg-gradient-to-br from-rosa-pastel to-dorado flex items-center justify-center">
-                            <div class="text-6xl text-negro-mate">💎</div>
+                        <div class="gallery-main-image bg-gradient-to-br from-beige to-marron flex items-center justify-center">
+                            <div class="text-6xl text-gris-oscuro">💎</div>
                         </div>
                     `}
                 </div>
@@ -627,12 +907,12 @@
                 <div class="flex justify-between items-start mb-4">
                     <div>
                         <h2 class="text-2xl font-bold text-white mb-2">${product.name}</h2>
-                        <span class="bg-rosa-pastel text-negro-mate px-3 py-1 rounded-full text-sm font-bold">
+                        <span class="bg-beige text-gris-oscuro px-3 py-1 rounded-full text-sm font-bold">
                             ${product.category}
                         </span>
                     </div>
                     <div class="text-right">
-                        <div class="text-3xl font-bold text-dorado mb-1">$${product.price.toFixed(2)}</div>
+                        <div class="text-3xl font-bold text-marron mb-1">$${product.price.toFixed(2)}</div>
                         <div class="text-sm text-gray-400">Stock: ${product.stock}</div>
                     </div>
                 </div>
@@ -640,12 +920,17 @@
                 <p class="text-gray-300 mb-6 leading-relaxed">
                     ${product.description || 'Producto personalizado de alta calidad, sublimado con la mejor tecnología y materiales premium.'}
                 </p>
+
+                <div class="mb-6">
+                    <label class="block text-beige font-bold mb-2">Mensaje para WhatsApp:</label>
+                    <textarea id="productMessage" placeholder="Hola, me interesa este producto..." 
+                            class="w-full bg-gray-700 text-white p-3 rounded-lg border border-gray-600 focus:border-beige focus:outline-none h-20 resize-none"></textarea>
+                </div>
                 
                 <div class="flex space-x-4">
-                    <button onclick="addToCart('${product.id}'); closeModal();" 
-                            class="flex-1 btn-primary text-negro-mate py-3 rounded-lg font-bold ${product.stock <= 0 ? 'opacity-50 cursor-not-allowed' : ''}"
-                            ${product.stock <= 0 ? 'disabled' : ''}>
-                        ${product.stock <= 0 ? 'Agotado' : 'Agregar al Carrito'}
+                    <button onclick="sendProductWhatsApp('${product.id}')" 
+                            class="flex-1 btn-primary text-gris-oscuro py-3 rounded-lg font-bold">
+                        💬 Consultar por WhatsApp
                     </button>
                     <button onclick="closeModal()" class="px-6 py-3 glass-effect rounded-lg font-bold hover:bg-white hover:bg-opacity-20 transition-all">
                         Cerrar
@@ -654,6 +939,26 @@
             `;
             
             modal.classList.add('show');
+        }
+
+        // Send product inquiry via WhatsApp
+        function sendProductWhatsApp(productId) {
+            const product = allProducts.find(p => p.id === productId);
+            if (!product) return;
+
+            const customMessage = document.getElementById('productMessage').value;
+            const productUrl = window.location.href + '#producto-' + productId;
+            
+            const message = customMessage || `Hola, me interesa este producto: ${product.name}`;
+            const fullMessage = encodeURIComponent(`${message}
+
+Producto: ${product.name}
+Precio: $${product.price.toFixed(2)}
+Link: ${productUrl}`);
+
+            window.open(`https://wa.me/595985501874?text=${fullMessage}`, '_blank');
+            closeModal();
+            showNotification('Redirigiendo a WhatsApp...', 'success');
         }
 
         // Change main image in modal
@@ -672,62 +977,20 @@
             document.getElementById('productModal').classList.remove('show');
         }
 
-        // Cart functionality
-        function loadCart() {
-            const savedCart = localStorage.getItem('panuCart');
-            if (savedCart) {
-                cart = JSON.parse(savedCart);
-            }
-        }
-
-        function saveCart() {
-            localStorage.setItem('panuCart', JSON.stringify(cart));
-        }
-
-        function addToCart(productId) {
-            const product = allProducts.find(p => p.id === productId);
-            if (!product || product.stock <= 0) return;
-
-            const existingItem = cart.find(item => item.id === productId);
-            
-            if (existingItem) {
-                if (existingItem.quantity < product.stock) {
-                    existingItem.quantity += 1;
-                    showNotification(`${product.name} agregado al carrito`, 'success');
-                } else {
-                    showNotification('No hay más stock disponible', 'error');
-                    return;
-                }
-            } else {
-                cart.push({
-                    id: productId,
-                    name: product.name,
-                    price: product.price,
-                    image: product.images?.[0] || null,
-                    quantity: 1
-                });
-                showNotification(`${product.name} agregado al carrito`, 'success');
-            }
-            
-            saveCart();
-            updateCartDisplay();
-        }
-
-        function updateCartDisplay() {
-            const cartCount = document.getElementById('cartCount');
-            const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
-            
-            if (totalItems > 0) {
-                cartCount.textContent = totalItems;
-                cartCount.classList.remove('hidden');
-            } else {
-                cartCount.classList.add('hidden');
-            }
+        // Show coming soon notification
+        function showComingSoon() {
+            showNotification('🚀 Carrito de compras próximamente. ¡Usa el editor de diseños o consulta por WhatsApp!', 'info');
         }
 
         // Utility functions
         function scrollToProducts() {
             document.getElementById('productos').scrollIntoView({ 
+                behavior: 'smooth' 
+            });
+        }
+
+        function scrollToEditor() {
+            document.getElementById('editor').scrollIntoView({ 
                 behavior: 'smooth' 
             });
         }
@@ -744,7 +1007,7 @@
             
             setTimeout(() => {
                 notification.remove();
-            }, 3000);
+            }, 4000);
         }
 
         // Close modal when clicking outside
@@ -754,5 +1017,5 @@
             }
         });
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98e167d65497a538',t:'MTc2MDM4NTQ0Mi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98e17d409266116d',t:'MTc2MDM4NjMxOS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
