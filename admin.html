@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel de Administración - Panu</title>
+    <title>Panu - Panel de Administración</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -21,22 +21,14 @@
     <style>
         body {
             box-sizing: border-box;
-            background-color: #3d3426;
+            background: linear-gradient(135deg, #3d3426 0%, #2a2419 100%);
+            min-height: 100%;
         }
         
         .glass-effect {
             backdrop-filter: blur(15px);
             background: rgba(255, 255, 255, 0.1);
             border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-        
-        .hover-lift {
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-        
-        .hover-lift:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
         }
         
         .text-gradient {
@@ -56,21 +48,15 @@
             transform: translateY(-2px);
         }
         
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.9);
-            z-index: 1000;
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
         }
         
-        .modal.active {
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-1px);
         }
         
         .notification {
@@ -95,539 +81,584 @@
                 transform: translateX(0);
             }
         }
+        
+        .drag-drop-zone {
+            border: 2px dashed #F8BBD9;
+            transition: all 0.3s ease;
+        }
+        
+        .drag-drop-zone.dragover {
+            border-color: #FFD700;
+            background: rgba(255, 215, 0, 0.1);
+        }
+        
+        .image-preview {
+            position: relative;
+            overflow: hidden;
+            border-radius: 8px;
+            transition: transform 0.3s ease;
+        }
+        
+        .image-preview:hover {
+            transform: scale(1.05);
+        }
+        
+        .image-preview .remove-btn {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: rgba(255, 0, 0, 0.8);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .image-preview:hover .remove-btn {
+            opacity: 1;
+        }
+        
+        .loading-spinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid transparent;
+            border-top: 2px solid currentColor;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .loading .loading-spinner {
+            display: inline-block;
+        }
+        
+        .loading .button-text {
+            display: none;
+        }
+        
+        .tab-active {
+            background: linear-gradient(45deg, #F8BBD9, #FFD700);
+            color: #1a1a1a;
+        }
+        
+        .tab-inactive {
+            background: rgba(255, 255, 255, 0.1);
+            color: #ffffff;
+        }
+        
+        .tab-inactive:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
     </style>
 </head>
 <body class="text-white font-sans min-h-full">
-    <!-- Navigation -->
-    <nav class="glass-effect sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-6 py-4">
-            <div class="flex justify-between items-center">
-                <div class="flex items-center space-x-3">
-                    <div class="text-3xl">🎨</div>
-                    <div class="text-2xl font-bold text-gradient">Panu Admin</div>
-                </div>
-                <div class="flex items-center space-x-4">
-                    <span id="welcomeUser" class="text-gray-300 text-sm"></span>
-                    <a href="panu.html" class="border border-rosa-pastel text-rosa-pastel px-4 py-2 rounded-full hover:bg-rosa-pastel hover:text-negro-mate transition-all">
-                        Ver Tienda
-                    </a>
-                    <a href="index.html" class="border border-rosa-pastel text-rosa-pastel px-4 py-2 rounded-full hover:bg-rosa-pastel hover:text-negro-mate transition-all">
-                        Inicio
-                    </a>
-                    <button onclick="logout()" class="bg-red-600 text-white px-4 py-2 rounded-full hover:bg-red-700 transition-all">
-                        🚪 Cerrar Sesión
-                    </button>
+    <!-- Header -->
+    <header class="glass-effect border-b border-gray-600 p-4">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-4">
+                <div class="text-3xl">🎨</div>
+                <div>
+                    <h1 class="text-2xl font-bold text-gradient">Panel Admin</h1>
+                    <p class="text-sm text-gray-300" id="welcomeMessage">Bienvenido, Admin</p>
                 </div>
             </div>
-        </div>
-    </nav>
-
-    <!-- Hero Section -->
-    <section class="relative py-12 px-6">
-        <div class="max-w-4xl mx-auto text-center">
-            <h1 class="text-5xl font-bold text-gradient mb-4">Panel de Administración</h1>
-            <p class="text-xl text-gray-300 mb-8">Gestiona tus productos de manera fácil y eficiente</p>
-        </div>
-    </section>
-
-    <!-- Stats Cards -->
-    <section class="max-w-7xl mx-auto px-6 mb-8">
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-            <div class="glass-effect rounded-2xl p-6 text-center hover-lift">
-                <div class="text-3xl mb-2">📦</div>
-                <div class="text-2xl font-bold text-dorado" id="totalProducts">0</div>
-                <div class="text-gray-300">Total Productos</div>
-            </div>
-            <div class="glass-effect rounded-2xl p-6 text-center hover-lift">
-                <div class="text-3xl mb-2">✅</div>
-                <div class="text-2xl font-bold text-green-400" id="availableProducts">0</div>
-                <div class="text-gray-300">Disponibles</div>
-            </div>
-            <div class="glass-effect rounded-2xl p-6 text-center hover-lift">
-                <div class="text-3xl mb-2">📂</div>
-                <div class="text-2xl font-bold text-rosa-pastel" id="totalCategories">0</div>
-                <div class="text-gray-300">Categorías</div>
-            </div>
-            <div class="glass-effect rounded-2xl p-6 text-center hover-lift">
-                <div class="text-3xl mb-2">💰</div>
-                <div class="text-2xl font-bold text-dorado">$<span id="averagePrice">0</span></div>
-                <div class="text-gray-300">Precio Promedio</div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Actions Section -->
-    <section class="max-w-7xl mx-auto px-6 mb-8">
-        <div class="glass-effect rounded-2xl p-6">
-            <div class="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
-                <h2 class="text-2xl font-bold text-gradient">Gestión de Productos</h2>
-                <button onclick="openAddProductModal()" class="btn-primary text-negro-mate px-6 py-3 rounded-lg font-bold hover-lift">
-                    ➕ Agregar Producto
+            <div class="flex items-center space-x-4">
+                <button onclick="logout()" class="btn-secondary px-4 py-2 rounded-lg text-sm">
+                    Cerrar Sesión
                 </button>
             </div>
         </div>
-    </section>
+    </header>
 
-    <!-- Products Table -->
-    <section class="max-w-7xl mx-auto px-6 pb-12">
-        <div class="glass-effect rounded-2xl p-6">
-            <div class="overflow-x-auto">
-                <table class="w-full text-left">
-                    <thead>
-                        <tr class="border-b border-gray-600">
-                            <th class="pb-4 text-rosa-pastel">Imagen</th>
-                            <th class="pb-4 text-rosa-pastel">Nombre</th>
-                            <th class="pb-4 text-rosa-pastel">Precio</th>
-                            <th class="pb-4 text-rosa-pastel">Categoría</th>
-                            <th class="pb-4 text-rosa-pastel">Estado</th>
-                            <th class="pb-4 text-rosa-pastel">Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody id="productsTableBody">
-                        <!-- Products will be loaded here -->
-                    </tbody>
-                </table>
-            </div>
-            
-            <!-- Empty State -->
-            <div id="emptyState" class="text-center py-12 hidden">
-                <div class="text-6xl mb-4">📦</div>
-                <h3 class="text-2xl font-bold text-gray-400 mb-2">No hay productos</h3>
-                <p class="text-gray-500 mb-6">Comienza agregando tu primer producto</p>
-                <button onclick="openAddProductModal()" class="btn-primary text-negro-mate px-6 py-3 rounded-lg font-bold hover-lift">
-                    ➕ Agregar Primer Producto
-                </button>
-            </div>
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto p-6">
+        <!-- Tabs -->
+        <div class="flex space-x-2 mb-6">
+            <button onclick="switchTab('products')" id="tab-products" class="tab-active px-6 py-3 rounded-lg font-medium transition-all">
+                📦 Productos
+            </button>
+            <button onclick="switchTab('orders')" id="tab-orders" class="tab-inactive px-6 py-3 rounded-lg font-medium transition-all">
+                📋 Pedidos
+            </button>
+            <button onclick="switchTab('settings')" id="tab-settings" class="tab-inactive px-6 py-3 rounded-lg font-medium transition-all">
+                ⚙️ Configuración
+            </button>
         </div>
-    </section>
 
-    <!-- Add/Edit Product Modal -->
-    <div id="productModal" class="modal">
-        <div class="glass-effect rounded-3xl p-8 max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
-            <div class="flex justify-between items-center mb-6">
-                <h2 id="modalTitle" class="text-2xl font-bold text-gradient">Agregar Producto</h2>
-                <button onclick="closeProductModal()" class="text-gray-400 hover:text-white text-2xl">✕</button>
-            </div>
-            
-            <form id="productForm" class="space-y-6">
-                <div>
-                    <label class="block text-sm font-medium text-gray-300 mb-2">Nombre del Producto</label>
-                    <input type="text" id="productName" required
-                           class="w-full bg-negro-mate border border-gray-600 rounded-lg px-4 py-3 text-white focus:border-rosa-pastel focus:outline-none">
+        <!-- Products Tab -->
+        <div id="content-products" class="tab-content">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Add Product Form -->
+                <div class="glass-effect rounded-xl p-6">
+                    <h2 class="text-xl font-bold text-gradient mb-6">➕ Agregar Producto</h2>
+                    
+                    <form id="productForm" class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-300 mb-2">Nombre del Producto</label>
+                            <input type="text" id="productName" required
+                                class="w-full bg-negro-mate border border-gray-600 rounded-lg px-4 py-3 text-white focus:border-rosa-pastel focus:outline-none transition-colors"
+                                placeholder="Ej: Collar Artesanal Rosa">
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-300 mb-2">Precio</label>
+                                <input type="number" id="productPrice" required step="0.01"
+                                    class="w-full bg-negro-mate border border-gray-600 rounded-lg px-4 py-3 text-white focus:border-rosa-pastel focus:outline-none transition-colors"
+                                    placeholder="0.00">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-300 mb-2">Stock</label>
+                                <input type="number" id="productStock" required
+                                    class="w-full bg-negro-mate border border-gray-600 rounded-lg px-4 py-3 text-white focus:border-rosa-pastel focus:outline-none transition-colors"
+                                    placeholder="10">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-300 mb-2">Categoría</label>
+                            <select id="productCategory" required
+                                class="w-full bg-negro-mate border border-gray-600 rounded-lg px-4 py-3 text-white focus:border-rosa-pastel focus:outline-none transition-colors">
+                                <option value="">Seleccionar categoría</option>
+                                <option value="collares">Collares</option>
+                                <option value="pulseras">Pulseras</option>
+                                <option value="aretes">Aretes</option>
+                                <option value="anillos">Anillos</option>
+                                <option value="otros">Otros</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-300 mb-2">Descripción</label>
+                            <textarea id="productDescription" rows="3"
+                                class="w-full bg-negro-mate border border-gray-600 rounded-lg px-4 py-3 text-white focus:border-rosa-pastel focus:outline-none transition-colors"
+                                placeholder="Describe el producto, materiales, características especiales..."></textarea>
+                        </div>
+
+                        <!-- Image Upload Section -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-300 mb-2">Imágenes del Producto</label>
+                            
+                            <!-- Drag & Drop Zone -->
+                            <div id="dropZone" class="drag-drop-zone rounded-lg p-8 text-center cursor-pointer mb-4">
+                                <div class="text-4xl mb-2">📸</div>
+                                <p class="text-gray-300 mb-2">Arrastra imágenes aquí o haz clic para seleccionar</p>
+                                <p class="text-xs text-gray-400">Formatos: JPG, PNG, WebP (máx. 5MB cada una)</p>
+                                <input type="file" id="imageInput" multiple accept="image/*" class="hidden">
+                            </div>
+
+                            <!-- Image Previews -->
+                            <div id="imagePreviewContainer" class="grid grid-cols-3 gap-4 mb-4"></div>
+
+                            <!-- Upload Progress -->
+                            <div id="uploadProgress" class="hidden">
+                                <div class="bg-gray-700 rounded-full h-2 mb-2">
+                                    <div id="progressBar" class="bg-gradient-to-r from-rosa-pastel to-dorado h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
+                                </div>
+                                <p class="text-xs text-gray-400 text-center" id="progressText">Subiendo imágenes...</p>
+                            </div>
+                        </div>
+
+                        <button type="submit" id="submitBtn" class="w-full btn-primary text-negro-mate py-3 rounded-lg font-bold transition-all hover:shadow-lg">
+                            <span class="loading-spinner"></span>
+                            <span class="button-text">Agregar Producto</span>
+                        </button>
+                    </form>
                 </div>
-                
-                <div>
-                    <label class="block text-sm font-medium text-gray-300 mb-2">Descripción</label>
-                    <textarea id="productDescription" rows="4" required
-                              class="w-full bg-negro-mate border border-gray-600 rounded-lg px-4 py-3 text-white focus:border-rosa-pastel focus:outline-none resize-none"></textarea>
-                </div>
-                
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-300 mb-2">Precio ($)</label>
-                        <input type="number" id="productPrice" step="0.01" min="0" required
-                               class="w-full bg-negro-mate border border-gray-600 rounded-lg px-4 py-3 text-white focus:border-rosa-pastel focus:outline-none">
+
+                <!-- Products List -->
+                <div class="glass-effect rounded-xl p-6">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-xl font-bold text-gradient">📋 Lista de Productos</h2>
+                        <button onclick="refreshProducts()" class="btn-secondary px-4 py-2 rounded-lg text-sm">
+                            🔄 Actualizar
+                        </button>
                     </div>
                     
-                    <div>
-                        <label class="block text-sm font-medium text-gray-300 mb-2">Categoría</label>
-                        <input type="text" id="productCategory" required
-                               class="w-full bg-negro-mate border border-gray-600 rounded-lg px-4 py-3 text-white focus:border-rosa-pastel focus:outline-none">
+                    <div id="productsList" class="space-y-4 max-h-96 overflow-y-auto">
+                        <!-- Products will be loaded here -->
+                        <div class="text-center text-gray-400 py-8">
+                            <div class="text-4xl mb-2">📦</div>
+                            <p>No hay productos aún</p>
+                            <p class="text-sm">Agrega tu primer producto usando el formulario</p>
+                        </div>
                     </div>
                 </div>
-                
-                <div>
-                    <label class="block text-sm font-medium text-gray-300 mb-2">URL de Imagen Principal</label>
-                    <input type="url" id="productImage" required
-                           class="w-full bg-negro-mate border border-gray-600 rounded-lg px-4 py-3 text-white focus:border-rosa-pastel focus:outline-none"
-                           placeholder="https://ejemplo.com/imagen.jpg">
-                </div>
-                
-                <div>
-                    <label class="flex items-center">
-                        <input type="checkbox" id="productAvailable" checked
-                               class="w-4 h-4 text-rosa-pastel bg-negro-mate border-gray-600 rounded focus:ring-rosa-pastel">
-                        <span class="ml-2 text-gray-300">Producto disponible</span>
-                    </label>
-                </div>
-                
-                <div class="flex space-x-4">
-                    <button type="button" onclick="closeProductModal()" 
-                            class="flex-1 bg-gray-600 text-white py-3 rounded-lg hover:bg-gray-500 transition-all">
-                        Cancelar
-                    </button>
-                    <button type="submit" id="saveProductBtn"
-                            class="flex-1 btn-primary text-negro-mate py-3 rounded-lg font-bold hover-lift">
-                        Guardar Producto
-                    </button>
-                </div>
-            </form>
+            </div>
         </div>
-    </div>
+
+        <!-- Orders Tab -->
+        <div id="content-orders" class="tab-content hidden">
+            <div class="glass-effect rounded-xl p-6">
+                <h2 class="text-xl font-bold text-gradient mb-6">📋 Gestión de Pedidos</h2>
+                <div class="text-center text-gray-400 py-8">
+                    <div class="text-4xl mb-2">📋</div>
+                    <p>Funcionalidad de pedidos próximamente</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings Tab -->
+        <div id="content-settings" class="tab-content hidden">
+            <div class="glass-effect rounded-xl p-6">
+                <h2 class="text-xl font-bold text-gradient mb-6">⚙️ Configuración</h2>
+                <div class="text-center text-gray-400 py-8">
+                    <div class="text-4xl mb-2">⚙️</div>
+                    <p>Configuraciones del sistema próximamente</p>
+                </div>
+            </div>
+        </div>
+    </main>
 
     <script>
-        // Authentication Check - MUST BE FIRST
-        function checkAuthentication() {
-            const session = localStorage.getItem('panuAdminSession');
-            if (!session) {
-                window.location.href = 'login.html';
-                return false;
+        // Suppress Tailwind CDN warning
+        console.warn = function(message) {
+            if (message.includes('cdn.tailwindcss.com should not be used in production')) {
+                return;
             }
-            
-            try {
-                const sessionData = JSON.parse(session);
-                const now = new Date().getTime();
-                
-                if (now > sessionData.expires) {
-                    localStorage.removeItem('panuAdminSession');
-                    window.location.href = 'login.html';
-                    return false;
-                }
-                
-                // Update welcome message
-                document.getElementById('welcomeUser').textContent = `Bienvenido, ${sessionData.username}`;
-                
-                return sessionData.authenticated === true;
-            } catch (e) {
-                localStorage.removeItem('panuAdminSession');
-                window.location.href = 'login.html';
-                return false;
-            }
-        }
-
-        // Check authentication immediately
-        if (!checkAuthentication()) {
-            // Redirect will happen in checkAuthentication function
-        }
-
-        // Caisy Configuration
-        const CAISY_CONFIG = {
-            projectId: 'd5020874-9338-4ce1-9f01-872741713f01',
-            apiKey: 'DR4cQSjCXwdqZDs20vuKsPmGreNnSu4T',
-            endpoint: 'https://cloud.caisy.io/api/v3/e/d5020874-9338-4ce1-9f01-872741713f01/graphql'
+            console.log(message);
         };
 
+        // Global variables
+        let selectedImages = [];
         let products = [];
-        let editingProductId = null;
 
-        // GraphQL Queries
-        const GET_PRODUCTS_QUERY = `
-            query GetProducts {
-                Producto {
-                    id
-                    nombre
-                    descripcion {
-                        json
-                    }
-                    precio
-                    categoria
-                    imagen_principal {
-                        ... on Asset {
-                            src
-                            title
-                        }
-                    }
-                    disponible
-                    fecha_creacion
-                }
-            }
-        `;
-
-        const CREATE_PRODUCT_MUTATION = `
-            mutation CreateProduct($input: ProductoInput!) {
-                createProducto(input: $input) {
-                    id
-                    nombre
-                    precio
-                    categoria
-                    disponible
-                }
-            }
-        `;
-
-        const UPDATE_PRODUCT_MUTATION = `
-            mutation UpdateProduct($id: ID!, $input: ProductoInput!) {
-                updateProducto(id: $id, input: $input) {
-                    id
-                    nombre
-                    precio
-                    categoria
-                    disponible
-                }
-            }
-        `;
-
-        const DELETE_PRODUCT_MUTATION = `
-            mutation DeleteProduct($id: ID!) {
-                deleteProducto(id: $id) {
-                    id
-                }
-            }
-        `;
-
-        // Utility function to extract text from rich text description
-        function extractTextFromDescription(descripcion) {
-            if (!descripcion) return '';
-            
-            if (typeof descripcion === 'string') return descripcion;
-            
-            if (descripcion.json) {
-                try {
-                    const jsonContent = typeof descripcion.json === 'string' 
-                        ? JSON.parse(descripcion.json) 
-                        : descripcion.json;
-                    
-                    function extractText(node) {
-                        if (typeof node === 'string') return node;
-                        if (!node || typeof node !== 'object') return '';
-                        
-                        if (node.text) return node.text;
-                        if (node.content && Array.isArray(node.content)) {
-                            return node.content.map(extractText).join(' ');
-                        }
-                        if (Array.isArray(node)) {
-                            return node.map(extractText).join(' ');
-                        }
-                        
-                        return '';
-                    }
-                    
-                    return extractText(jsonContent).trim();
-                } catch (e) {
-                    console.warn('Error parsing description JSON:', e);
-                    return String(descripcion.json);
-                }
-            }
-            
-            return String(descripcion);
-        }
-
-        // Create rich text description for Caisy
-        function createRichTextDescription(text) {
-            return {
-                json: JSON.stringify({
-                    type: 'doc',
-                    content: [
-                        {
-                            type: 'paragraph',
-                            content: [
-                                {
-                                    type: 'text',
-                                    text: text
-                                }
-                            ]
-                        }
-                    ]
-                })
-            };
-        }
-
-        // API Functions
-        async function makeGraphQLRequest(query, variables = {}) {
-            try {
-                const response = await fetch(CAISY_CONFIG.endpoint, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'x-caisy-apikey': CAISY_CONFIG.apiKey
-                    },
-                    body: JSON.stringify({
-                        query,
-                        variables
-                    })
-                });
-
-                const data = await response.json();
-                
-                if (data.errors) {
-                    throw new Error(data.errors[0].message);
-                }
-                
-                return data.data;
-            } catch (error) {
-                console.error('GraphQL Error:', error);
-                throw error;
-            }
-        }
-
-        // Load Products
-        async function loadProducts() {
-            try {
-                const data = await makeGraphQLRequest(GET_PRODUCTS_QUERY);
-                
-                products = (data.Producto || []).map(product => ({
-                    id: product.id,
-                    name: product.nombre,
-                    price: product.precio,
-                    image: product.imagen_principal?.src || '/api/placeholder/400/400',
-                    category: product.categoria,
-                    description: extractTextFromDescription(product.descripcion),
-                    available: product.disponible,
-                    createdAt: product.fecha_creacion
-                }));
-
-                renderProductsTable();
-                updateStats();
-            } catch (error) {
-                console.error('Error loading products:', error);
-                showNotification('Error al cargar productos', 'error');
-            }
-        }
-
-        // Render Products Table
-        function renderProductsTable() {
-            const tbody = document.getElementById('productsTableBody');
-            const emptyState = document.getElementById('emptyState');
-
-            if (products.length === 0) {
-                tbody.innerHTML = '';
-                emptyState.classList.remove('hidden');
-                return;
-            }
-
-            emptyState.classList.add('hidden');
-            
-            tbody.innerHTML = products.map(product => `
-                <tr class="border-b border-gray-700 hover:bg-gray-800 transition-colors">
-                    <td class="py-4">
-                        <img src="${product.image}" alt="${product.name}" class="w-16 h-16 object-cover rounded-lg">
-                    </td>
-                    <td class="py-4 font-medium">${product.name}</td>
-                    <td class="py-4 text-dorado font-bold">$${product.price}</td>
-                    <td class="py-4">
-                        <span class="bg-rosa-pastel bg-opacity-20 text-rosa-pastel px-2 py-1 rounded-full text-xs">
-                            ${product.category}
-                        </span>
-                    </td>
-                    <td class="py-4">
-                        <span class="px-2 py-1 rounded-full text-xs ${
-                            product.available 
-                                ? 'bg-green-600 bg-opacity-20 text-green-400' 
-                                : 'bg-red-600 bg-opacity-20 text-red-400'
-                        }">
-                            ${product.available ? 'Disponible' : 'No disponible'}
-                        </span>
-                    </td>
-                    <td class="py-4">
-                        <div class="flex space-x-2">
-                            <button onclick="editProduct('${product.id}')" 
-                                    class="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 transition-all text-sm">
-                                ✏️ Editar
-                            </button>
-                            <button onclick="deleteProduct('${product.id}')" 
-                                    class="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 transition-all text-sm">
-                                🗑️ Eliminar
-                            </button>
-                        </div>
-                    </td>
-                </tr>
-            `).join('');
-        }
-
-        // Update Stats
-        function updateStats() {
-            document.getElementById('totalProducts').textContent = products.length;
-            document.getElementById('availableProducts').textContent = products.filter(p => p.available).length;
-            
-            const categories = [...new Set(products.map(p => p.category))];
-            document.getElementById('totalCategories').textContent = categories.length;
-            
-            const averagePrice = products.length > 0 
-                ? (products.reduce((sum, p) => sum + p.price, 0) / products.length).toFixed(2)
-                : '0.00';
-            document.getElementById('averagePrice').textContent = averagePrice;
-        }
-
-        // Modal Functions
-        function openAddProductModal() {
-            editingProductId = null;
-            document.getElementById('modalTitle').textContent = 'Agregar Producto';
-            document.getElementById('productForm').reset();
-            document.getElementById('productAvailable').checked = true;
-            document.getElementById('productModal').classList.add('active');
-        }
-
-        function editProduct(productId) {
-            const product = products.find(p => p.id === productId);
-            if (!product) return;
-
-            editingProductId = productId;
-            document.getElementById('modalTitle').textContent = 'Editar Producto';
-            
-            document.getElementById('productName').value = product.name;
-            document.getElementById('productDescription').value = product.description;
-            document.getElementById('productPrice').value = product.price;
-            document.getElementById('productCategory').value = product.category;
-            document.getElementById('productImage').value = product.image;
-            document.getElementById('productAvailable').checked = product.available;
-            
-            document.getElementById('productModal').classList.add('active');
-        }
-
-        function closeProductModal() {
-            document.getElementById('productModal').classList.remove('active');
-            editingProductId = null;
-        }
-
-        // Product Form Handler
-        document.getElementById('productForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            const formData = {
-                nombre: document.getElementById('productName').value.trim(),
-                descripcion: createRichTextDescription(document.getElementById('productDescription').value.trim()),
-                precio: parseFloat(document.getElementById('productPrice').value),
-                categoria: document.getElementById('productCategory').value.trim(),
-                imagen_principal: document.getElementById('productImage').value.trim(),
-                disponible: document.getElementById('productAvailable').checked,
-                fecha_creacion: new Date().toISOString()
-            };
-
-            try {
-                if (editingProductId) {
-                    await makeGraphQLRequest(UPDATE_PRODUCT_MUTATION, {
-                        id: editingProductId,
-                        input: formData
-                    });
-                    showNotification('Producto actualizado exitosamente', 'success');
-                } else {
-                    await makeGraphQLRequest(CREATE_PRODUCT_MUTATION, {
-                        input: formData
-                    });
-                    showNotification('Producto creado exitosamente', 'success');
-                }
-                
-                closeProductModal();
-                loadProducts();
-            } catch (error) {
-                console.error('Error saving product:', error);
-                showNotification('Error al guardar el producto', 'error');
-            }
+        // Check authentication on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            checkAuthentication();
+            initializeImageUpload();
+            loadProducts();
         });
 
-        // Delete Product
-        async function deleteProduct(productId) {
-            if (!confirm('¿Estás seguro de que quieres eliminar este producto?')) {
+        function checkAuthentication() {
+            const sessionData = localStorage.getItem('panuAdminSession') || 
+                               sessionStorage.getItem('panuAdminSession');
+            
+            if (!sessionData) {
+                window.location.href = 'login.html';
                 return;
             }
 
             try {
-                await makeGraphQLRequest(DELETE_PRODUCT_MUTATION, { id: productId });
-                showNotification('Producto eliminado exitosamente', 'success');
-                loadProducts();
+                const session = JSON.parse(sessionData);
+                const now = Date.now();
+                const sessionAge = now - session.timestamp;
+                const maxAge = session.remember ? 7 * 24 * 60 * 60 * 1000 : 24 * 60 * 60 * 1000;
+                
+                if (sessionAge >= maxAge) {
+                    logout();
+                    return;
+                }
+
+                // Update welcome message
+                document.getElementById('welcomeMessage').textContent = `Bienvenido, ${session.user.nombre}`;
+                
             } catch (error) {
-                console.error('Error deleting product:', error);
-                showNotification('Error al eliminar el producto', 'error');
+                console.error('Error parsing session:', error);
+                logout();
             }
         }
 
-        // Logout function
         function logout() {
             localStorage.removeItem('panuAdminSession');
+            sessionStorage.removeItem('panuAdminSession');
             window.location.href = 'login.html';
         }
 
-        // Utility Functions
+        // Tab Management
+        function switchTab(tabName) {
+            // Hide all tab contents
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.add('hidden');
+            });
+            
+            // Remove active class from all tabs
+            document.querySelectorAll('[id^="tab-"]').forEach(tab => {
+                tab.className = tab.className.replace('tab-active', 'tab-inactive');
+            });
+            
+            // Show selected tab content
+            document.getElementById(`content-${tabName}`).classList.remove('hidden');
+            
+            // Add active class to selected tab
+            document.getElementById(`tab-${tabName}`).className = 
+                document.getElementById(`tab-${tabName}`).className.replace('tab-inactive', 'tab-active');
+        }
+
+        // Image Upload Functionality
+        function initializeImageUpload() {
+            const dropZone = document.getElementById('dropZone');
+            const imageInput = document.getElementById('imageInput');
+
+            // Click to select files
+            dropZone.addEventListener('click', () => {
+                imageInput.click();
+            });
+
+            // File input change
+            imageInput.addEventListener('change', (e) => {
+                handleFiles(e.target.files);
+            });
+
+            // Drag and drop events
+            dropZone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                dropZone.classList.add('dragover');
+            });
+
+            dropZone.addEventListener('dragleave', (e) => {
+                e.preventDefault();
+                dropZone.classList.remove('dragover');
+            });
+
+            dropZone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                dropZone.classList.remove('dragover');
+                handleFiles(e.dataTransfer.files);
+            });
+        }
+
+        function handleFiles(files) {
+            const maxSize = 5 * 1024 * 1024; // 5MB
+            const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+
+            Array.from(files).forEach(file => {
+                // Validate file type
+                if (!allowedTypes.includes(file.type)) {
+                    showNotification(`${file.name}: Tipo de archivo no permitido`, 'error');
+                    return;
+                }
+
+                // Validate file size
+                if (file.size > maxSize) {
+                    showNotification(`${file.name}: Archivo muy grande (máx. 5MB)`, 'error');
+                    return;
+                }
+
+                // Add to selected images
+                const imageData = {
+                    id: Date.now() + Math.random(),
+                    file: file,
+                    name: file.name,
+                    size: file.size,
+                    preview: null
+                };
+
+                selectedImages.push(imageData);
+                createImagePreview(imageData);
+            });
+
+            updateImageInput();
+        }
+
+        function createImagePreview(imageData) {
+            const container = document.getElementById('imagePreviewContainer');
+            
+            // Create preview element
+            const previewDiv = document.createElement('div');
+            previewDiv.className = 'image-preview bg-negro-mate border border-gray-600';
+            previewDiv.setAttribute('data-id', imageData.id);
+
+            // Create image element
+            const img = document.createElement('img');
+            img.className = 'w-full h-24 object-cover';
+            img.alt = imageData.name;
+
+            // Create remove button
+            const removeBtn = document.createElement('button');
+            removeBtn.className = 'remove-btn';
+            removeBtn.innerHTML = '×';
+            removeBtn.onclick = () => removeImage(imageData.id);
+
+            // Create file reader to generate preview
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                img.src = e.target.result;
+                imageData.preview = e.target.result;
+            };
+            reader.readAsDataURL(imageData.file);
+
+            // Assemble preview
+            previewDiv.appendChild(img);
+            previewDiv.appendChild(removeBtn);
+            container.appendChild(previewDiv);
+
+            // Add file info
+            const infoDiv = document.createElement('div');
+            infoDiv.className = 'text-xs text-gray-400 mt-1 px-2';
+            infoDiv.textContent = `${imageData.name} (${(imageData.size / 1024).toFixed(1)}KB)`;
+            previewDiv.appendChild(infoDiv);
+        }
+
+        function removeImage(imageId) {
+            // Remove from array
+            selectedImages = selectedImages.filter(img => img.id !== imageId);
+            
+            // Remove from DOM
+            const previewElement = document.querySelector(`[data-id="${imageId}"]`);
+            if (previewElement) {
+                previewElement.remove();
+            }
+
+            updateImageInput();
+            showNotification('Imagen eliminada', 'info');
+        }
+
+        function updateImageInput() {
+            const imageInput = document.getElementById('imageInput');
+            
+            // Create new FileList (this is a workaround since FileList is read-only)
+            const dt = new DataTransfer();
+            selectedImages.forEach(imageData => {
+                dt.items.add(imageData.file);
+            });
+            imageInput.files = dt.files;
+        }
+
+        // Product Management
+        function loadProducts() {
+            // Load products from localStorage for demo
+            const savedProducts = localStorage.getItem('panuProducts');
+            if (savedProducts) {
+                products = JSON.parse(savedProducts);
+                renderProducts();
+            }
+        }
+
+        function saveProducts() {
+            localStorage.setItem('panuProducts', JSON.stringify(products));
+        }
+
+        function renderProducts() {
+            const container = document.getElementById('productsList');
+            
+            if (products.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center text-gray-400 py-8">
+                        <div class="text-4xl mb-2">📦</div>
+                        <p>No hay productos aún</p>
+                        <p class="text-sm">Agrega tu primer producto usando el formulario</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = products.map(product => `
+                <div class="bg-negro-mate border border-gray-600 rounded-lg p-4">
+                    <div class="flex justify-between items-start mb-2">
+                        <h3 class="font-bold text-rosa-pastel">${product.name}</h3>
+                        <button onclick="deleteProduct('${product.id}')" class="text-red-400 hover:text-red-300 text-sm">
+                            🗑️
+                        </button>
+                    </div>
+                    <p class="text-sm text-gray-300 mb-2">${product.description || 'Sin descripción'}</p>
+                    <div class="flex justify-between items-center text-sm">
+                        <span class="text-dorado font-bold">$${product.price}</span>
+                        <span class="text-gray-400">Stock: ${product.stock}</span>
+                        <span class="bg-rosa-pastel text-negro-mate px-2 py-1 rounded text-xs">${product.category}</span>
+                    </div>
+                    ${product.images && product.images.length > 0 ? `
+                        <div class="flex space-x-2 mt-3">
+                            ${product.images.slice(0, 3).map(img => `
+                                <img src="${img}" alt="${product.name}" class="w-12 h-12 object-cover rounded border border-gray-500">
+                            `).join('')}
+                            ${product.images.length > 3 ? `<div class="w-12 h-12 bg-gray-700 rounded border border-gray-500 flex items-center justify-center text-xs text-gray-400">+${product.images.length - 3}</div>` : ''}
+                        </div>
+                    ` : ''}
+                </div>
+            `).join('');
+        }
+
+        function deleteProduct(productId) {
+            if (confirm('¿Estás seguro de que quieres eliminar este producto?')) {
+                products = products.filter(p => p.id !== productId);
+                saveProducts();
+                renderProducts();
+                showNotification('Producto eliminado', 'success');
+            }
+        }
+
+        function refreshProducts() {
+            loadProducts();
+            showNotification('Lista actualizada', 'info');
+        }
+
+        // Form Submission
+        document.getElementById('productForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.classList.add('loading');
+
+            try {
+                // Simulate image upload process
+                if (selectedImages.length > 0) {
+                    await simulateImageUpload();
+                }
+
+                // Create product object
+                const product = {
+                    id: Date.now().toString(),
+                    name: document.getElementById('productName').value,
+                    price: parseFloat(document.getElementById('productPrice').value),
+                    stock: parseInt(document.getElementById('productStock').value),
+                    category: document.getElementById('productCategory').value,
+                    description: document.getElementById('productDescription').value,
+                    images: selectedImages.map(img => img.preview),
+                    createdAt: new Date().toISOString()
+                };
+
+                // Add to products array
+                products.unshift(product);
+                saveProducts();
+                renderProducts();
+
+                // Reset form
+                document.getElementById('productForm').reset();
+                selectedImages = [];
+                document.getElementById('imagePreviewContainer').innerHTML = '';
+
+                showNotification('Producto agregado exitosamente', 'success');
+
+            } catch (error) {
+                console.error('Error adding product:', error);
+                showNotification('Error al agregar producto', 'error');
+            } finally {
+                submitBtn.classList.remove('loading');
+            }
+        });
+
+        async function simulateImageUpload() {
+            const progressContainer = document.getElementById('uploadProgress');
+            const progressBar = document.getElementById('progressBar');
+            const progressText = document.getElementById('progressText');
+
+            progressContainer.classList.remove('hidden');
+
+            for (let i = 0; i <= 100; i += 10) {
+                progressBar.style.width = `${i}%`;
+                progressText.textContent = `Subiendo imágenes... ${i}%`;
+                await new Promise(resolve => setTimeout(resolve, 100));
+            }
+
+            progressContainer.classList.add('hidden');
+            progressBar.style.width = '0%';
+        }
+
+        // Notification System
         function showNotification(message, type = 'info') {
             const notification = document.createElement('div');
             notification.className = `notification ${
@@ -640,19 +671,8 @@
             
             setTimeout(() => {
                 notification.remove();
-            }, 3000);
+            }, 4000);
         }
-
-        // Initialize
-        document.addEventListener('DOMContentLoaded', () => {
-            // Double check authentication on page load
-            if (!checkAuthentication()) {
-                return; // Will redirect in checkAuthentication
-            }
-            
-            loadProducts();
-            updateStats();
-        });
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98e0b8cb9127a538',t:'MTc2MDM3ODI3Mi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98e1451335c0116d',t:'MTc2MDM4NDAxOC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
