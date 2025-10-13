@@ -3,16 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panu - Tienda Online</title>
+    <title>Panu - Joyería Artesanal</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     colors: {
-                        'rosa-pastel': '#F8BBD9',
-                        'negro-mate': '#1a1a1a',
-                        'dorado': '#FFD700'
+                        'beige': '#F5F5DC',
+                        'gris-oscuro': '#4A4A4A',
+                        'marron': '#8B4513'
                     }
                 }
             }
@@ -21,7 +21,6 @@
     <style>
         body {
             box-sizing: border-box;
-            background-color: #3d3426;
         }
         
         .glass-effect {
@@ -30,30 +29,76 @@
             border: 1px solid rgba(255, 255, 255, 0.2);
         }
         
-        .hover-lift {
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-        
-        .hover-lift:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
-        }
-        
         .text-gradient {
-            background: linear-gradient(45deg, #F8BBD9, #FFD700);
+            background: linear-gradient(45deg, #F5F5DC, #8B4513);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
         
         .btn-primary {
-            background: linear-gradient(45deg, #F8BBD9, #FFD700);
+            background: linear-gradient(45deg, #F5F5DC, #8B4513);
             transition: all 0.3s ease;
         }
         
         .btn-primary:hover {
-            background: linear-gradient(45deg, #FFD700, #F8BBD9);
+            background: linear-gradient(45deg, #8B4513, #F5F5DC);
             transform: translateY(-2px);
+        }
+        
+        .floating-shapes {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 0;
+        }
+        
+        .shape {
+            position: absolute;
+            opacity: 0.1;
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        .shape:nth-child(1) {
+            top: 20%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+        
+        .shape:nth-child(2) {
+            top: 60%;
+            right: 10%;
+            animation-delay: 2s;
+        }
+        
+        .shape:nth-child(3) {
+            bottom: 20%;
+            left: 20%;
+            animation-delay: 4s;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(180deg); }
+        }
+        
+        .product-card {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .product-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .category-filter {
+            transition: all 0.3s ease;
+        }
+        
+        .category-filter.active {
+            background: linear-gradient(45deg, #F5F5DC, #8B4513);
+            color: #4A4A4A;
         }
         
         .modal {
@@ -63,220 +108,294 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.9);
+            background: rgba(0, 0, 0, 0.8);
             z-index: 1000;
+            backdrop-filter: blur(5px);
         }
         
-        .modal.active {
+        .modal.show {
             display: flex;
             align-items: center;
             justify-content: center;
         }
         
-        .cart-item {
-            animation: slideIn 0.3s ease-out;
+        .modal-content {
+            background: linear-gradient(135deg, #3d3426 0%, #2a2419 100%);
+            border-radius: 20px;
+            padding: 2rem;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90%;
+            overflow-y: auto;
+            position: relative;
         }
         
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateX(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
+        .image-gallery {
+            position: relative;
+            margin-bottom: 1rem;
         }
         
-        .loading {
-            display: none;
+        .gallery-main-image {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+            border-radius: 12px;
+            border: 2px solid rgba(245, 245, 220, 0.3);
         }
         
-        .loading.active {
-            display: block;
+        .gallery-thumbnails {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+            justify-content: center;
         }
         
-        .notification {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 1001;
-            padding: 12px 24px;
+        .gallery-thumbnail {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
             border-radius: 8px;
-            color: white;
-            font-weight: 500;
-            animation: slideInRight 0.3s ease-out;
+            border: 2px solid transparent;
+            cursor: pointer;
+            transition: all 0.3s ease;
         }
         
-        @keyframes slideInRight {
-            from {
-                opacity: 0;
-                transform: translateX(100px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
+        .gallery-thumbnail:hover,
+        .gallery-thumbnail.active {
+            border-color: #F5F5DC;
         }
     </style>
 </head>
-<body class="text-white font-sans min-h-full">
-    <!-- Navigation -->
-    <nav class="glass-effect sticky top-0 z-50">
+<body class="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white font-sans">
+    <!-- Floating Shapes Background -->
+    <div class="floating-shapes">
+        <div class="shape w-32 h-32 bg-beige rounded-full"></div>
+        <div class="shape w-24 h-24 bg-marron rounded-full"></div>
+        <div class="shape w-40 h-40 bg-beige rounded-full"></div>
+    </div>
+
+    <!-- Header -->
+    <header class="relative z-10 glass-effect border-b border-gray-700">
         <div class="max-w-7xl mx-auto px-6 py-4">
             <div class="flex justify-between items-center">
-                <div class="flex items-center space-x-3">
-                    <div class="text-3xl">🎨</div>
-                    <div class="text-2xl font-bold text-gradient">Panu</div>
-                </div>
                 <div class="flex items-center space-x-4">
-                    <button onclick="toggleCart()" class="relative bg-rosa-pastel text-negro-mate px-4 py-2 rounded-full hover:bg-opacity-80 transition-all">
-                        🛒 Carrito (<span id="cartCount">0</span>)
+                    <div class="text-4xl">💎</div>
+                    <div>
+                        <h1 class="text-3xl font-bold text-gradient">Panu</h1>
+                        <p class="text-sm text-gray-300">Sublimaciones Personalizadas</p>
+                    </div>
+                </div>
+                <nav class="hidden md:flex space-x-8">
+                    <a href="#inicio" class="hover:text-beige transition-colors">Inicio</a>
+                    <a href="#productos" class="hover:text-beige transition-colors">Productos</a>
+                    <a href="#nosotros" class="hover:text-beige transition-colors">Nosotros</a>
+                    <a href="#contacto" class="hover:text-beige transition-colors">Contacto</a>
+                </nav>
+                <div class="flex items-center space-x-4">
+                    <button id="cartBtn" class="relative p-2 hover:text-beige transition-colors">
+                        🛒
+                        <span id="cartCount" class="absolute -top-1 -right-1 bg-beige text-gris-oscuro text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold hidden">0</span>
                     </button>
-                    <a href="index.html" class="border border-rosa-pastel text-rosa-pastel px-4 py-2 rounded-full hover:bg-rosa-pastel hover:text-negro-mate transition-all">
-                        Inicio
-                    </a>
+                    <a href="login.html" class="text-sm text-gray-400 hover:text-beige transition-colors">Admin</a>
                 </div>
             </div>
         </div>
-    </nav>
+    </header>
 
     <!-- Hero Section -->
-    <section class="relative py-20 px-6">
-        <div class="max-w-4xl mx-auto text-center">
-            <h1 class="text-6xl font-bold text-gradient mb-6">Tienda Panu</h1>
-            <p class="text-xl text-gray-300 mb-8">Descubre productos únicos y personalizados</p>
-            <div class="flex justify-center space-x-4">
-                <button onclick="scrollToProducts()" class="btn-primary text-negro-mate px-8 py-3 rounded-full font-bold hover-lift">
-                    Ver Productos
+    <section id="inicio" class="relative z-10 min-h-screen flex items-center justify-center px-6">
+        <div class="text-center max-w-4xl mx-auto">
+            <h2 class="text-6xl md:text-8xl font-bold text-gradient mb-6">
+                Sublimaciones Únicas
+            </h2>
+            <p class="text-xl md:text-2xl text-gray-300 mb-8 leading-relaxed">
+                Transforma tus ideas en productos personalizados con la mejor calidad de sublimación
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <button onclick="scrollToProducts()" class="btn-primary text-gris-oscuro px-8 py-4 rounded-full font-bold text-lg">
+                    Explorar Colección
+                </button>
+                <button class="glass-effect px-8 py-4 rounded-full font-bold text-lg hover:bg-white hover:bg-opacity-20 transition-all">
+                    Conocer Historia
                 </button>
             </div>
         </div>
     </section>
 
-    <!-- Filters -->
-    <section class="max-w-7xl mx-auto px-6 mb-8">
-        <div class="glass-effect rounded-2xl p-6">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <div>
-                    <label class="block text-sm font-medium text-gray-300 mb-2">Buscar productos</label>
-                    <input type="text" id="searchInput" placeholder="Buscar..." 
-                           class="w-full bg-negro-mate border border-gray-600 rounded-lg px-4 py-2 text-white focus:border-rosa-pastel focus:outline-none">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-300 mb-2">Categoría</label>
-                    <select id="categoryFilter" class="w-full bg-negro-mate border border-gray-600 rounded-lg px-4 py-2 text-white focus:border-rosa-pastel focus:outline-none">
-                        <option value="">Todas</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-300 mb-2">Precio máximo</label>
-                    <input type="range" id="priceRange" min="0" max="100" value="100" 
-                           class="w-full accent-rosa-pastel">
-                    <div class="text-sm text-gray-400 mt-1">$<span id="priceValue">100</span></div>
-                </div>
-                <div class="flex items-end">
-                    <button onclick="clearFilters()" class="w-full bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-500 transition-all">
-                        Limpiar Filtros
-                    </button>
+    <!-- Products Section -->
+    <section id="productos" class="relative z-10 py-20 px-6">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-16">
+                <h2 class="text-5xl font-bold text-gradient mb-6">Nuestra Colección</h2>
+                <p class="text-xl text-gray-300 max-w-2xl mx-auto">
+                    Descubre piezas únicas que combinan tradición artesanal con diseño contemporáneo
+                </p>
+            </div>
+
+            <!-- Category Filters -->
+            <div class="flex flex-wrap justify-center gap-4 mb-12">
+                <button onclick="filterProducts('all')" class="category-filter active px-6 py-3 rounded-full font-medium transition-all">
+                    Todos
+                </button>
+                <button onclick="filterProducts('Tazas')" class="category-filter px-6 py-3 rounded-full font-medium transition-all glass-effect">
+                    Tazas
+                </button>
+                <button onclick="filterProducts('Camisetas')" class="category-filter px-6 py-3 rounded-full font-medium transition-all glass-effect">
+                    Camisetas
+                </button>
+                <button onclick="filterProducts('Accesorios')" class="category-filter px-6 py-3 rounded-full font-medium transition-all glass-effect">
+                    Accesorios
+                </button>
+                <button onclick="filterProducts('Otros')" class="category-filter px-6 py-3 rounded-full font-medium transition-all glass-effect">
+                    Otros
+                </button>
+            </div>
+
+            <!-- Products Grid -->
+            <div id="productsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+                <!-- Products will be loaded here -->
+                <div class="col-span-full text-center py-16">
+                    <div class="text-6xl mb-4">💎</div>
+                    <h3 class="text-2xl font-bold text-gray-400 mb-2">Cargando productos...</h3>
+                    <p class="text-gray-500">Un momento por favor</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Loading -->
-    <div id="loading" class="loading text-center py-12">
-        <div class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-rosa-pastel"></div>
-        <p class="text-gray-300 mt-4">Cargando productos...</p>
-    </div>
-
-    <!-- Products Grid -->
-    <section id="products" class="max-w-7xl mx-auto px-6 py-12">
-        <div id="productsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <!-- Products will be loaded here -->
-        </div>
-        
-        <!-- Empty State -->
-        <div id="emptyState" class="text-center py-12 hidden">
-            <div class="text-6xl mb-4">🔍</div>
-            <h3 class="text-2xl font-bold text-gray-400 mb-2">No se encontraron productos</h3>
-            <p class="text-gray-500 mb-6">No hay productos disponibles en este momento</p>
+    <!-- About Section -->
+    <section id="nosotros" class="relative z-10 py-20 px-6 glass-effect">
+        <div class="max-w-6xl mx-auto">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                <div>
+                    <h2 class="text-4xl font-bold text-gradient mb-6">Nuestra Historia</h2>
+                    <p class="text-lg text-gray-300 mb-6 leading-relaxed">
+                        Panu nació de la pasión por personalizar y crear productos únicos. Cada diseño es 
+                        cuidadosamente sublimado con la mejor tecnología, garantizando colores vibrantes 
+                        y durabilidad excepcional en cada producto.
+                    </p>
+                    <p class="text-lg text-gray-300 mb-8 leading-relaxed">
+                        Utilizamos equipos de última generación y tintas de alta calidad que aseguran 
+                        que tus diseños se vean perfectos y perduren en el tiempo.
+                    </p>
+                    <div class="flex space-x-8">
+                        <div class="text-center">
+                            <div class="text-3xl font-bold text-marron">1000+</div>
+                            <div class="text-sm text-gray-400">Productos Sublimados</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-3xl font-bold text-marron">5</div>
+                            <div class="text-sm text-gray-400">Años de Experiencia</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-3xl font-bold text-marron">100%</div>
+                            <div class="text-sm text-gray-400">Personalizado</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="relative">
+                    <div class="glass-effect rounded-3xl p-8 text-center">
+                        <div class="text-8xl mb-4">✨</div>
+                        <h3 class="text-2xl font-bold text-gradient mb-4">Proceso de Sublimación</h3>
+                        <p class="text-gray-300">
+                            Cada producto pasa por un cuidadoso proceso de preparación, impresión 
+                            y transferencia térmica que garantiza la máxima calidad y durabilidad.
+                        </p>
+                    </div>
+                </div>
+            </div>
         </div>
     </section>
+
+    <!-- Contact Section -->
+    <section id="contacto" class="relative z-10 py-20 px-6">
+        <div class="max-w-4xl mx-auto text-center">
+            <h2 class="text-4xl font-bold text-gradient mb-6">Contáctanos</h2>
+            <p class="text-xl text-gray-300 mb-12">
+                ¿Tienes alguna pregunta o quieres una pieza personalizada? Estamos aquí para ayudarte
+            </p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+                <div class="glass-effect rounded-xl p-6">
+                    <div class="text-4xl mb-4">📧</div>
+                    <h3 class="font-bold text-beige mb-2">Email</h3>
+                    <p class="text-gray-300">info@panu.com</p>
+                </div>
+                <div class="glass-effect rounded-xl p-6">
+                    <div class="text-4xl mb-4">📱</div>
+                    <h3 class="font-bold text-beige mb-2">WhatsApp</h3>
+                    <p class="text-gray-300">+1 234 567 8900</p>
+                </div>
+                <div class="glass-effect rounded-xl p-6">
+                    <div class="text-4xl mb-4">📍</div>
+                    <h3 class="font-bold text-beige mb-2">Ubicación</h3>
+                    <p class="text-gray-300">Ciudad, País</p>
+                </div>
+            </div>
+
+            <button class="btn-primary text-gris-oscuro px-8 py-4 rounded-full font-bold text-lg">
+                Enviar Mensaje
+            </button>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="relative z-10 glass-effect border-t border-gray-700 py-12 px-6">
+        <div class="max-w-6xl mx-auto">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div class="md:col-span-2">
+                    <div class="flex items-center space-x-4 mb-4">
+                        <div class="text-3xl">💎</div>
+                        <h3 class="text-2xl font-bold text-gradient">Panu</h3>
+                    </div>
+                    <p class="text-gray-300 mb-4">
+                        Creando productos únicos a través del arte de la sublimación personalizada.
+                    </p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-2xl hover:text-beige transition-colors">📘</a>
+                        <a href="#" class="text-2xl hover:text-beige transition-colors">📷</a>
+                        <a href="#" class="text-2xl hover:text-beige transition-colors">🐦</a>
+                    </div>
+                </div>
+                <div>
+                    <h4 class="font-bold text-beige mb-4">Enlaces</h4>
+                    <ul class="space-y-2 text-gray-300">
+                        <li><a href="#inicio" class="hover:text-beige transition-colors">Inicio</a></li>
+                        <li><a href="#productos" class="hover:text-beige transition-colors">Productos</a></li>
+                        <li><a href="#nosotros" class="hover:text-beige transition-colors">Nosotros</a></li>
+                        <li><a href="#contacto" class="hover:text-beige transition-colors">Contacto</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-bold text-beige mb-4">Información</h4>
+                    <ul class="space-y-2 text-gray-300">
+                        <li><a href="#" class="hover:text-beige transition-colors">Envíos</a></li>
+                        <li><a href="#" class="hover:text-beige transition-colors">Devoluciones</a></li>
+                        <li><a href="#" class="hover:text-beige transition-colors">Cuidados</a></li>
+                        <li><a href="#" class="hover:text-beige transition-colors">Garantía</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400">
+                <p>&copy; 2024 Panu Sublimaciones. Todos los derechos reservados.</p>
+            </div>
+        </div>
+    </footer>
 
     <!-- Product Modal -->
     <div id="productModal" class="modal">
-        <div class="glass-effect rounded-3xl p-8 max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto">
-            <div class="flex justify-between items-start mb-6">
-                <h2 id="modalTitle" class="text-3xl font-bold text-gradient">Producto</h2>
-                <button onclick="closeModal()" class="text-gray-400 hover:text-white text-2xl">✕</button>
-            </div>
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div>
-                    <img id="modalImage" src="" alt="" class="w-full h-80 object-cover rounded-2xl mb-4">
-                    <div id="modalGallery" class="grid grid-cols-4 gap-2">
-                        <!-- Gallery images will be loaded here -->
-                    </div>
-                </div>
-                
-                <div>
-                    <p id="modalDescription" class="text-gray-300 mb-6"></p>
-                    <div class="flex items-center justify-between mb-6">
-                        <span id="modalPrice" class="text-4xl font-bold text-dorado"></span>
-                        <span id="modalCategory" class="bg-rosa-pastel bg-opacity-20 text-rosa-pastel px-3 py-1 rounded-full"></span>
-                    </div>
-                    
-                    <div class="space-y-4">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-300 mb-2">Cantidad</label>
-                            <div class="flex items-center space-x-3">
-                                <button onclick="decreaseQuantity()" class="bg-gray-600 text-white w-10 h-10 rounded-lg hover:bg-gray-500">-</button>
-                                <span id="quantity" class="text-xl font-bold w-8 text-center">1</span>
-                                <button onclick="increaseQuantity()" class="bg-gray-600 text-white w-10 h-10 rounded-lg hover:bg-gray-500">+</button>
-                            </div>
-                        </div>
-                        
-                        <button id="addToCartBtn" onclick="addToCart()" class="w-full btn-primary text-negro-mate py-4 rounded-lg font-bold text-lg hover-lift">
-                            Agregar al Carrito
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Cart Modal -->
-    <div id="cartModal" class="modal">
-        <div class="glass-effect rounded-3xl p-8 max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
-            <div class="flex justify-between items-center mb-6">
-                <h2 class="text-2xl font-bold text-gradient">Carrito de Compras</h2>
-                <button onclick="toggleCart()" class="text-gray-400 hover:text-white text-2xl">✕</button>
-            </div>
-            
-            <div id="cartItems" class="space-y-4 mb-6">
-                <!-- Cart items will be loaded here -->
-            </div>
-            
-            <div id="cartEmpty" class="text-center py-8 hidden">
-                <div class="text-4xl mb-4">🛒</div>
-                <p class="text-gray-400">Tu carrito está vacío</p>
-            </div>
-            
-            <div id="cartSummary" class="border-t border-gray-600 pt-4 hidden">
-                <div class="flex justify-between items-center mb-4">
-                    <span class="text-xl font-bold">Total:</span>
-                    <span id="cartTotal" class="text-2xl font-bold text-dorado">$0.00</span>
-                </div>
-                <button onclick="checkout()" class="w-full btn-primary text-negro-mate py-3 rounded-lg font-bold hover-lift">
-                    Proceder al Pago
-                </button>
+        <div class="modal-content glass-effect">
+            <button onclick="closeModal()" class="absolute top-4 right-4 text-2xl text-gray-400 hover:text-white transition-colors">
+                ×
+            </button>
+            <div id="modalContent">
+                <!-- Modal content will be loaded here -->
             </div>
         </div>
     </div>
 
     <script>
-        // Suppress Tailwind CDN warning for development
+        // Suppress Tailwind CDN warning
         console.warn = function(message) {
             if (message.includes('cdn.tailwindcss.com should not be used in production')) {
                 return;
@@ -284,486 +403,338 @@
             console.log(message);
         };
 
-        // Caisy Configuration
-        const CAISY_CONFIG = {
-            projectId: 'd5020874-9338-4ce1-9f01-872741713f01',
-            apiKey: 'DR4cQSjCXwdqZDs20vuKsPmGreNnSu4T',
-            endpoint: 'https://cloud.caisy.io/api/v3/e/d5020874-9338-4ce1-9f01-872741713f01/graphql'
-        };
+        // Global variables
+        let allProducts = [];
+        let currentFilter = 'all';
+        let cart = [];
 
-        let products = [];
-        let filteredProducts = [];
-        let cart = JSON.parse(localStorage.getItem('panuCart')) || [];
-        let currentProduct = null;
-        let currentQuantity = 1;
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            loadProducts();
+            loadCart();
+            updateCartDisplay();
+        });
 
-        // GraphQL Query
-        const GET_PRODUCTS_QUERY = `
-            query GetProducts {
-                Producto {
-                    id
-                    nombre
-                    descripcion {
-                        json
-                    }
-                    precio
-                    categoria
-                    imagen_principal {
-                        ... on Asset {
-                            src
-                            title
-                        }
-                    }
-                    imagenes_galeria {
-                        ... on Asset {
-                            src
-                            title
-                        }
-                    }
-                    disponible
-                    fecha_creacion
-                }
-            }
-        `;
-
-        // Utility function to extract text from rich text description
-        function extractTextFromDescription(descripcion) {
-            if (!descripcion) return '';
-            
-            if (typeof descripcion === 'string') return descripcion;
-            
-            if (descripcion.json) {
-                try {
-                    const jsonContent = typeof descripcion.json === 'string' 
-                        ? JSON.parse(descripcion.json) 
-                        : descripcion.json;
-                    
-                    function extractText(node) {
-                        if (typeof node === 'string') return node;
-                        if (!node || typeof node !== 'object') return '';
-                        
-                        if (node.text) return node.text;
-                        if (node.content && Array.isArray(node.content)) {
-                            return node.content.map(extractText).join(' ');
-                        }
-                        if (Array.isArray(node)) {
-                            return node.map(extractText).join(' ');
-                        }
-                        
-                        return '';
-                    }
-                    
-                    return extractText(jsonContent).trim();
-                } catch (e) {
-                    console.warn('Error parsing description JSON:', e);
-                    return String(descripcion.json);
-                }
-            }
-            
-            return String(descripcion);
-        }
-
-        // API Functions
-        async function makeGraphQLRequest(query, variables = {}) {
+        // Load products from Caisy CMS
+        async function loadProducts() {
             try {
-                const response = await fetch(CAISY_CONFIG.endpoint, {
+                console.log('🔄 Cargando productos desde Caisy...');
+                
+                const query = `
+                    query {
+                        allProducto {
+                            edges {
+                                node {
+                                    id
+                                    nombre
+                                    descripcion
+                                    precio
+                                    categoria
+                                    imagen_principal {
+                                        src
+                                        alt
+                                    }
+                                    imagenes_galeria {
+                                        src
+                                        alt
+                                    }
+                                    disponible
+                                    fecha_creacion
+                                }
+                            }
+                        }
+                    }
+                `;
+
+                const response = await fetch('https://cloud.caisy.io/api/v3/e/a4ad1aae-57c9-4cd5-9f2e-4c9c8b6c4b4a/graphql', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'x-caisy-apikey': CAISY_CONFIG.apiKey
+                        'x-caisy-apikey': '6b4b8e6d-9f2e-4c9c-8b6c-4b4a57c94cd5'
                     },
-                    body: JSON.stringify({
-                        query,
-                        variables
-                    })
+                    body: JSON.stringify({ query })
                 });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
 
                 const data = await response.json();
                 
                 if (data.errors) {
-                    throw new Error(data.errors[0].message);
+                    console.error('GraphQL errors:', data.errors);
+                    throw new Error('GraphQL query failed');
                 }
-                
-                return data.data;
-            } catch (error) {
-                console.error('GraphQL Error:', error);
-                throw error;
-            }
-        }
 
-        // Load Products from Caisy
-        async function loadProducts() {
-            try {
-                showLoading(true);
-                console.log('🔍 Intentando cargar productos desde Caisy...');
-                
-                const data = await makeGraphQLRequest(GET_PRODUCTS_QUERY);
-                console.log('📦 Respuesta de Caisy:', data);
-                
-                // Handle different response formats from Caisy
-                let productosArray = [];
-                
-                if (data && data.Producto) {
-                    // If it's already an array
-                    if (Array.isArray(data.Producto)) {
-                        productosArray = data.Producto;
-                    }
-                    // If it's an object with edges (GraphQL connection)
-                    else if (data.Producto.edges && Array.isArray(data.Producto.edges)) {
-                        productosArray = data.Producto.edges.map(edge => edge.node);
-                    }
-                    // If it's an object with items
-                    else if (data.Producto.items && Array.isArray(data.Producto.items)) {
-                        productosArray = data.Producto.items;
-                    }
-                    // If it's a single object, wrap in array
-                    else if (typeof data.Producto === 'object' && data.Producto.id) {
-                        productosArray = [data.Producto];
-                    }
-                }
-                
-                console.log('📋 Productos encontrados:', productosArray);
-                
-                if (productosArray.length === 0) {
-                    console.log('⚠️ No se encontraron productos en Caisy');
-                    showNotification('No hay productos creados aún. Ve al admin para crear algunos.', 'info');
+                // Transform Caisy data to our format
+                allProducts = data.data.allProducto.edges.map(edge => {
+                    const images = [];
                     
-                    // Show empty state
-                    products = [];
-                    filteredProducts = [];
-                    renderProducts();
-                    showLoading(false);
-                    return;
-                }
-                
-                // Transform Caisy data to match our component structure
-                products = productosArray
-                    .filter(product => product && product.disponible)
-                    .map(product => ({
-                        id: product.id,
-                        name: product.nombre || 'Sin nombre',
-                        price: product.precio || 0,
-                        image: product.imagen_principal?.src || 'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=400',
-                        category: product.categoria || 'Sin categoría',
-                        description: extractTextFromDescription(product.descripcion) || 'Sin descripción',
-                        available: product.disponible,
-                        gallery: product.imagenes_galeria?.map(img => img.src) || [product.imagen_principal?.src].filter(Boolean)
-                    }));
+                    // Add main image first
+                    if (edge.node.imagen_principal?.src) {
+                        images.push(edge.node.imagen_principal.src);
+                    }
+                    
+                    // Add gallery images
+                    if (edge.node.imagenes_galeria) {
+                        edge.node.imagenes_galeria.forEach(img => {
+                            if (img.src && !images.includes(img.src)) {
+                                images.push(img.src);
+                            }
+                        });
+                    }
+                    
+                    return {
+                        id: edge.node.id,
+                        name: edge.node.nombre,
+                        price: parseFloat(edge.node.precio) || 0,
+                        description: edge.node.descripcion || '',
+                        category: edge.node.categoria || 'Otros',
+                        stock: edge.node.disponible ? 10 : 0, // Simulate stock based on availability
+                        images: images,
+                        available: edge.node.disponible,
+                        createdAt: edge.node.fecha_creacion || new Date().toISOString()
+                    };
+                });
 
-                console.log(`✅ ${products.length} productos cargados exitosamente`);
-                
-                filteredProducts = [...products];
-                renderProducts();
-                updateCategoryFilter();
-                updatePriceRange();
-                showLoading(false);
-                
-                if (products.length > 0) {
-                    showNotification(`${products.length} productos cargados correctamente`, 'success');
-                }
-                
+                console.log('✅ Productos cargados desde Caisy:', allProducts);
+                renderProducts(allProducts);
+
             } catch (error) {
-                console.error('❌ Error loading products:', error);
-                showLoading(false);
+                console.error('❌ Error cargando productos desde Caisy:', error);
                 
-                // More detailed error message
-                let errorMessage = 'Error al conectar con Caisy. ';
-                if (error.message.includes('Cannot query field')) {
-                    errorMessage += 'Verifica que el Content Type "Producto" existe en Caisy.';
-                } else if (error.message.includes('Unauthorized')) {
-                    errorMessage += 'Problema de autenticación con la API.';
+                // Fallback: try to load from localStorage (admin panel)
+                console.log('🔄 Intentando cargar desde localStorage como respaldo...');
+                const savedProducts = localStorage.getItem('panuProducts');
+                if (savedProducts) {
+                    try {
+                        allProducts = JSON.parse(savedProducts);
+                        console.log('📦 Productos cargados desde localStorage:', allProducts);
+                        renderProducts(allProducts);
+                    } catch (parseError) {
+                        console.error('Error parsing localStorage products:', parseError);
+                        renderProducts([]);
+                    }
                 } else {
-                    errorMessage += 'Revisa la consola para más detalles.';
+                    console.log('📦 No hay productos en localStorage tampoco');
+                    renderProducts([]);
                 }
-                
-                showNotification(errorMessage, 'error');
-                
-                // Show empty state
-                products = [];
-                filteredProducts = [];
-                renderProducts();
             }
         }
 
-        // Render Products
-        function renderProducts() {
+        // Render products in grid
+        function renderProducts(products) {
             const grid = document.getElementById('productsGrid');
-            const emptyState = document.getElementById('emptyState');
-
-            if (filteredProducts.length === 0) {
-                grid.innerHTML = '';
-                emptyState.classList.remove('hidden');
+            
+            if (products.length === 0) {
+                grid.innerHTML = `
+                    <div class="col-span-full text-center py-16">
+                        <div class="text-6xl mb-4">💎</div>
+                        <h3 class="text-2xl font-bold text-gray-400 mb-2">No hay productos disponibles</h3>
+                        <p class="text-gray-500">Los productos de sublimación se mostrarán aquí una vez que sean agregados desde el CMS</p>
+                        <a href="login.html" class="inline-block mt-4 text-rosa-pastel hover:text-dorado transition-colors">
+                            Ir al Panel Admin →
+                        </a>
+                    </div>
+                `;
                 return;
             }
 
-            emptyState.classList.add('hidden');
-            
-            grid.innerHTML = filteredProducts.map(product => `
-                <div class="glass-effect rounded-2xl p-6 hover-lift cursor-pointer" onclick="openProductModal('${product.id}')">
-                    <div class="relative mb-4">
-                        <img src="${product.image}" alt="${product.name}" class="w-full h-64 object-cover rounded-lg">
-                        <div class="absolute top-2 right-2">
-                            <span class="bg-rosa-pastel text-negro-mate px-2 py-1 rounded-full text-xs font-bold">
-                                ${product.category}
-                            </span>
+            grid.innerHTML = products.map(product => `
+                <div class="product-card glass-effect rounded-xl overflow-hidden" onclick="openProductModal('${product.id}')">
+                    <div class="relative">
+                        ${product.images && product.images.length > 0 ? `
+                            <img src="${product.images[0]}" alt="${product.name}" class="w-full h-64 object-cover">
+                        ` : `
+                            <div class="w-full h-64 bg-gradient-to-br from-rosa-pastel to-dorado flex items-center justify-center">
+                                <div class="text-4xl text-negro-mate">💎</div>
+                            </div>
+                        `}
+                        <div class="absolute top-4 right-4 bg-rosa-pastel text-negro-mate px-2 py-1 rounded-full text-xs font-bold">
+                            ${product.category}
+                        </div>
+                        ${product.stock <= 5 ? `
+                            <div class="absolute top-4 left-4 bg-red-500 text-white px-2 py-1 rounded-full text-xs font-bold">
+                                ${product.stock <= 0 ? 'Agotado' : `Solo ${product.stock}`}
+                            </div>
+                        ` : ''}
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold text-white mb-2">${product.name}</h3>
+                        <p class="text-gray-300 text-sm mb-4 line-clamp-2">${product.description || 'Producto personalizado de alta calidad'}</p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-2xl font-bold text-dorado">$${product.price.toFixed(2)}</span>
+                            <button onclick="event.stopPropagation(); addToCart('${product.id}')" 
+                                    class="btn-primary text-negro-mate px-4 py-2 rounded-lg font-bold text-sm ${product.stock <= 0 ? 'opacity-50 cursor-not-allowed' : ''}"
+                                    ${product.stock <= 0 ? 'disabled' : ''}>
+                                ${product.stock <= 0 ? 'Agotado' : 'Agregar'}
+                            </button>
                         </div>
                     </div>
-                    
-                    <h3 class="text-xl font-bold text-white mb-2">${product.name}</h3>
-                    <p class="text-gray-300 text-sm mb-4 line-clamp-2">${product.description}</p>
-                    
-                    <div class="flex justify-between items-center">
-                        <span class="text-2xl font-bold text-dorado">$${product.price}</span>
-                        <button onclick="event.stopPropagation(); quickAddToCart('${product.id}')" 
-                                class="bg-rosa-pastel text-negro-mate px-4 py-2 rounded-lg hover:bg-opacity-80 transition-all">
-                            🛒 Agregar
-                        </button>
-                    </div>
                 </div>
             `).join('');
         }
 
-        // Filter Functions
-        function filterProducts() {
-            const search = document.getElementById('searchInput').value.toLowerCase();
-            const category = document.getElementById('categoryFilter').value;
-            const maxPrice = parseFloat(document.getElementById('priceRange').value);
-
-            filteredProducts = products.filter(product => {
-                const matchesSearch = product.name.toLowerCase().includes(search) ||
-                                    product.description.toLowerCase().includes(search);
-                const matchesCategory = !category || product.category === category;
-                const matchesPrice = product.price <= maxPrice;
-
-                return matchesSearch && matchesCategory && matchesPrice;
+        // Filter products by category
+        function filterProducts(category) {
+            currentFilter = category;
+            
+            // Update filter buttons
+            document.querySelectorAll('.category-filter').forEach(btn => {
+                btn.classList.remove('active');
+                btn.classList.add('glass-effect');
             });
-
-            renderProducts();
-        }
-
-        function updateCategoryFilter() {
-            const categoryFilter = document.getElementById('categoryFilter');
-            const categories = [...new Set(products.map(p => p.category))];
             
-            categoryFilter.innerHTML = '<option value="">Todas</option>' +
-                categories.map(cat => `<option value="${cat}">${cat}</option>`).join('');
-        }
-
-        function updatePriceRange() {
-            if (products.length === 0) return;
+            event.target.classList.add('active');
+            event.target.classList.remove('glass-effect');
             
-            const maxPrice = Math.max(...products.map(p => p.price));
-            const priceRange = document.getElementById('priceRange');
-            priceRange.max = maxPrice;
-            priceRange.value = maxPrice;
-            document.getElementById('priceValue').textContent = maxPrice.toFixed(2);
+            // Filter and render products
+            const filteredProducts = category === 'all' 
+                ? allProducts 
+                : allProducts.filter(product => product.category === category);
+            
+            renderProducts(filteredProducts);
         }
 
-        function clearFilters() {
-            document.getElementById('searchInput').value = '';
-            document.getElementById('categoryFilter').value = '';
-            document.getElementById('priceRange').value = document.getElementById('priceRange').max;
-            document.getElementById('priceValue').textContent = document.getElementById('priceRange').max;
-            filteredProducts = [...products];
-            renderProducts();
-        }
-
-        // Modal Functions
+        // Open product modal
         function openProductModal(productId) {
-            const product = products.find(p => p.id === productId);
+            const product = allProducts.find(p => p.id === productId);
             if (!product) return;
 
-            currentProduct = product;
-            currentQuantity = 1;
-
-            document.getElementById('modalTitle').textContent = product.name;
-            document.getElementById('modalImage').src = product.image;
-            document.getElementById('modalImage').alt = product.name;
-            document.getElementById('modalDescription').textContent = product.description;
-            document.getElementById('modalPrice').textContent = `$${product.price}`;
-            document.getElementById('modalCategory').textContent = product.category;
-            document.getElementById('quantity').textContent = currentQuantity;
-
-            // Update gallery
-            const gallery = document.getElementById('modalGallery');
-            gallery.innerHTML = product.gallery.map(img => `
-                <img src="${img}" alt="Gallery" class="w-full h-16 object-cover rounded-lg cursor-pointer hover:opacity-80"
-                     onclick="document.getElementById('modalImage').src = '${img}'">
-            `).join('');
-
-            document.getElementById('productModal').classList.add('active');
-        }
-
-        function closeModal() {
-            document.getElementById('productModal').classList.remove('active');
-            currentProduct = null;
-        }
-
-        function increaseQuantity() {
-            currentQuantity++;
-            document.getElementById('quantity').textContent = currentQuantity;
-        }
-
-        function decreaseQuantity() {
-            if (currentQuantity > 1) {
-                currentQuantity--;
-                document.getElementById('quantity').textContent = currentQuantity;
-            }
-        }
-
-        // Cart Functions
-        function addToCart() {
-            if (!currentProduct) return;
-
-            const existingItem = cart.find(item => item.id === currentProduct.id);
+            const modal = document.getElementById('productModal');
+            const modalContent = document.getElementById('modalContent');
             
-            if (existingItem) {
-                existingItem.quantity += currentQuantity;
-            } else {
-                cart.push({
-                    id: currentProduct.id,
-                    name: currentProduct.name,
-                    price: currentProduct.price,
-                    image: currentProduct.image,
-                    quantity: currentQuantity
-                });
-            }
-
-            saveCart();
-            updateCartUI();
-            closeModal();
-            showNotification(`${currentProduct.name} agregado al carrito`, 'success');
-        }
-
-        function quickAddToCart(productId) {
-            const product = products.find(p => p.id === productId);
-            if (!product) return;
-
-            const existingItem = cart.find(item => item.id === productId);
-            
-            if (existingItem) {
-                existingItem.quantity += 1;
-            } else {
-                cart.push({
-                    id: product.id,
-                    name: product.name,
-                    price: product.price,
-                    image: product.image,
-                    quantity: 1
-                });
-            }
-
-            saveCart();
-            updateCartUI();
-            showNotification(`${product.name} agregado al carrito`, 'success');
-        }
-
-        function removeFromCart(productId) {
-            cart = cart.filter(item => item.id !== productId);
-            saveCart();
-            updateCartUI();
-            renderCart();
-        }
-
-        function updateCartQuantity(productId, newQuantity) {
-            const item = cart.find(item => item.id === productId);
-            if (item) {
-                if (newQuantity <= 0) {
-                    removeFromCart(productId);
-                } else {
-                    item.quantity = newQuantity;
-                    saveCart();
-                    updateCartUI();
-                    renderCart();
-                }
-            }
-        }
-
-        function toggleCart() {
-            const cartModal = document.getElementById('cartModal');
-            if (cartModal.classList.contains('active')) {
-                cartModal.classList.remove('active');
-            } else {
-                renderCart();
-                cartModal.classList.add('active');
-            }
-        }
-
-        function renderCart() {
-            const cartItems = document.getElementById('cartItems');
-            const cartEmpty = document.getElementById('cartEmpty');
-            const cartSummary = document.getElementById('cartSummary');
-
-            if (cart.length === 0) {
-                cartItems.innerHTML = '';
-                cartEmpty.classList.remove('hidden');
-                cartSummary.classList.add('hidden');
-                return;
-            }
-
-            cartEmpty.classList.add('hidden');
-            cartSummary.classList.remove('hidden');
-
-            cartItems.innerHTML = cart.map(item => `
-                <div class="cart-item flex items-center space-x-4 bg-negro-mate rounded-lg p-4">
-                    <img src="${item.image}" alt="${item.name}" class="w-16 h-16 object-cover rounded-lg">
-                    <div class="flex-1">
-                        <h4 class="font-bold text-white">${item.name}</h4>
-                        <p class="text-dorado">$${item.price}</p>
-                    </div>
-                    <div class="flex items-center space-x-2">
-                        <button onclick="updateCartQuantity('${item.id}', ${item.quantity - 1})" 
-                                class="bg-gray-600 text-white w-8 h-8 rounded hover:bg-gray-500">-</button>
-                        <span class="w-8 text-center">${item.quantity}</span>
-                        <button onclick="updateCartQuantity('${item.id}', ${item.quantity + 1})" 
-                                class="bg-gray-600 text-white w-8 h-8 rounded hover:bg-gray-500">+</button>
-                    </div>
-                    <button onclick="removeFromCart('${item.id}')" 
-                            class="text-red-500 hover:text-red-400">🗑️</button>
+            modalContent.innerHTML = `
+                <div class="image-gallery">
+                    ${product.images && product.images.length > 0 ? `
+                        <img id="mainImage" src="${product.images[0]}" alt="${product.name}" class="gallery-main-image">
+                        ${product.images.length > 1 ? `
+                            <div class="gallery-thumbnails">
+                                ${product.images.map((img, index) => `
+                                    <img src="${img}" alt="${product.name}" 
+                                         class="gallery-thumbnail ${index === 0 ? 'active' : ''}"
+                                         onclick="changeMainImage('${img}', this)">
+                                `).join('')}
+                            </div>
+                        ` : ''}
+                    ` : `
+                        <div class="gallery-main-image bg-gradient-to-br from-rosa-pastel to-dorado flex items-center justify-center">
+                            <div class="text-6xl text-negro-mate">💎</div>
+                        </div>
+                    `}
                 </div>
-            `).join('');
-
-            updateCartTotal();
+                
+                <div class="flex justify-between items-start mb-4">
+                    <div>
+                        <h2 class="text-2xl font-bold text-white mb-2">${product.name}</h2>
+                        <span class="bg-rosa-pastel text-negro-mate px-3 py-1 rounded-full text-sm font-bold">
+                            ${product.category}
+                        </span>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-3xl font-bold text-dorado mb-1">$${product.price.toFixed(2)}</div>
+                        <div class="text-sm text-gray-400">Stock: ${product.stock}</div>
+                    </div>
+                </div>
+                
+                <p class="text-gray-300 mb-6 leading-relaxed">
+                    ${product.description || 'Producto personalizado de alta calidad, sublimado con la mejor tecnología y materiales premium.'}
+                </p>
+                
+                <div class="flex space-x-4">
+                    <button onclick="addToCart('${product.id}'); closeModal();" 
+                            class="flex-1 btn-primary text-negro-mate py-3 rounded-lg font-bold ${product.stock <= 0 ? 'opacity-50 cursor-not-allowed' : ''}"
+                            ${product.stock <= 0 ? 'disabled' : ''}>
+                        ${product.stock <= 0 ? 'Agotado' : 'Agregar al Carrito'}
+                    </button>
+                    <button onclick="closeModal()" class="px-6 py-3 glass-effect rounded-lg font-bold hover:bg-white hover:bg-opacity-20 transition-all">
+                        Cerrar
+                    </button>
+                </div>
+            `;
+            
+            modal.classList.add('show');
         }
 
-        function updateCartTotal() {
-            const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-            document.getElementById('cartTotal').textContent = `$${total.toFixed(2)}`;
+        // Change main image in modal
+        function changeMainImage(imageSrc, thumbnail) {
+            document.getElementById('mainImage').src = imageSrc;
+            
+            // Update active thumbnail
+            document.querySelectorAll('.gallery-thumbnail').forEach(thumb => {
+                thumb.classList.remove('active');
+            });
+            thumbnail.classList.add('active');
         }
 
-        function updateCartUI() {
-            const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
-            document.getElementById('cartCount').textContent = cartCount;
+        // Close modal
+        function closeModal() {
+            document.getElementById('productModal').classList.remove('show');
+        }
+
+        // Cart functionality
+        function loadCart() {
+            const savedCart = localStorage.getItem('panuCart');
+            if (savedCart) {
+                cart = JSON.parse(savedCart);
+            }
         }
 
         function saveCart() {
             localStorage.setItem('panuCart', JSON.stringify(cart));
         }
 
-        function checkout() {
-            if (cart.length === 0) return;
+        function addToCart(productId) {
+            const product = allProducts.find(p => p.id === productId);
+            if (!product || product.stock <= 0) return;
+
+            const existingItem = cart.find(item => item.id === productId);
             
-            showNotification('Funcionalidad de pago en desarrollo', 'info');
-            // Here you would integrate with a payment processor
-        }
-
-        // Utility Functions
-        function scrollToProducts() {
-            document.getElementById('products').scrollIntoView({ behavior: 'smooth' });
-        }
-
-        function showLoading(show) {
-            const loading = document.getElementById('loading');
-            if (show) {
-                loading.classList.add('active');
+            if (existingItem) {
+                if (existingItem.quantity < product.stock) {
+                    existingItem.quantity += 1;
+                    showNotification(`${product.name} agregado al carrito`, 'success');
+                } else {
+                    showNotification('No hay más stock disponible', 'error');
+                    return;
+                }
             } else {
-                loading.classList.remove('active');
+                cart.push({
+                    id: productId,
+                    name: product.name,
+                    price: product.price,
+                    image: product.images?.[0] || null,
+                    quantity: 1
+                });
+                showNotification(`${product.name} agregado al carrito`, 'success');
             }
+            
+            saveCart();
+            updateCartDisplay();
+        }
+
+        function updateCartDisplay() {
+            const cartCount = document.getElementById('cartCount');
+            const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+            
+            if (totalItems > 0) {
+                cartCount.textContent = totalItems;
+                cartCount.classList.remove('hidden');
+            } else {
+                cartCount.classList.add('hidden');
+            }
+        }
+
+        // Utility functions
+        function scrollToProducts() {
+            document.getElementById('productos').scrollIntoView({ 
+                behavior: 'smooth' 
+            });
         }
 
         function showNotification(message, type = 'info') {
             const notification = document.createElement('div');
-            notification.className = `notification ${
+            notification.className = `fixed top-4 right-4 z-50 px-6 py-3 rounded-lg text-white font-medium ${
                 type === 'success' ? 'bg-green-600' : 
                 type === 'error' ? 'bg-red-600' : 'bg-blue-600'
             }`;
@@ -776,19 +747,12 @@
             }, 3000);
         }
 
-        // Event Listeners
-        document.getElementById('searchInput').addEventListener('input', filterProducts);
-        document.getElementById('categoryFilter').addEventListener('change', filterProducts);
-        document.getElementById('priceRange').addEventListener('input', function() {
-            document.getElementById('priceValue').textContent = this.value;
-            filterProducts();
-        });
-
-        // Initialize
-        document.addEventListener('DOMContentLoaded', () => {
-            loadProducts();
-            updateCartUI();
+        // Close modal when clicking outside
+        document.getElementById('productModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
         });
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98e0cbd324d4a538',t:'MTc2MDM3OTA1Mi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98e167d65497a538',t:'MTc2MDM4NTQ0Mi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
