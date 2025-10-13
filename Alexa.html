@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Alexa — La más linda</title>
+<style>
+  :root{
+    --bg1: #0f172a;   /* azul oscuro */
+    --bg2: #0b1220;   /* más oscuro */
+    --accent: #ff5c8a; /* rosa fuerte */
+    --glass: rgba(255,255,255,0.06);
+    --glass-2: rgba(255,255,255,0.03);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    background: radial-gradient(1200px 600px at 10% 20%, rgba(255,92,138,0.08), transparent),
+                radial-gradient(900px 500px at 90% 80%, rgba(0,200,255,0.03), transparent),
+                linear-gradient(180deg,var(--bg1),var(--bg2));
+    color: #fff;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:24px;
+  }
+
+  .card{
+    width: min(1100px, 95%);
+    background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02));
+    border-radius: 20px;
+    padding: clamp(28px, 4vw, 48px);
+    box-shadow: 0 10px 30px rgba(2,6,23,0.6), inset 0 1px 0 rgba(255,255,255,0.02);
+    display:grid;
+    grid-template-columns: 1fr 420px;
+    gap: 24px;
+    align-items:center;
+    backdrop-filter: blur(6px) saturate(1.1);
+    border: 1px solid rgba(255,255,255,0.04);
+  }
+
+  @media (max-width:900px){
+    .card{grid-template-columns:1fr; text-align:center}
+  }
+
+  .headline{
+    font-weight:800;
+    line-height:0.88;
+    font-size: clamp(48px, 8vw, 120px);
+    letter-spacing: -1px;
+    margin-bottom: 10px;
+    background: linear-gradient(90deg,#fff 0%, var(--accent) 45%, #ffd1e0 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    text-shadow: 0 6px 30px rgba(0,0,0,0.6);
+  }
+
+  .sub{
+    font-size: clamp(14px, 2.2vw, 18px);
+    color: #dbeafe;
+    opacity: 0.95;
+    margin-top: 6px;
+  }
+
+  .badge{
+    display:inline-flex;
+    gap:10px;
+    align-items:center;
+    margin-top:18px;
+    padding:10px 14px;
+    background: linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    border-radius: 999px;
+    border: 1px solid rgba(255,255,255,0.03);
+    box-shadow: 0 6px 18px rgba(2,6,23,0.45);
+    width: fit-content;
+  }
+
+  .heart {
+    width:44px;height:44px;
+    display:inline-grid;
+    place-items:center;
+    background: radial-gradient(circle at 30% 20%, rgba(255,92,138,0.18), transparent 25%),
+                linear-gradient(135deg, rgba(255,92,138,0.18), rgba(255,92,138,0.06));
+    border-radius: 12px;
+    transform: translateY(0);
+    animation: pop 1600ms ease-in-out infinite;
+  }
+
+  @keyframes pop{
+    0%,100%{transform: translateY(0) scale(1)}
+    50%{transform: translateY(-6px) scale(1.05)}
+  }
+
+  .panel{
+    background: linear-gradient(180deg,var(--glass), var(--glass-2));
+    border-radius: 14px;
+    padding:18px;
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+    align-items:flex-start;
+  }
+  .panel h4{font-size:14px;color:#cfe9ff;margin-bottom:8px}
+  .meta{font-size:13px;color:#b8d7ff;opacity:0.9}
+
+  .footer{
+    margin-top:10px;
+    font-size:12px;
+    color: #9fbff5;
+    opacity:0.9;
+  }
+
+  /* little sparkle */
+  .sparkle{
+    position:absolute;
+    right:24px;
+    top:24px;
+    width:80px;height:80px;
+    background: conic-gradient(from 90deg at 50% 50%, rgba(255,255,255,0.06), transparent 30%);
+    filter: blur(18px);
+    opacity:0.7;
+    transform: rotate(20deg);
+    border-radius:20px;
+  }
+</style>
+</head>
+<body>
+  <div class="sparkle" aria-hidden="true"></div>
+
+  <div class="card" role="main" aria-label="Tarjeta dedicada">
+    <div>
+      <div class="headline">Alexa<br>la más linda<br>del universo</div>
+      <div class="sub">Sin discusión. Confirmado por este HTML.</div>
+
+      <div class="badge" title="Hecho con amor">
+        <div class="heart" aria-hidden="true">
+          <!-- simple heart SVG -->
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" aria-hidden="true">
+            <path d="M12 20s-7.2-4.6-9.3-7.2C-0.3 8.8 4 4.2 7 6.6 8.5 7.8 9 9.4 12 11c3-1.6 3.5-3.2 5-4.4 3-2.4 7.3 2.2 4.3 6.2C19.2 15.4 12 20 12 20z" fill="white" opacity="0.9"/>
+          </svg>
+        </div>
+        <div style="display:flex;flex-direction:column">
+          <strong style="font-size:13px;color:white">Dedicado</strong>
+          <span class="meta">Para Alexa — siempre.</span>
+        </div>
+      </div>
+
+      <div class="footer">Pro tip: hacé click derecho → "Guardar como..." para compartirlo.</div>
+    </div>
+
+    <aside class="panel" aria-hidden="true">
+      <h4>Detalles</h4>
+      <div class="meta">Autor: Esteban Páez</div>
+      <div class="meta">Fecha: <span id="fecha"></span></div>
+      <div style="height:12px"></div>
+      <div style="font-size:13px;color:#dbeafe">¿Querés versión printable o póster en A4? Te la dejo lista.</div>
+    </aside>
+  </div>
+
+<script>
+  // pone la fecha actual
+  document.getElementById('fecha').textContent = new Date().toLocaleString('es-AR', {
+    year: 'numeric', month: 'long', day: 'numeric'
+  });
+</script>
+</body>
+</html>
