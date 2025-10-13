@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Renditor Panu - Panel de Administración</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'rosa-pastel': '#F8BBD9',
+                        'negro-mate': '#1a1a1a',
+                        'dorado': '#FFD700'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            box-sizing: border-box;
+            background-color: #3d3426;
+        }
+        
+        .glass-effect {
+            backdrop-filter: blur(15px);
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .hover-lift {
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        
+        .hover-lift:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .text-gradient {
+            background: linear-gradient(45deg, #F8BBD9, #FFD700);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(45deg, #F8BBD9, #FFD700);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            background: linear-gradient(45deg, #FFD700, #F8BBD9);
+            transform: translateY(-2px);
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+        }
+        
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .loading {
+            display: none;
+        }
+        
+        .loading.active {
+            display: block;
+        }
+    </style>
+</head>
+<body class="text-white font-sans min-h-full">
+    <!-- Navigation -->
+    <nav class="glass-effect sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-6 py-4">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center space-x-3">
+                    <div class="text-3xl">🎨</div>
+                    <div class="text-2xl font-bold text-gradient">Renditor Panu</div>
+                </div>
+                <div class="flex space-x-4">
+                    <a href="panu.html" class="bg-rosa-pastel text-negro-mate px-4 py-2 rounded-full hover:bg-opacity-80 transition-all">
+                        Ver Tienda
+                    </a>
+                    <a href="index.html" class="border border-rosa-pastel text-rosa-pastel px-4 py-2 rounded-full hover:bg-rosa-pastel hover:text-negro-mate transition-all">
+                        Inicio
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-6 py-8">
+        <!-- Header -->
+        <div class="flex justify-between items-center mb-8">
+            <div>
+                <h1 class="text-4xl font-bold text-gradient mb-2">Panel de Administración</h1>
+                <p class="text-gray-300">Gestiona todos los productos de Panu</p>
+            </div>
+            <button onclick="openModal('create')" class="btn-primary text-negro-mate px-6 py-3 rounded-full font-bold hover-lift">
+                ➕ Nuevo Producto
+            </button>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            <div class="glass-effect rounded-2xl p-6 text-center">
+                <div class="text-3xl font-bold text-rosa-pastel mb-2" id="totalProducts">0</div>
+                <p class="text-gray-300 text-sm">Total Productos</p>
+            </div>
+            <div class="glass-effect rounded-2xl p-6 text-center">
+                <div class="text-3xl font-bold text-dorado mb-2" id="availableProducts">0</div>
+                <p class="text-gray-300 text-sm">Disponibles</p>
+            </div>
+            <div class="glass-effect rounded-2xl p-6 text-center">
+                <div class="text-3xl font-bold text-gray-400 mb-2" id="unavailableProducts">0</div>
+                <p class="text-gray-300 text-sm">No Disponibles</p>
+            </div>
+            <div class="glass-effect rounded-2xl p-6 text-center">
+                <div class="text-3xl font-bold text-rosa-pastel mb-2" id="totalCategories">0</div>
+                <p class="text-gray-300 text-sm">Categorías</p>
+            </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="glass-effect rounded-2xl p-6 mb-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-2">Buscar</label>
+                    <input type="text" id="searchInput" placeholder="Nombre del producto..." 
+                           class="w-full bg-negro-mate border border-gray-600 rounded-lg px-4 py-2 text-white focus:border-rosa-pastel focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-2">Categoría</label>
+                    <select id="categoryFilter" class="w-full bg-negro-mate border border-gray-600 rounded-lg px-4 py-2 text-white focus:border-rosa-pastel focus:outline-none">
+                        <option value="">Todas las categorías</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-2">Estado</label>
+                    <select id="statusFilter" class="w-full bg-negro-mate border border-gray-600 rounded-lg px-4 py-2 text-white focus:border-rosa-pastel focus:outline-none">
+                        <option value="">Todos</option>
+                        <option value="true">Disponible</option>
+                        <option value="false">No Disponible</option>
+                    </select>
+                </div>
+                <div class="flex items-end">
+                    <button onclick="clearFilters()" class="w-full bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-500 transition-all">
+                        Limpiar Filtros
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Loading -->
+        <div id="loading" class="loading text-center py-12">
+            <div class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-rosa-pastel"></div>
+            <p class="text-gray-300 mt-4">Cargando productos...</p>
+        </div>
+
+        <!-- Products Grid -->
+        <div id="productsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Products will be loaded here -->
+        </div>
+
+        <!-- Empty State -->
+        <div id="emptyState" class="text-center py-12 hidden">
+            <div class="text-6xl mb-4">📦</div>
+            <h3 class="text-2xl font-bold text-gray-400 mb-2">No hay productos</h3>
+            <p class="text-gray-500 mb-6">Crea tu primer producto para empezar</p>
+            <button onclick="openModal('create')" class="btn-primary text-negro-mate px-6 py-3 rounded-full font-bold hover-lift">
+                Crear Producto
+            </button>
+        </div>
+    </div>
+
+    <!-- Modal for Create/Edit Product -->
+    <div id="productModal" class="modal">
+        <div class="glass-effect rounded-3xl p-8 max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-6">
+                <h2 id="modalTitle" class="text-2xl font-bold text-gradient">Nuevo Producto</h2>
+                <button onclick="closeModal()" class="text-gray-400 hover:text-white text-2xl">✕</button>
+            </div>
+
+            <form id="productForm" class="space-y-6">
+                <input type="hidden" id="productId">
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-2">Nombre del Producto *</label>
+                    <input type="text" id="productName" required
+                           class="w-full bg-negro-mate border border-gray-600 rounded-lg px-4 py-3 text-white focus:border-rosa-pastel focus:outline-none">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-2">Descripción *</label>
+                    <textarea id="productDescription" required rows="4"
+                              class="w-full bg-negro-mate border border-gray-600 rounded-lg px-4 py-3 text-white focus:border-rosa-pastel focus:outline-none resize-none"></textarea>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-2">Precio *</label>
+                        <input type="number" id="productPrice" required step="0.01" min="0"
+                               class="w-full bg-negro-mate border border-gray-600 rounded-lg px-4 py-3 text-white focus:border-rosa-pastel focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-2">Categoría *</label>
+                        <input type="text" id="productCategory" required
+                               class="w-full bg-negro-mate border border-gray-600 rounded-lg px-4 py-3 text-white focus:border-rosa-pastel focus:outline-none"
+                               placeholder="ej: Tazas, Camisetas, Accesorios">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-2">Imagen Principal *</label>
+                    <input type="file" id="mainImage" accept="image/*"
+                           class="w-full bg-negro-mate border border-gray-600 rounded-lg px-4 py-3 text-white focus:border-rosa-pastel focus:outline-none">
+                    <div id="mainImagePreview" class="mt-2"></div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-2">Galería de Imágenes</label>
+                    <input type="file" id="galleryImages" accept="image/*" multiple
+                           class="w-full bg-negro-mate border border-gray-600 rounded-lg px-4 py-3 text-white focus:border-rosa-pastel focus:outline-none">
+                    <div id="galleryPreview" class="mt-2 grid grid-cols-3 gap-2"></div>
+                </div>
+
+                <div class="flex items-center">
+                    <input type="checkbox" id="productAvailable" checked
+                           class="w-4 h-4 text-rosa-pastel bg-negro-mate border-gray-600 rounded focus:ring-rosa-pastel">
+                    <label for="productAvailable" class="ml-2 text-sm text-gray-300">Producto disponible</label>
+                </div>
+
+                <div class="flex space-x-4 pt-4">
+                    <button type="submit" class="flex-1 btn-primary text-negro-mate py-3 rounded-lg font-bold hover-lift">
+                        <span id="submitText">Crear Producto</span>
+                    </button>
+                    <button type="button" onclick="closeModal()" class="flex-1 bg-gray-600 text-white py-3 rounded-lg hover:bg-gray-500 transition-all">
+                        Cancelar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Confirmation Modal -->
+    <div id="confirmModal" class="modal">
+        <div class="glass-effect rounded-3xl p-8 max-w-md w-full mx-4">
+            <h3 class="text-xl font-bold text-white mb-4">¿Estás seguro?</h3>
+            <p class="text-gray-300 mb-6" id="confirmMessage">Esta acción no se puede deshacer.</p>
+            <div class="flex space-x-4">
+                <button id="confirmButton" class="flex-1 bg-red-600 text-white py-3 rounded-lg hover:bg-red-700 transition-all">
+                    Eliminar
+                </button>
+                <button onclick="closeConfirmModal()" class="flex-1 bg-gray-600 text-white py-3 rounded-lg hover:bg-gray-500 transition-all">
+                    Cancelar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Caisy Configuration
+        const CAISY_CONFIG = {
+            projectId: 'd5020874-9338-4ce1-9f01-872741713f01',
+            apiKey: 'DR4cQSjCXwdqZDs20vuKsPmGreNnSu4T',
+            endpoint: 'https://cloud.caisy.io/api/v3/e/d5020874-9338-4ce1-9f01-872741713f01/graphql'
+        };
+
+        let products = [];
+        let filteredProducts = [];
+        let editingProduct = null;
+
+        // GraphQL Queries
+        const GET_PRODUCTS_QUERY = `
+            query GetProducts {
+                Producto {
+                    id
+                    nombre
+                    descripcion {
+                        json
+                    }
+                    precio
+                    categoria
+                    imagen_principal {
+                        ... on Asset {
+                            src
+                            title
+                        }
+                    }
+                    imagenes_galeria {
+                        ... on Asset {
+                            src
+                            title
+                        }
+                    }
+                    disponible
+                    fecha_creacion
+                }
+            }
+        `;
+
+        const CREATE_PRODUCT_MUTATION = `
+            mutation CreateProduct($input: ProductoInput!) {
+                createProducto(input: $input) {
+                    id
+                    nombre
+                    descripcion
+                    precio
+                    categoria
+                    disponible
+                }
+            }
+        `;
+
+        const UPDATE_PRODUCT_MUTATION = `
+            mutation UpdateProduct($id: ID!, $input: ProductoInput!) {
+                updateProducto(id: $id, input: $input) {
+                    id
+                    nombre
+                    descripcion
+                    precio
+                    categoria
+                    disponible
+                }
+            }
+        `;
+
+        const DELETE_PRODUCT_MUTATION = `
+            mutation DeleteProduct($id: ID!) {
+                deleteProducto(id: $id) {
+                    id
+                }
+            }
+        `;
+
+        // Utility function to extract text from rich text description
+        function extractTextFromDescription(descripcion) {
+            if (!descripcion) return '';
+            
+            // If it's already a string, return it
+            if (typeof descripcion === 'string') return descripcion;
+            
+            // If it has json property, try to extract text from it
+            if (descripcion.json) {
+                try {
+                    const jsonContent = typeof descripcion.json === 'string' 
+                        ? JSON.parse(descripcion.json) 
+                        : descripcion.json;
+                    
+                    // Extract text from rich text JSON structure
+                    function extractText(node) {
+                        if (typeof node === 'string') return node;
+                        if (!node || typeof node !== 'object') return '';
+                        
+                        if (node.text) return node.text;
+                        if (node.content && Array.isArray(node.content)) {
+                            return node.content.map(extractText).join(' ');
+                        }
+                        if (Array.isArray(node)) {
+                            return node.map(extractText).join(' ');
+                        }
+                        
+                        return '';
+                    }
+                    
+                    return extractText(jsonContent).trim();
+                } catch (e) {
+                    console.warn('Error parsing description JSON:', e);
+                    return String(descripcion.json);
+                }
+            }
+            
+            return String(descripcion);
+        }
+
+        // API Functions
+        async function makeGraphQLRequest(query, variables = {}) {
+            try {
+                const response = await fetch(CAISY_CONFIG.endpoint, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-caisy-apikey': CAISY_CONFIG.apiKey
+                    },
+                    body: JSON.stringify({
+                        query,
+                        variables
+                    })
+                });
+
+                const data = await response.json();
+                
+                if (data.errors) {
+                    throw new Error(data.errors[0].message);
+                }
+                
+                return data.data;
+            } catch (error) {
+                console.error('GraphQL Error:', error);
+                showNotification('Error de conexión: ' + error.message, 'error');
+                throw error;
+            }
+        }
+
+        // Load Products
+        async function loadProducts() {
+            showLoading(true);
+            try {
+                const data = await makeGraphQLRequest(GET_PRODUCTS_QUERY);
+                products = data.Producto || [];
+                filteredProducts = [...products];
+                renderProducts();
+                updateStats();
+                updateCategoryFilter();
+            } catch (error) {
+                console.error('Error loading products:', error);
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        // Render Products
+        function renderProducts() {
+            const grid = document.getElementById('productsGrid');
+            const emptyState = document.getElementById('emptyState');
+
+            if (filteredProducts.length === 0) {
+                grid.innerHTML = '';
+                emptyState.classList.remove('hidden');
+                return;
+            }
+
+            emptyState.classList.add('hidden');
+            
+            grid.innerHTML = filteredProducts.map(product => `
+                <div class="glass-effect rounded-2xl p-6 hover-lift">
+                    <div class="relative mb-4">
+                        <img src="${product.imagen_principal?.src || '/api/placeholder/300/200'}" 
+                             alt="${product.nombre}" 
+                             class="w-full h-48 object-cover rounded-lg">
+                        <div class="absolute top-2 right-2">
+                            <span class="px-2 py-1 rounded-full text-xs font-bold ${product.disponible ? 'bg-green-500 text-white' : 'bg-red-500 text-white'}">
+                                ${product.disponible ? 'Disponible' : 'No Disponible'}
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <h3 class="text-xl font-bold text-white mb-2">${product.nombre}</h3>
+                    <p class="text-gray-300 text-sm mb-3 line-clamp-2">${extractTextFromDescription(product.descripcion)}</p>
+                    
+                    <div class="flex justify-between items-center mb-4">
+                        <span class="text-2xl font-bold text-dorado">$${product.precio}</span>
+                        <span class="text-sm text-rosa-pastel bg-rosa-pastel bg-opacity-20 px-2 py-1 rounded-full">
+                            ${product.categoria}
+                        </span>
+                    </div>
+                    
+                    <div class="flex space-x-2">
+                        <button onclick="editProduct('${product.id}')" 
+                                class="flex-1 bg-rosa-pastel text-negro-mate py-2 rounded-lg hover:bg-opacity-80 transition-all">
+                            ✏️ Editar
+                        </button>
+                        <button onclick="confirmDelete('${product.id}', '${product.nombre}')" 
+                                class="flex-1 bg-red-600 text-white py-2 rounded-lg hover:bg-red-700 transition-all">
+                            🗑️ Eliminar
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Update Stats
+        function updateStats() {
+            document.getElementById('totalProducts').textContent = products.length;
+            document.getElementById('availableProducts').textContent = products.filter(p => p.disponible).length;
+            document.getElementById('unavailableProducts').textContent = products.filter(p => !p.disponible).length;
+            
+            const categories = [...new Set(products.map(p => p.categoria))];
+            document.getElementById('totalCategories').textContent = categories.length;
+        }
+
+        // Update Category Filter
+        function updateCategoryFilter() {
+            const categoryFilter = document.getElementById('categoryFilter');
+            const categories = [...new Set(products.map(p => p.categoria))];
+            
+            categoryFilter.innerHTML = '<option value="">Todas las categorías</option>' +
+                categories.map(cat => `<option value="${cat}">${cat}</option>`).join('');
+        }
+
+        // Filter Products
+        function filterProducts() {
+            const search = document.getElementById('searchInput').value.toLowerCase();
+            const category = document.getElementById('categoryFilter').value;
+            const status = document.getElementById('statusFilter').value;
+
+            filteredProducts = products.filter(product => {
+                const descripcionText = extractTextFromDescription(product.descripcion);
+                const matchesSearch = product.nombre.toLowerCase().includes(search) ||
+                                    descripcionText.toLowerCase().includes(search);
+                const matchesCategory = !category || product.categoria === category;
+                const matchesStatus = status === '' || product.disponible.toString() === status;
+
+                return matchesSearch && matchesCategory && matchesStatus;
+            });
+
+            renderProducts();
+        }
+
+        // Clear Filters
+        function clearFilters() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('categoryFilter').value = '';
+            document.getElementById('statusFilter').value = '';
+            filteredProducts = [...products];
+            renderProducts();
+        }
+
+        // Modal Functions
+        function openModal(mode, productId = null) {
+            const modal = document.getElementById('productModal');
+            const title = document.getElementById('modalTitle');
+            const submitText = document.getElementById('submitText');
+            
+            if (mode === 'create') {
+                title.textContent = 'Nuevo Producto';
+                submitText.textContent = 'Crear Producto';
+                document.getElementById('productForm').reset();
+                document.getElementById('productId').value = '';
+                editingProduct = null;
+            } else if (mode === 'edit' && productId) {
+                title.textContent = 'Editar Producto';
+                submitText.textContent = 'Actualizar Producto';
+                loadProductForEdit(productId);
+            }
+            
+            modal.classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('productModal').classList.remove('active');
+            document.getElementById('productForm').reset();
+            editingProduct = null;
+        }
+
+        // Load Product for Edit
+        function loadProductForEdit(productId) {
+            const product = products.find(p => p.id === productId);
+            if (!product) return;
+
+            editingProduct = product;
+            document.getElementById('productId').value = product.id;
+            document.getElementById('productName').value = product.nombre;
+            document.getElementById('productDescription').value = extractTextFromDescription(product.descripcion);
+            document.getElementById('productPrice').value = product.precio;
+            document.getElementById('productCategory').value = product.categoria;
+            document.getElementById('productAvailable').checked = product.disponible;
+
+            // Show current main image
+            if (product.imagen_principal?.src) {
+                document.getElementById('mainImagePreview').innerHTML = `
+                    <img src="${product.imagen_principal.src}" alt="Imagen actual" class="w-32 h-32 object-cover rounded-lg">
+                `;
+            }
+
+            // Show current gallery images
+            if (product.imagenes_galeria?.length > 0) {
+                document.getElementById('galleryPreview').innerHTML = product.imagenes_galeria.map(img => `
+                    <img src="${img.src}" alt="Galería" class="w-full h-24 object-cover rounded-lg">
+                `).join('');
+            }
+        }
+
+        // Edit Product
+        function editProduct(productId) {
+            openModal('edit', productId);
+        }
+
+        // Confirm Delete
+        function confirmDelete(productId, productName) {
+            document.getElementById('confirmMessage').textContent = 
+                `¿Estás seguro de que quieres eliminar "${productName}"? Esta acción no se puede deshacer.`;
+            
+            document.getElementById('confirmButton').onclick = () => deleteProduct(productId);
+            document.getElementById('confirmModal').classList.add('active');
+        }
+
+        function closeConfirmModal() {
+            document.getElementById('confirmModal').classList.remove('active');
+        }
+
+        // Delete Product
+        async function deleteProduct(productId) {
+            try {
+                await makeGraphQLRequest(DELETE_PRODUCT_MUTATION, { id: productId });
+                showNotification('Producto eliminado exitosamente', 'success');
+                closeConfirmModal();
+                loadProducts();
+            } catch (error) {
+                console.error('Error deleting product:', error);
+            }
+        }
+
+        // Handle Form Submit
+        document.getElementById('productForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = {
+                nombre: document.getElementById('productName').value,
+                descripcion: document.getElementById('productDescription').value,
+                precio: parseFloat(document.getElementById('productPrice').value),
+                categoria: document.getElementById('productCategory').value,
+                disponible: document.getElementById('productAvailable').checked,
+                fecha_creacion: new Date().toISOString()
+            };
+
+            try {
+                if (editingProduct) {
+                    await makeGraphQLRequest(UPDATE_PRODUCT_MUTATION, {
+                        id: editingProduct.id,
+                        input: formData
+                    });
+                    showNotification('Producto actualizado exitosamente', 'success');
+                } else {
+                    await makeGraphQLRequest(CREATE_PRODUCT_MUTATION, {
+                        input: formData
+                    });
+                    showNotification('Producto creado exitosamente', 'success');
+                }
+                
+                closeModal();
+                loadProducts();
+            } catch (error) {
+                console.error('Error saving product:', error);
+            }
+        });
+
+        // Utility Functions
+        function showLoading(show) {
+            const loading = document.getElementById('loading');
+            if (show) {
+                loading.classList.add('active');
+            } else {
+                loading.classList.remove('active');
+            }
+        }
+
+        function showNotification(message, type = 'info') {
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.className = `fixed top-4 right-4 z-50 px-6 py-3 rounded-lg text-white font-medium ${
+                type === 'success' ? 'bg-green-600' : 
+                type === 'error' ? 'bg-red-600' : 'bg-blue-600'
+            }`;
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+
+        // Event Listeners
+        document.getElementById('searchInput').addEventListener('input', filterProducts);
+        document.getElementById('categoryFilter').addEventListener('change', filterProducts);
+        document.getElementById('statusFilter').addEventListener('change', filterProducts);
+
+        // Image Preview Handlers
+        document.getElementById('mainImage').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('mainImagePreview').innerHTML = `
+                        <img src="${e.target.result}" alt="Preview" class="w-32 h-32 object-cover rounded-lg">
+                    `;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        document.getElementById('galleryImages').addEventListener('change', function(e) {
+            const files = Array.from(e.target.files);
+            const preview = document.getElementById('galleryPreview');
+            preview.innerHTML = '';
+            
+            files.forEach(file => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.className = 'w-full h-24 object-cover rounded-lg';
+                    preview.appendChild(img);
+                };
+                reader.readAsDataURL(file);
+            });
+        });
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            loadProducts();
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98e093fca6ada538',t:'MTc2MDM3Njc2NS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
