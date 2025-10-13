@@ -203,7 +203,10 @@
         <div id="emptyState" class="text-center py-12 hidden">
             <div class="text-6xl mb-4">🔍</div>
             <h3 class="text-2xl font-bold text-gray-400 mb-2">No se encontraron productos</h3>
-            <p class="text-gray-500">Intenta ajustar los filtros de búsqueda</p>
+            <p class="text-gray-500 mb-6">Ve al panel de administración para crear productos</p>
+            <a href="admin.html" class="btn-primary text-negro-mate px-6 py-3 rounded-lg font-bold hover-lift inline-block">
+                Ir al Admin
+            </a>
         </div>
     </section>
 
@@ -390,63 +393,68 @@
         async function loadProducts() {
             try {
                 showLoading(true);
+                console.log('🔍 Intentando cargar productos desde Caisy...');
+                
                 const data = await makeGraphQLRequest(GET_PRODUCTS_QUERY);
+                console.log('📦 Respuesta de Caisy:', data);
+                
+                // Check if we have products
+                if (!data.Producto || data.Producto.length === 0) {
+                    console.log('⚠️ No se encontraron productos en Caisy');
+                    showNotification('No hay productos creados aún. Ve al admin para crear algunos.', 'info');
+                    
+                    // Show empty state
+                    products = [];
+                    filteredProducts = [];
+                    renderProducts();
+                    showLoading(false);
+                    return;
+                }
                 
                 // Transform Caisy data to match our component structure
-                products = (data.Producto || []).filter(product => product.disponible).map(product => ({
+                products = data.Producto.filter(product => product.disponible).map(product => ({
                     id: product.id,
                     name: product.nombre,
                     price: product.precio,
-                    image: product.imagen_principal?.src || '/api/placeholder/400/400',
+                    image: product.imagen_principal?.src || 'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=400',
                     category: product.categoria,
                     description: extractTextFromDescription(product.descripcion),
                     available: product.disponible,
                     gallery: product.imagenes_galeria?.map(img => img.src) || [product.imagen_principal?.src].filter(Boolean)
                 }));
 
-                filteredProducts = [...products];
-                renderProducts();
-                updateCategoryFilter();
-                updatePriceRange();
-                showLoading(false);
-            } catch (error) {
-                console.error('Error loading products:', error);
-                showLoading(false);
-                showNotification('Error al cargar productos. Mostrando productos de ejemplo.', 'error');
+                console.log(`✅ ${products.length} productos cargados exitosamente`);
                 
-                // Fallback to sample data if API fails
-                products = [
-                    {
-                        id: 'sample-1',
-                        name: "Taza Mágica Personalizada",
-                        price: 25.99,
-                        image: "https://images.unsplash.com/photo-1544787219-7f47ccb76574?w=400",
-                        category: "Tazas",
-                        description: "Taza que cambia de color con líquidos calientes. Personalizable con tu diseño favorito.",
-                        available: true,
-                        gallery: [
-                            "https://images.unsplash.com/photo-1544787219-7f47ccb76574?w=400",
-                            "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400"
-                        ]
-                    },
-                    {
-                        id: 'sample-2',
-                        name: "Camiseta Vintage Panu",
-                        price: 35.50,
-                        image: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400",
-                        category: "Ropa",
-                        description: "Camiseta de algodón 100% con diseño exclusivo de Panu. Disponible en varios colores.",
-                        available: true,
-                        gallery: [
-                            "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400",
-                            "https://images.unsplash.com/photo-1503341504253-dff4815485f1?w=400"
-                        ]
-                    }
-                ];
                 filteredProducts = [...products];
                 renderProducts();
                 updateCategoryFilter();
                 updatePriceRange();
+                showLoading(false);
+                
+                if (products.length > 0) {
+                    showNotification(`${products.length} productos cargados correctamente`, 'success');
+                }
+                
+            } catch (error) {
+                console.error('❌ Error loading products:', error);
+                showLoading(false);
+                
+                // More detailed error message
+                let errorMessage = 'Error al conectar con Caisy. ';
+                if (error.message.includes('Cannot query field')) {
+                    errorMessage += 'Verifica que el Content Type "Producto" existe en Caisy.';
+                } else if (error.message.includes('Unauthorized')) {
+                    errorMessage += 'Problema de autenticación con la API.';
+                } else {
+                    errorMessage += 'Revisa la consola para más detalles.';
+                }
+                
+                showNotification(errorMessage, 'error');
+                
+                // Show empty state
+                products = [];
+                filteredProducts = [];
+                renderProducts();
             }
         }
 
@@ -515,6 +523,8 @@
         }
 
         function updatePriceRange() {
+            if (products.length === 0) return;
+            
             const maxPrice = Math.max(...products.map(p => p.price));
             const priceRange = document.getElementById('priceRange');
             priceRange.max = maxPrice;
@@ -753,5 +763,5 @@
             updateCartUI();
         });
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98e098bad076a538',t:'MTc2MDM3Njk1OS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98e0c114c738a538',t:'MTc2MDM3ODYxMi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
