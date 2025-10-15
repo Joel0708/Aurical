@@ -10,11 +10,16 @@
             theme: {
                 extend: {
                     colors: {
-                        'beige': '#F5F5DC',
-                        'beige-dark': '#E6D7B8',
-                        'navy': '#1e3a8a',
-                        'navy-dark': '#1e40af',
-                        'navy-light': '#3b82f6'
+                        'beige': '#F5E6D3',
+                        'beige-dark': '#E8D5B7',
+                        'brown': '#8B7355',
+                        'brown-dark': '#6B5B47',
+                        'cream': '#FFF8F0',
+                        'cream-dark': '#F5F0E8',
+                        'black': '#1C1C1C',
+                        'black-light': '#2D2D2D',
+                        'white': '#FFFFFF',
+                        'accent': '#D4AF37'
                     }
                 }
             }
@@ -27,32 +32,32 @@
         
         .glass-effect {
             backdrop-filter: blur(15px);
-            background: rgba(245, 245, 220, 0.1);
-            border: 1px solid rgba(245, 245, 220, 0.2);
+            background: rgba(248, 248, 255, 0.1);
+            border: 1px solid rgba(255, 215, 0, 0.3);
         }
         
-        .glass-navy {
+        .glass-black {
             backdrop-filter: blur(15px);
-            background: rgba(30, 58, 138, 0.2);
-            border: 1px solid rgba(59, 130, 246, 0.3);
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 215, 0, 0.4);
         }
         
         .text-gradient {
-            background: linear-gradient(45deg, #F5F5DC, #3b82f6);
+            background: linear-gradient(45deg, #FFD700, #F5F5DC);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
         
         .btn-primary {
-            background: linear-gradient(45deg, #F5F5DC, #1e3a8a);
+            background: linear-gradient(45deg, #FFD700, #000000);
             transition: all 0.3s ease;
         }
         
         .btn-primary:hover {
-            background: linear-gradient(45deg, #1e3a8a, #F5F5DC);
+            background: linear-gradient(45deg, #DAA520, #1a1a1a);
             transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(30, 58, 138, 0.3);
+            box-shadow: 0 10px 25px rgba(255, 215, 0, 0.4);
         }
         
         .product-card {
@@ -66,7 +71,7 @@
         }
         
         .hero-bg {
-            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 50%, #F5F5DC 100%);
+            background: linear-gradient(135deg, #000000 0%, #1a1a1a 30%, #FFD700 70%, #F5F5DC 100%);
         }
         
         .connection-status {
@@ -109,7 +114,8 @@
         }
         
         .modal-content {
-            background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
+            background: linear-gradient(135deg, #F8F8FF 0%, #FFFFFF 50%, #F5F5DC 100%);
+            border: 2px solid #E6D7B8;
             border-radius: 20px;
             padding: 2rem;
             max-width: 800px;
@@ -120,29 +126,29 @@
         }
     </style>
 </head>
-<body class="bg-gradient-to-br from-navy via-navy-dark to-beige text-white font-sans">
+<body class="bg-beige text-black font-sans">
     <!-- Connection Status -->
     <div id="connectionStatus" class="connection-status status-offline">
         🔄 Conectando...
     </div>
 
     <!-- Header -->
-    <header class="glass-navy border-b border-beige border-opacity-20 sticky top-0 z-50">
+    <header class="bg-cream bg-opacity-95 backdrop-blur-md border-b border-brown sticky top-0 z-50 shadow-lg">
         <div class="max-w-7xl mx-auto px-6 py-4">
             <div class="flex justify-between items-center">
                 <div class="flex items-center space-x-4">
-                    <img src="image/Aurical.svg" alt="Panu Logo" class="w-10 h-10">
+                    <img src="./image/Aurical.svg" alt="Panu Logo" class="w-10 h-10" onerror="this.style.display='none'">
                     <div>
-                        <h1 class="text-2xl font-bold text-gradient">Panu Sublimaciones</h1>
-                        <p class="text-sm text-beige opacity-80">Productos únicos y personalizados</p>
+                        <h1 class="text-2xl font-bold text-black">Panu Sublimaciones</h1>
+                        <p class="text-sm text-brown">Productos únicos y personalizados</p>
                     </div>
                 </div>
                 <div class="flex items-center space-x-4">
-                    <span id="productCount" class="text-sm text-beige opacity-70">0 productos</span>
-                    <button onclick="openEditor()" class="glass-effect px-4 py-2 rounded-lg hover:bg-beige hover:bg-opacity-20 transition-all text-beige">
+                    <span id="productCount" class="text-sm text-brown">0 productos</span>
+                    <button onclick="openEditor()" class="bg-brown hover:bg-brown-dark text-cream px-4 py-2 rounded-lg transition-all font-medium">
                         🎨 Editor
                     </button>
-                    <a href="admin.html" class="glass-effect px-4 py-2 rounded-lg hover:bg-beige hover:bg-opacity-20 transition-all text-beige">
+                    <a href="admin.html" class="bg-black hover:bg-black-light text-white px-4 py-2 rounded-lg transition-all font-medium">
                         🛠️ Admin
                     </a>
                 </div>
@@ -151,15 +157,15 @@
     </header>
 
     <!-- Hero Section -->
-    <section class="hero-bg py-20">
+    <section class="bg-gradient-to-br from-cream via-beige to-brown-dark py-20">
         <div class="max-w-7xl mx-auto px-6 text-center">
-            <h2 class="text-5xl font-bold text-white mb-6">
-                Sublimación de <span class="text-beige">Alta Calidad</span>
+            <h2 class="text-5xl font-bold text-black mb-6">
+                Sublimación de <span class="text-accent">Alta Calidad</span>
             </h2>
-            <p class="text-xl text-beige opacity-90 mb-8 max-w-2xl mx-auto">
+            <p class="text-xl text-brown mb-8 max-w-2xl mx-auto">
                 Transforma tus ideas en productos únicos con nuestra tecnología de sublimación profesional
             </p>
-            <button onclick="scrollToProducts()" class="btn-primary text-navy px-8 py-4 rounded-lg font-bold text-lg">
+            <button onclick="scrollToProducts()" class="bg-black hover:bg-black-light text-cream px-8 py-4 rounded-lg font-bold text-lg transition-all shadow-lg">
                 🛍️ Ver Productos
             </button>
         </div>
@@ -169,24 +175,24 @@
     <main class="max-w-7xl mx-auto px-6 py-16">
         <!-- Section Header -->
         <div class="text-center mb-12">
-            <h3 class="text-4xl font-bold text-beige mb-4">Nuestros Productos</h3>
-            <p class="text-navy-light text-lg max-w-2xl mx-auto">
+            <h3 class="text-4xl font-bold text-black mb-4">Nuestros Productos</h3>
+            <p class="text-brown text-lg max-w-2xl mx-auto">
                 Descubre nuestra colección de productos personalizables con la mejor calidad de sublimación
             </p>
         </div>
 
         <!-- Filters -->
         <div class="flex flex-wrap justify-center gap-4 mb-12">
-            <button onclick="filterProducts('all')" class="filter-btn active glass-effect px-6 py-3 rounded-lg font-medium transition-all hover:bg-beige hover:bg-opacity-20">
+            <button onclick="filterProducts('all')" class="filter-btn active bg-brown text-cream border border-brown-dark px-6 py-3 rounded-lg font-medium transition-all hover:bg-brown-dark">
                 Todos
             </button>
-            <button onclick="filterProducts('Tazas')" class="filter-btn glass-effect px-6 py-3 rounded-lg font-medium transition-all hover:bg-beige hover:bg-opacity-20">
+            <button onclick="filterProducts('Tazas')" class="filter-btn bg-cream border border-brown px-6 py-3 rounded-lg font-medium transition-all hover:bg-brown hover:text-cream text-black">
                 Tazas
             </button>
-            <button onclick="filterProducts('Camisetas')" class="filter-btn glass-effect px-6 py-3 rounded-lg font-medium transition-all hover:bg-beige hover:bg-opacity-20">
+            <button onclick="filterProducts('Camisetas')" class="filter-btn bg-cream border border-brown px-6 py-3 rounded-lg font-medium transition-all hover:bg-brown hover:text-cream text-black">
                 Camisetas
             </button>
-            <button onclick="filterProducts('Accesorios')" class="filter-btn glass-effect px-6 py-3 rounded-lg font-medium transition-all hover:bg-beige hover:bg-opacity-20">
+            <button onclick="filterProducts('Accesorios')" class="filter-btn bg-cream border border-brown px-6 py-3 rounded-lg font-medium transition-all hover:bg-brown hover:text-cream text-black">
                 Accesorios
             </button>
         </div>
@@ -196,43 +202,43 @@
             <!-- Loading State -->
             <div class="col-span-full text-center py-16">
                 <div class="text-6xl mb-4">🔄</div>
-                <h3 class="text-2xl font-bold text-beige mb-2">Cargando productos...</h3>
-                <p class="text-navy-light">Conectando con Caisy CMS...</p>
+                <h3 class="text-2xl font-bold text-gold mb-2">Cargando productos...</h3>
+                <p class="text-beige">Conectando con Caisy CMS...</p>
             </div>
         </div>
     </main>
 
     <!-- Footer -->
-    <footer class="glass-navy border-t border-beige border-opacity-20 mt-20 py-12">
+    <footer class="bg-black border-t border-brown mt-20 py-12">
         <div class="max-w-7xl mx-auto px-6">
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                 <div>
-                    <h4 class="text-xl font-bold text-beige mb-4">Panu Sublimaciones</h4>
-                    <p class="text-navy-light">
+                    <h4 class="text-xl font-bold text-cream mb-4">Panu Sublimaciones</h4>
+                    <p class="text-beige">
                         Especialistas en sublimación de alta calidad. Transformamos tus ideas en productos únicos.
                     </p>
                 </div>
                 <div>
-                    <h4 class="text-xl font-bold text-beige mb-4">Contacto</h4>
-                    <div class="space-y-2 text-navy-light">
+                    <h4 class="text-xl font-bold text-cream mb-4">Contacto</h4>
+                    <div class="space-y-2 text-beige">
                         <p>📧 panu@aurical.org</p>
                         <p>📱 +1 234 567 8900</p>
                         <p>📍 Tu Ciudad, País</p>
                     </div>
                 </div>
                 <div>
-                    <h4 class="text-xl font-bold text-beige mb-4">Síguenos</h4>
+                    <h4 class="text-xl font-bold text-cream mb-4">Síguenos</h4>
                     <div class="flex space-x-4">
-                        <a href="#" class="glass-effect p-3 rounded-lg hover:bg-beige hover:bg-opacity-20 transition-all">📘</a>
-                        <a href="#" class="glass-effect p-3 rounded-lg hover:bg-beige hover:bg-opacity-20 transition-all">📷</a>
-                        <a href="#" class="glass-effect p-3 rounded-lg hover:bg-beige hover:bg-opacity-20 transition-all">🐦</a>
+                        <a href="#" class="bg-brown p-3 rounded-lg hover:bg-brown-dark transition-all">📘</a>
+                        <a href="#" class="bg-brown p-3 rounded-lg hover:bg-brown-dark transition-all">📷</a>
+                        <a href="#" class="bg-brown p-3 rounded-lg hover:bg-brown-dark transition-all">🐦</a>
                     </div>
                 </div>
             </div>
-            <div class="border-t border-beige border-opacity-20 mt-8 pt-8 text-center">
-                <p class="text-navy-light">
+            <div class="border-t border-brown mt-8 pt-8 text-center">
+                <p class="text-beige">
                     © 2024 Panu Sublimaciones. Todos los derechos reservados. 
-                    <span class="text-beige">Desarrollado por Esteban Paez Building</span>
+                    <span class="text-accent">Desarrollado por Esteban Paez Building</span>
                 </p>
             </div>
         </div>
@@ -240,8 +246,8 @@
 
     <!-- Product Detail Modal -->
     <div id="productModal" class="modal">
-        <div class="modal-content glass-navy">
-            <button onclick="closeModal()" class="absolute top-4 right-4 text-2xl text-beige hover:text-white transition-colors">
+        <div class="modal-content">
+            <button onclick="closeModal()" class="absolute top-4 right-4 text-2xl text-black hover:text-beige-dark transition-colors">
                 ×
             </button>
             
@@ -618,10 +624,12 @@
             
             // Update filter buttons
             document.querySelectorAll('.filter-btn').forEach(btn => {
-                btn.classList.remove('active', 'bg-beige', 'bg-opacity-20', 'text-navy');
+                btn.classList.remove('active', 'bg-brown', 'text-cream');
+                btn.classList.add('bg-cream', 'text-black', 'hover:bg-brown', 'hover:text-cream');
             });
             
-            event.target.classList.add('active', 'bg-beige', 'bg-opacity-20', 'text-navy');
+            event.target.classList.remove('bg-cream', 'text-black', 'hover:bg-brown', 'hover:text-cream');
+            event.target.classList.add('active', 'bg-brown', 'text-cream');
             
             applyFilter();
         }
@@ -658,37 +666,37 @@
             }
 
             grid.innerHTML = filteredProducts.map(product => `
-                <div class="product-card glass-effect rounded-xl overflow-hidden cursor-pointer" onclick="openProductModal('${product.id}')">
+                <div class="product-card bg-cream border border-brown rounded-xl overflow-hidden cursor-pointer shadow-lg hover:shadow-xl transition-all" onclick="openProductModal('${product.id}')">
                     <div class="relative">
                         ${product.images && product.images.length > 0 ? `
                             <img src="${product.images[0]}" alt="${product.name}" class="w-full h-48 object-cover">
                         ` : `
-                            <div class="w-full h-48 bg-gradient-to-br from-beige to-navy flex items-center justify-center">
-                                <div class="text-4xl text-navy">💎</div>
+                            <div class="w-full h-48 bg-gradient-to-br from-beige to-brown flex items-center justify-center">
+                                <div class="text-4xl text-cream">💎</div>
                             </div>
                         `}
                         <div class="absolute top-2 right-2 flex gap-2">
-                            <span class="bg-beige text-navy px-2 py-1 rounded text-xs font-bold">
+                            <span class="bg-brown text-cream px-2 py-1 rounded text-xs font-bold">
                                 ${product.category}
                             </span>
                             ${product.source === 'caisy' ? `
-                                <span class="bg-purple-500 text-white px-2 py-1 rounded text-xs">
+                                <span class="bg-accent text-black px-2 py-1 rounded text-xs font-bold">
                                     ☁️ Caisy
                                 </span>
                             ` : ''}
                         </div>
                         ${product.stock <= 5 ? `
-                            <div class="absolute top-2 left-2 bg-red-500 text-white px-2 py-1 rounded text-xs font-bold">
+                            <div class="absolute top-2 left-2 bg-red-600 text-white px-2 py-1 rounded text-xs font-bold">
                                 ${product.stock <= 0 ? 'Agotado' : `Últimas ${product.stock}`}
                             </div>
                         ` : ''}
                     </div>
                     <div class="p-4">
-                        <h3 class="text-lg font-bold text-beige mb-2">${product.name}</h3>
-                        <p class="text-navy-light text-sm mb-3 line-clamp-2">${product.description || 'Producto de sublimación personalizable'}</p>
+                        <h3 class="text-lg font-bold text-black mb-2">${product.name}</h3>
+                        <p class="text-brown text-sm mb-3 line-clamp-2">${product.description || 'Producto de sublimación personalizable'}</p>
                         <div class="flex justify-between items-center">
-                            <span class="text-xl font-bold text-beige">$${product.price.toFixed(2)}</span>
-                            <button class="btn-primary text-navy px-4 py-2 rounded-lg text-sm font-medium">
+                            <span class="text-xl font-bold text-black">$${product.price.toFixed(2)}</span>
+                            <button class="bg-black hover:bg-black-light text-cream px-4 py-2 rounded-lg text-sm font-medium transition-all">
                                 Ver Detalles
                             </button>
                         </div>
@@ -1118,5 +1126,5 @@ ${window.location.href}`;
             if (e.target === this) closeEditor();
         });
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98f1d5b0c5c51161',t:'MTc2MDU1NzcxNC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98f22a6c70636246',t:'MTc2MDU2MTE4NC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
