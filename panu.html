@@ -660,7 +660,7 @@
                             continue;
                         }
 
-                        // Now try the full query
+                        // Now try the full query with Spanish field names
                         console.log('✅ Consulta simple exitosa, probando consulta completa...');
                         
                         const fullQuery = `
@@ -668,23 +668,12 @@
                                 ${queryField.name} {
                                     id
                                     nombre
-                                    name
-                                    title
                                     descripcion {
                                         json
                                     }
-                                    description {
-                                        json
-                                    }
                                     precio
-                                    price
                                     categoria
-                                    category
                                     imagen_principal {
-                                        src
-                                        url
-                                    }
-                                    image {
                                         src
                                         url
                                     }
@@ -694,16 +683,7 @@
                                             url
                                         }
                                     }
-                                    images {
-                                        ... on Asset {
-                                            src
-                                            url
-                                        }
-                                    }
                                     disponible
-                                    available
-                                    fecha_creacion
-                                    createdAt
                                     _meta {
                                         createdAt
                                         updatedAt
@@ -728,14 +708,12 @@
                         if (fullData.errors) {
                             console.log(`❌ Error en consulta completa: ${fullData.errors[0]?.message}`);
                             
-                            // Try a more basic query
+                            // Try a more basic query with Spanish fields
                             const basicProductQuery = `
                                 query {
                                     ${queryField.name} {
                                         id
                                         nombre
-                                        name
-                                        title
                                     }
                                 }
                             `;
@@ -1555,5 +1533,5 @@ ${window.location.href}`;
             if (e.target === this) closeEditor();
         });
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98f25612672a3472',t:'MTc2MDU2Mjk3Mi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98f28fdda540f1a7',t:'MTc2MDU2NTMzOS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
