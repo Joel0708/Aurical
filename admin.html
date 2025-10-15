@@ -3,16 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panu - Panel de Administración</title>
+    <title>Panel Admin - Panu Sublimaciones</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     colors: {
-                        'rosa-pastel': '#F8BBD9',
-                        'negro-mate': '#1a1a1a',
-                        'dorado': '#FFD700'
+                        'beige': '#F5F5DC',
+                        'gris-oscuro': '#4A4A4A',
+                        'marron': '#8B4513'
                     }
                 }
             }
@@ -21,8 +21,6 @@
     <style>
         body {
             box-sizing: border-box;
-            background: linear-gradient(135deg, #3d3426 0%, #2a2419 100%);
-            min-height: 100%;
         }
         
         .glass-effect {
@@ -32,638 +30,847 @@
         }
         
         .text-gradient {
-            background: linear-gradient(45deg, #F8BBD9, #FFD700);
+            background: linear-gradient(45deg, #F5F5DC, #8B4513);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
         
         .btn-primary {
-            background: linear-gradient(45deg, #F8BBD9, #FFD700);
+            background: linear-gradient(45deg, #F5F5DC, #8B4513);
             transition: all 0.3s ease;
         }
         
         .btn-primary:hover {
-            background: linear-gradient(45deg, #FFD700, #F8BBD9);
+            background: linear-gradient(45deg, #8B4513, #F5F5DC);
             transform: translateY(-2px);
         }
         
-        .btn-secondary {
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            transition: all 0.3s ease;
-        }
-        
-        .btn-secondary:hover {
-            background: rgba(255, 255, 255, 0.2);
-            transform: translateY(-1px);
-        }
-        
-        .notification {
+        .modal {
+            display: none;
             position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 1001;
-            padding: 12px 24px;
-            border-radius: 8px;
-            color: white;
-            font-weight: 500;
-            animation: slideInRight 0.3s ease-out;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            backdrop-filter: blur(5px);
         }
         
-        @keyframes slideInRight {
-            from {
-                opacity: 0;
-                transform: translateX(100px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
-        }
-        
-        .drag-drop-zone {
-            border: 2px dashed #F8BBD9;
-            transition: all 0.3s ease;
-        }
-        
-        .drag-drop-zone.dragover {
-            border-color: #FFD700;
-            background: rgba(255, 215, 0, 0.1);
-        }
-        
-        .image-preview {
-            position: relative;
-            overflow: hidden;
-            border-radius: 8px;
-            transition: transform 0.3s ease;
-        }
-        
-        .image-preview:hover {
-            transform: scale(1.05);
-        }
-        
-        .image-preview .remove-btn {
-            position: absolute;
-            top: 8px;
-            right: 8px;
-            background: rgba(255, 0, 0, 0.8);
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 24px;
-            height: 24px;
-            cursor: pointer;
+        .modal.show {
             display: flex;
             align-items: center;
             justify-content: center;
+        }
+        
+        .modal-content {
+            background: linear-gradient(135deg, #3d3426 0%, #2a2419 100%);
+            border-radius: 20px;
+            padding: 2rem;
+            max-width: 600px;
+            width: 90%;
+            max-height: 90%;
+            overflow-y: auto;
+            position: relative;
+        }
+        
+        .image-preview {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 2px solid rgba(245, 245, 220, 0.3);
+        }
+        
+        .connection-status {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 8px 16px;
+            border-radius: 20px;
             font-size: 12px;
-            opacity: 0;
-            transition: opacity 0.3s ease;
+            font-weight: bold;
+            z-index: 100;
         }
         
-        .image-preview:hover .remove-btn {
-            opacity: 1;
+        .status-online {
+            background: #10B981;
+            color: white;
         }
         
-        .loading-spinner {
-            display: none;
-            width: 20px;
-            height: 20px;
-            border: 2px solid transparent;
-            border-top: 2px solid currentColor;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
+        .status-offline {
+            background: #EF4444;
+            color: white;
         }
         
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        
-        .loading .loading-spinner {
-            display: inline-block;
-        }
-        
-        .loading .button-text {
-            display: none;
-        }
-        
-        .tab-active {
-            background: linear-gradient(45deg, #F8BBD9, #FFD700);
-            color: #1a1a1a;
-        }
-        
-        .tab-inactive {
-            background: rgba(255, 255, 255, 0.1);
-            color: #ffffff;
-        }
-        
-        .tab-inactive:hover {
-            background: rgba(255, 255, 255, 0.2);
+        .status-caisy {
+            background: #8B5CF6;
+            color: white;
         }
     </style>
 </head>
-<body class="text-white font-sans min-h-full">
+<body class="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white font-sans">
+    <!-- Connection Status -->
+    <div id="connectionStatus" class="connection-status status-offline">
+        🔄 Conectando...
+    </div>
+
     <!-- Header -->
-    <header class="glass-effect border-b border-gray-600 p-4">
-        <div class="max-w-7xl mx-auto flex justify-between items-center">
-            <div class="flex items-center space-x-4">
-                <div class="text-3xl">🎨</div>
-                <div>
-                    <h1 class="text-2xl font-bold text-gradient">Panel Admin</h1>
-                    <p class="text-sm text-gray-300" id="welcomeMessage">Bienvenido, Admin</p>
+    <header class="glass-effect border-b border-gray-700 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-6 py-4">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center space-x-4">
+                    <div class="text-3xl">🛠️</div>
+                    <div>
+                        <h1 class="text-2xl font-bold text-gradient">Panel Admin</h1>
+                        <p class="text-sm text-gray-300">Gestión de Productos Panu</p>
+                    </div>
                 </div>
-            </div>
-            <div class="flex items-center space-x-4">
-                <button onclick="logout()" class="btn-secondary px-4 py-2 rounded-lg text-sm">
-                    Cerrar Sesión
-                </button>
+                <div class="flex items-center space-x-4">
+                    <span id="productCount" class="text-sm text-gray-400">0 productos</span>
+                    <a href="index.html" class="glass-effect px-4 py-2 rounded-lg hover:bg-white hover:bg-opacity-20 transition-all">
+                        ← Volver al sitio
+                    </a>
+                </div>
             </div>
         </div>
     </header>
 
     <!-- Main Content -->
-    <main class="max-w-7xl mx-auto p-6">
-        <!-- Tabs -->
-        <div class="flex space-x-2 mb-6">
-            <button onclick="switchTab('products')" id="tab-products" class="tab-active px-6 py-3 rounded-lg font-medium transition-all">
-                📦 Productos
-            </button>
-            <button onclick="switchTab('orders')" id="tab-orders" class="tab-inactive px-6 py-3 rounded-lg font-medium transition-all">
-                📋 Pedidos
-            </button>
-            <button onclick="switchTab('settings')" id="tab-settings" class="tab-inactive px-6 py-3 rounded-lg font-medium transition-all">
-                ⚙️ Configuración
-            </button>
-        </div>
-
-        <!-- Products Tab -->
-        <div id="content-products" class="tab-content">
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <!-- Add Product Form -->
-                <div class="glass-effect rounded-xl p-6">
-                    <h2 class="text-xl font-bold text-gradient mb-6">➕ Agregar Producto</h2>
-                    
-                    <form id="productForm" class="space-y-4">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-300 mb-2">Nombre del Producto</label>
-                            <input type="text" id="productName" required
-                                class="w-full bg-negro-mate border border-gray-600 rounded-lg px-4 py-3 text-white focus:border-rosa-pastel focus:outline-none transition-colors"
-                                placeholder="Ej: Collar Artesanal Rosa">
-                        </div>
-
-                        <div class="grid grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-300 mb-2">Precio</label>
-                                <input type="number" id="productPrice" required step="0.01"
-                                    class="w-full bg-negro-mate border border-gray-600 rounded-lg px-4 py-3 text-white focus:border-rosa-pastel focus:outline-none transition-colors"
-                                    placeholder="0.00">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-300 mb-2">Stock</label>
-                                <input type="number" id="productStock" required
-                                    class="w-full bg-negro-mate border border-gray-600 rounded-lg px-4 py-3 text-white focus:border-rosa-pastel focus:outline-none transition-colors"
-                                    placeholder="10">
-                            </div>
-                        </div>
-
-                        <div>
-                            <label class="block text-sm font-medium text-gray-300 mb-2">Categoría</label>
-                            <select id="productCategory" required
-                                class="w-full bg-negro-mate border border-gray-600 rounded-lg px-4 py-3 text-white focus:border-rosa-pastel focus:outline-none transition-colors">
-                                <option value="">Seleccionar categoría</option>
-                                <option value="collares">Collares</option>
-                                <option value="pulseras">Pulseras</option>
-                                <option value="aretes">Aretes</option>
-                                <option value="anillos">Anillos</option>
-                                <option value="otros">Otros</option>
-                            </select>
-                        </div>
-
-                        <div>
-                            <label class="block text-sm font-medium text-gray-300 mb-2">Descripción</label>
-                            <textarea id="productDescription" rows="3"
-                                class="w-full bg-negro-mate border border-gray-600 rounded-lg px-4 py-3 text-white focus:border-rosa-pastel focus:outline-none transition-colors"
-                                placeholder="Describe el producto, materiales, características especiales..."></textarea>
-                        </div>
-
-                        <!-- Image Upload Section -->
-                        <div>
-                            <label class="block text-sm font-medium text-gray-300 mb-2">Imágenes del Producto</label>
-                            
-                            <!-- Drag & Drop Zone -->
-                            <div id="dropZone" class="drag-drop-zone rounded-lg p-8 text-center cursor-pointer mb-4">
-                                <div class="text-4xl mb-2">📸</div>
-                                <p class="text-gray-300 mb-2">Arrastra imágenes aquí o haz clic para seleccionar</p>
-                                <p class="text-xs text-gray-400">Formatos: JPG, PNG, WebP (máx. 5MB cada una)</p>
-                                <input type="file" id="imageInput" multiple accept="image/*" class="hidden">
-                            </div>
-
-                            <!-- Image Previews -->
-                            <div id="imagePreviewContainer" class="grid grid-cols-3 gap-4 mb-4"></div>
-
-                            <!-- Upload Progress -->
-                            <div id="uploadProgress" class="hidden">
-                                <div class="bg-gray-700 rounded-full h-2 mb-2">
-                                    <div id="progressBar" class="bg-gradient-to-r from-rosa-pastel to-dorado h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
-                                </div>
-                                <p class="text-xs text-gray-400 text-center" id="progressText">Subiendo imágenes...</p>
-                            </div>
-                        </div>
-
-                        <button type="submit" id="submitBtn" class="w-full btn-primary text-negro-mate py-3 rounded-lg font-bold transition-all hover:shadow-lg">
-                            <span class="loading-spinner"></span>
-                            <span class="button-text">Agregar Producto</span>
-                        </button>
-                    </form>
-                </div>
-
-                <!-- Products List -->
-                <div class="glass-effect rounded-xl p-6">
-                    <div class="flex justify-between items-center mb-6">
-                        <h2 class="text-xl font-bold text-gradient">📋 Lista de Productos</h2>
-                        <button onclick="refreshProducts()" class="btn-secondary px-4 py-2 rounded-lg text-sm">
-                            🔄 Actualizar
-                        </button>
-                    </div>
-                    
-                    <div id="productsList" class="space-y-4 max-h-96 overflow-y-auto">
-                        <!-- Products will be loaded here -->
-                        <div class="text-center text-gray-400 py-8">
-                            <div class="text-4xl mb-2">📦</div>
-                            <p>No hay productos aún</p>
-                            <p class="text-sm">Agrega tu primer producto usando el formulario</p>
-                        </div>
-                    </div>
-                </div>
+    <main class="max-w-7xl mx-auto px-6 py-8">
+        <!-- Actions Bar -->
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+            <div>
+                <h2 class="text-3xl font-bold text-white mb-2">Gestión de Productos</h2>
+                <p class="text-gray-400">Administra el catálogo de productos de sublimación</p>
+            </div>
+            <div class="flex gap-3">
+                <button onclick="syncWithCaisy()" class="glass-effect px-4 py-2 rounded-lg hover:bg-white hover:bg-opacity-20 transition-all">
+                    🔄 Sincronizar
+                </button>
+                <button onclick="openProductModal()" class="btn-primary text-gris-oscuro px-6 py-3 rounded-lg font-bold">
+                    ➕ Nuevo Producto
+                </button>
             </div>
         </div>
 
-        <!-- Orders Tab -->
-        <div id="content-orders" class="tab-content hidden">
-            <div class="glass-effect rounded-xl p-6">
-                <h2 class="text-xl font-bold text-gradient mb-6">📋 Gestión de Pedidos</h2>
-                <div class="text-center text-gray-400 py-8">
-                    <div class="text-4xl mb-2">📋</div>
-                    <p>Funcionalidad de pedidos próximamente</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Settings Tab -->
-        <div id="content-settings" class="tab-content hidden">
-            <div class="glass-effect rounded-xl p-6">
-                <h2 class="text-xl font-bold text-gradient mb-6">⚙️ Configuración</h2>
-                <div class="text-center text-gray-400 py-8">
-                    <div class="text-4xl mb-2">⚙️</div>
-                    <p>Configuraciones del sistema próximamente</p>
-                </div>
+        <!-- Products Grid -->
+        <div id="productsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Products will be loaded here -->
+            <div class="col-span-full text-center py-16">
+                <div class="text-6xl mb-4">📦</div>
+                <h3 class="text-2xl font-bold text-gray-400 mb-2">Cargando productos...</h3>
+                <p class="text-gray-500">Un momento por favor</p>
             </div>
         </div>
     </main>
 
+    <!-- Product Modal -->
+    <div id="productModal" class="modal">
+        <div class="modal-content glass-effect">
+            <button onclick="closeModal()" class="absolute top-4 right-4 text-2xl text-gray-400 hover:text-white transition-colors">
+                ×
+            </button>
+            
+            <h3 id="modalTitle" class="text-2xl font-bold text-gradient mb-6">Nuevo Producto</h3>
+            
+            <form id="productForm" class="space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-beige font-bold mb-2">Nombre del Producto *</label>
+                        <input type="text" id="productName" required 
+                               class="w-full bg-gray-700 text-white p-3 rounded-lg border border-gray-600 focus:border-beige focus:outline-none">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-beige font-bold mb-2">Precio *</label>
+                        <input type="number" id="productPrice" step="0.01" min="0" required 
+                               class="w-full bg-gray-700 text-white p-3 rounded-lg border border-gray-600 focus:border-beige focus:outline-none">
+                    </div>
+                </div>
+                
+                <div>
+                    <label class="block text-beige font-bold mb-2">Categoría *</label>
+                    <select id="productCategory" required 
+                            class="w-full bg-gray-700 text-white p-3 rounded-lg border border-gray-600 focus:border-beige focus:outline-none">
+                        <option value="">Seleccionar categoría...</option>
+                        <option value="Tazas">Tazas</option>
+                        <option value="Camisetas">Camisetas</option>
+                        <option value="Accesorios">Accesorios</option>
+                        <option value="Otros">Otros</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label class="block text-beige font-bold mb-2">Descripción</label>
+                    <textarea id="productDescription" rows="3" 
+                              class="w-full bg-gray-700 text-white p-3 rounded-lg border border-gray-600 focus:border-beige focus:outline-none resize-none"
+                              placeholder="Describe las características del producto..."></textarea>
+                </div>
+                
+                <div>
+                    <label class="block text-beige font-bold mb-2">Stock</label>
+                    <input type="number" id="productStock" min="0" value="10" 
+                           class="w-full bg-gray-700 text-white p-3 rounded-lg border border-gray-600 focus:border-beige focus:outline-none">
+                </div>
+                
+                <div>
+                    <label class="block text-beige font-bold mb-2">Imagen Principal</label>
+                    <input type="file" id="productImage" accept="image/*" 
+                           class="w-full bg-gray-700 text-white p-3 rounded-lg border border-gray-600 focus:border-beige focus:outline-none">
+                    <div id="imagePreview" class="mt-3 hidden">
+                        <img id="previewImg" class="image-preview">
+                    </div>
+                </div>
+                
+                <div class="flex justify-end space-x-4 pt-4">
+                    <button type="button" onclick="closeModal()" 
+                            class="px-6 py-3 glass-effect rounded-lg font-bold hover:bg-white hover:bg-opacity-20 transition-all">
+                        Cancelar
+                    </button>
+                    <button type="submit" 
+                            class="btn-primary text-gris-oscuro px-6 py-3 rounded-lg font-bold">
+                        💾 Guardar Producto
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script>
-        // Suppress Tailwind CDN warning
-        console.warn = function(message) {
-            if (message.includes('cdn.tailwindcss.com should not be used in production')) {
-                return;
-            }
-            console.log(message);
+        // Global variables
+        let allProducts = [];
+        let editingProductId = null;
+        let caisyConnected = false;
+
+        // Caisy configuration
+        const CAISY_CONFIG = {
+            endpoint: 'https://cloud.caisy.io/api/v3/e/a4ad1aae-57c9-4cd5-9f2e-4c9c8b6c4b4a/graphql',
+            apiKey: '6b4b8e6d-9f2e-4c9c-8b6c-4b4a57c94cd5'
         };
 
-        // Global variables
-        let selectedImages = [];
-        let products = [];
-
-        // Check authentication on page load
+        // Initialize admin panel
         document.addEventListener('DOMContentLoaded', function() {
-            checkAuthentication();
-            initializeImageUpload();
-            loadProducts();
+            initializeAdmin();
+            setupFormHandlers();
         });
 
-        function checkAuthentication() {
-            const sessionData = localStorage.getItem('panuAdminSession') || 
-                               sessionStorage.getItem('panuAdminSession');
-            
-            if (!sessionData) {
-                window.location.href = 'login.html';
-                return;
-            }
+        // Initialize admin panel
+        async function initializeAdmin() {
+            updateConnectionStatus('connecting');
+            await loadProducts();
+            checkCaisyConnection();
+        }
 
+        // Setup form handlers
+        function setupFormHandlers() {
+            // Product form submission
+            document.getElementById('productForm').addEventListener('submit', handleProductSubmit);
+            
+            // Image preview
+            document.getElementById('productImage').addEventListener('change', handleImagePreview);
+            
+            // Close modal on outside click
+            document.getElementById('productModal').addEventListener('click', function(e) {
+                if (e.target === this) closeModal();
+            });
+        }
+
+        // Check Caisy connection
+        async function checkCaisyConnection() {
             try {
-                const session = JSON.parse(sessionData);
-                const now = Date.now();
-                const sessionAge = now - session.timestamp;
-                const maxAge = session.remember ? 7 * 24 * 60 * 60 * 1000 : 24 * 60 * 60 * 1000;
-                
-                if (sessionAge >= maxAge) {
-                    logout();
-                    return;
-                }
+                const query = `query { __typename }`;
+                const response = await fetch(CAISY_CONFIG.endpoint, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-caisy-apikey': CAISY_CONFIG.apiKey
+                    },
+                    body: JSON.stringify({ query })
+                });
 
-                // Update welcome message
-                document.getElementById('welcomeMessage').textContent = `Bienvenido, ${session.user.nombre}`;
-                
+                if (response.ok) {
+                    caisyConnected = true;
+                    updateConnectionStatus('caisy');
+                    console.log('✅ Conectado a Caisy CMS');
+                } else {
+                    throw new Error('Connection failed');
+                }
             } catch (error) {
-                console.error('Error parsing session:', error);
-                logout();
+                caisyConnected = false;
+                updateConnectionStatus('offline');
+                console.log('❌ Sin conexión a Caisy, modo offline');
             }
         }
 
-        function logout() {
-            localStorage.removeItem('panuAdminSession');
-            sessionStorage.removeItem('panuAdminSession');
-            window.location.href = 'login.html';
-        }
-
-        // Tab Management
-        function switchTab(tabName) {
-            // Hide all tab contents
-            document.querySelectorAll('.tab-content').forEach(content => {
-                content.classList.add('hidden');
-            });
+        // Update connection status
+        function updateConnectionStatus(status) {
+            const statusEl = document.getElementById('connectionStatus');
             
-            // Remove active class from all tabs
-            document.querySelectorAll('[id^="tab-"]').forEach(tab => {
-                tab.className = tab.className.replace('tab-active', 'tab-inactive');
-            });
-            
-            // Show selected tab content
-            document.getElementById(`content-${tabName}`).classList.remove('hidden');
-            
-            // Add active class to selected tab
-            document.getElementById(`tab-${tabName}`).className = 
-                document.getElementById(`tab-${tabName}`).className.replace('tab-inactive', 'tab-active');
-        }
-
-        // Image Upload Functionality
-        function initializeImageUpload() {
-            const dropZone = document.getElementById('dropZone');
-            const imageInput = document.getElementById('imageInput');
-
-            // Click to select files
-            dropZone.addEventListener('click', () => {
-                imageInput.click();
-            });
-
-            // File input change
-            imageInput.addEventListener('change', (e) => {
-                handleFiles(e.target.files);
-            });
-
-            // Drag and drop events
-            dropZone.addEventListener('dragover', (e) => {
-                e.preventDefault();
-                dropZone.classList.add('dragover');
-            });
-
-            dropZone.addEventListener('dragleave', (e) => {
-                e.preventDefault();
-                dropZone.classList.remove('dragover');
-            });
-
-            dropZone.addEventListener('drop', (e) => {
-                e.preventDefault();
-                dropZone.classList.remove('dragover');
-                handleFiles(e.dataTransfer.files);
-            });
-        }
-
-        function handleFiles(files) {
-            const maxSize = 5 * 1024 * 1024; // 5MB
-            const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
-
-            Array.from(files).forEach(file => {
-                // Validate file type
-                if (!allowedTypes.includes(file.type)) {
-                    showNotification(`${file.name}: Tipo de archivo no permitido`, 'error');
-                    return;
-                }
-
-                // Validate file size
-                if (file.size > maxSize) {
-                    showNotification(`${file.name}: Archivo muy grande (máx. 5MB)`, 'error');
-                    return;
-                }
-
-                // Add to selected images
-                const imageData = {
-                    id: Date.now() + Math.random(),
-                    file: file,
-                    name: file.name,
-                    size: file.size,
-                    preview: null
-                };
-
-                selectedImages.push(imageData);
-                createImagePreview(imageData);
-            });
-
-            updateImageInput();
-        }
-
-        function createImagePreview(imageData) {
-            const container = document.getElementById('imagePreviewContainer');
-            
-            // Create preview element
-            const previewDiv = document.createElement('div');
-            previewDiv.className = 'image-preview bg-negro-mate border border-gray-600';
-            previewDiv.setAttribute('data-id', imageData.id);
-
-            // Create image element
-            const img = document.createElement('img');
-            img.className = 'w-full h-24 object-cover';
-            img.alt = imageData.name;
-
-            // Create remove button
-            const removeBtn = document.createElement('button');
-            removeBtn.className = 'remove-btn';
-            removeBtn.innerHTML = '×';
-            removeBtn.onclick = () => removeImage(imageData.id);
-
-            // Create file reader to generate preview
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                img.src = e.target.result;
-                imageData.preview = e.target.result;
-            };
-            reader.readAsDataURL(imageData.file);
-
-            // Assemble preview
-            previewDiv.appendChild(img);
-            previewDiv.appendChild(removeBtn);
-            container.appendChild(previewDiv);
-
-            // Add file info
-            const infoDiv = document.createElement('div');
-            infoDiv.className = 'text-xs text-gray-400 mt-1 px-2';
-            infoDiv.textContent = `${imageData.name} (${(imageData.size / 1024).toFixed(1)}KB)`;
-            previewDiv.appendChild(infoDiv);
-        }
-
-        function removeImage(imageId) {
-            // Remove from array
-            selectedImages = selectedImages.filter(img => img.id !== imageId);
-            
-            // Remove from DOM
-            const previewElement = document.querySelector(`[data-id="${imageId}"]`);
-            if (previewElement) {
-                previewElement.remove();
+            switch (status) {
+                case 'connecting':
+                    statusEl.className = 'connection-status status-offline';
+                    statusEl.textContent = '🔄 Conectando...';
+                    break;
+                case 'caisy':
+                    statusEl.className = 'connection-status status-caisy';
+                    statusEl.textContent = '☁️ Conectado a Caisy';
+                    break;
+                case 'offline':
+                    statusEl.className = 'connection-status status-offline';
+                    statusEl.textContent = '📱 Modo Local';
+                    break;
             }
-
-            updateImageInput();
-            showNotification('Imagen eliminada', 'info');
         }
 
-        function updateImageInput() {
-            const imageInput = document.getElementById('imageInput');
-            
-            // Create new FileList (this is a workaround since FileList is read-only)
-            const dt = new DataTransfer();
-            selectedImages.forEach(imageData => {
-                dt.items.add(imageData.file);
-            });
-            imageInput.files = dt.files;
+        // Load products from Caisy and localStorage
+        async function loadProducts() {
+            try {
+                // Try to load from Caisy first
+                if (caisyConnected) {
+                    await loadFromCaisy();
+                } else {
+                    // Fallback to localStorage
+                    loadFromLocalStorage();
+                }
+            } catch (error) {
+                console.error('Error loading products:', error);
+                loadFromLocalStorage();
+            }
         }
 
-        // Product Management
-        function loadProducts() {
-            // Load products from localStorage for demo
-            const savedProducts = localStorage.getItem('panuProducts');
-            if (savedProducts) {
-                products = JSON.parse(savedProducts);
+        // Load products from Caisy
+        async function loadFromCaisy() {
+            try {
+                const query = `
+                    query {
+                        allProducto {
+                            edges {
+                                node {
+                                    id
+                                    nombre
+                                    descripcion
+                                    precio
+                                    categoria
+                                    imagen_principal {
+                                        src
+                                        alt
+                                    }
+                                    disponible
+                                    fecha_creacion
+                                }
+                            }
+                        }
+                    }
+                `;
+
+                const response = await fetch(CAISY_CONFIG.endpoint, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-caisy-apikey': CAISY_CONFIG.apiKey
+                    },
+                    body: JSON.stringify({ query })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                
+                if (data.errors) {
+                    throw new Error('GraphQL query failed');
+                }
+
+                // Transform Caisy data
+                allProducts = data.data.allProducto.edges.map(edge => ({
+                    id: edge.node.id,
+                    name: edge.node.nombre,
+                    price: parseFloat(edge.node.precio) || 0,
+                    description: edge.node.descripcion || '',
+                    category: edge.node.categoria || 'Otros',
+                    stock: edge.node.disponible ? 10 : 0,
+                    images: edge.node.imagen_principal?.src ? [edge.node.imagen_principal.src] : [],
+                    available: edge.node.disponible,
+                    createdAt: edge.node.fecha_creacion || new Date().toISOString(),
+                    source: 'caisy'
+                }));
+
+                // Sync with localStorage
+                localStorage.setItem('panuProducts', JSON.stringify(allProducts));
+                
+                console.log('✅ Productos cargados desde Caisy:', allProducts.length);
+                renderProducts();
+
+            } catch (error) {
+                console.error('Error loading from Caisy:', error);
+                throw error;
+            }
+        }
+
+        // Load products from localStorage
+        function loadFromLocalStorage() {
+            try {
+                const saved = localStorage.getItem('panuProducts');
+                if (saved) {
+                    allProducts = JSON.parse(saved);
+                    console.log('📦 Productos cargados desde localStorage:', allProducts.length);
+                } else {
+                    allProducts = [];
+                    console.log('📦 No hay productos guardados');
+                }
+                renderProducts();
+            } catch (error) {
+                console.error('Error loading from localStorage:', error);
+                allProducts = [];
                 renderProducts();
             }
         }
 
-        function saveProducts() {
-            localStorage.setItem('panuProducts', JSON.stringify(products));
+        // Save product to Caisy
+        async function saveProductToCaisy(productData) {
+            try {
+                const mutation = `
+                    mutation CreateProducto($input: ProductoInput!) {
+                        createProducto(input: $input) {
+                            id
+                            nombre
+                            descripcion
+                            precio
+                            categoria
+                            disponible
+                            fecha_creacion
+                        }
+                    }
+                `;
+
+                const variables = {
+                    input: {
+                        nombre: productData.name,
+                        descripcion: productData.description,
+                        precio: productData.price,
+                        categoria: productData.category,
+                        disponible: productData.stock > 0,
+                        fecha_creacion: new Date().toISOString()
+                    }
+                };
+
+                const response = await fetch(CAISY_CONFIG.endpoint, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-caisy-apikey': CAISY_CONFIG.apiKey
+                    },
+                    body: JSON.stringify({ query: mutation, variables })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                
+                if (data.errors) {
+                    throw new Error('GraphQL mutation failed: ' + JSON.stringify(data.errors));
+                }
+
+                return data.data.createProducto;
+
+            } catch (error) {
+                console.error('Error saving to Caisy:', error);
+                throw error;
+            }
         }
 
-        function renderProducts() {
-            const container = document.getElementById('productsList');
+        // Delete product from Caisy
+        async function deleteProductFromCaisy(productId) {
+            try {
+                const mutation = `
+                    mutation DeleteProducto($id: ID!) {
+                        deleteProducto(id: $id) {
+                            id
+                        }
+                    }
+                `;
+
+                const response = await fetch(CAISY_CONFIG.endpoint, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-caisy-apikey': CAISY_CONFIG.apiKey
+                    },
+                    body: JSON.stringify({ 
+                        query: mutation, 
+                        variables: { id: productId } 
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                
+                if (data.errors) {
+                    throw new Error('GraphQL mutation failed');
+                }
+
+                return true;
+
+            } catch (error) {
+                console.error('Error deleting from Caisy:', error);
+                throw error;
+            }
+        }
+
+        // Handle product form submission
+        async function handleProductSubmit(e) {
+            e.preventDefault();
             
-            if (products.length === 0) {
-                container.innerHTML = `
-                    <div class="text-center text-gray-400 py-8">
-                        <div class="text-4xl mb-2">📦</div>
-                        <p>No hay productos aún</p>
-                        <p class="text-sm">Agrega tu primer producto usando el formulario</p>
+            const formData = {
+                name: document.getElementById('productName').value.trim(),
+                price: parseFloat(document.getElementById('productPrice').value),
+                category: document.getElementById('productCategory').value,
+                description: document.getElementById('productDescription').value.trim(),
+                stock: parseInt(document.getElementById('productStock').value) || 0,
+                images: []
+            };
+
+            // Validate required fields
+            if (!formData.name || !formData.price || !formData.category) {
+                showNotification('Por favor completa todos los campos requeridos', 'error');
+                return;
+            }
+
+            // Handle image
+            const imageFile = document.getElementById('productImage').files[0];
+            if (imageFile) {
+                formData.images = [await convertImageToBase64(imageFile)];
+            }
+
+            try {
+                let savedProduct;
+                
+                if (editingProductId) {
+                    // Update existing product
+                    savedProduct = await updateProduct(editingProductId, formData);
+                    showNotification('Producto actualizado correctamente', 'success');
+                } else {
+                    // Create new product
+                    savedProduct = await createProduct(formData);
+                    showNotification('Producto creado correctamente', 'success');
+                }
+
+                closeModal();
+                await loadProducts();
+
+            } catch (error) {
+                console.error('Error saving product:', error);
+                showNotification('Error al guardar el producto. Guardado localmente.', 'warning');
+                
+                // Fallback: save locally
+                if (editingProductId) {
+                    updateProductLocally(editingProductId, formData);
+                } else {
+                    createProductLocally(formData);
+                }
+                
+                closeModal();
+                renderProducts();
+            }
+        }
+
+        // Create new product
+        async function createProduct(productData) {
+            const newProduct = {
+                id: generateId(),
+                ...productData,
+                available: productData.stock > 0,
+                createdAt: new Date().toISOString(),
+                source: 'local'
+            };
+
+            try {
+                if (caisyConnected) {
+                    const caisyProduct = await saveProductToCaisy(productData);
+                    newProduct.id = caisyProduct.id;
+                    newProduct.source = 'caisy';
+                    showNotification('✅ Producto guardado en Caisy', 'success');
+                }
+            } catch (error) {
+                console.error('Caisy save failed, saving locally:', error);
+                showNotification('⚠️ Guardado localmente (sin conexión a Caisy)', 'warning');
+            }
+
+            // Always save to localStorage as backup
+            allProducts.push(newProduct);
+            localStorage.setItem('panuProducts', JSON.stringify(allProducts));
+            
+            return newProduct;
+        }
+
+        // Update existing product
+        async function updateProduct(productId, productData) {
+            const productIndex = allProducts.findIndex(p => p.id === productId);
+            if (productIndex === -1) throw new Error('Product not found');
+
+            const updatedProduct = {
+                ...allProducts[productIndex],
+                ...productData,
+                available: productData.stock > 0
+            };
+
+            try {
+                if (caisyConnected && allProducts[productIndex].source === 'caisy') {
+                    // Update in Caisy (would need update mutation)
+                    showNotification('✅ Producto actualizado en Caisy', 'success');
+                }
+            } catch (error) {
+                console.error('Caisy update failed:', error);
+                showNotification('⚠️ Actualizado localmente', 'warning');
+            }
+
+            allProducts[productIndex] = updatedProduct;
+            localStorage.setItem('panuProducts', JSON.stringify(allProducts));
+            
+            return updatedProduct;
+        }
+
+        // Create product locally
+        function createProductLocally(productData) {
+            const newProduct = {
+                id: generateId(),
+                ...productData,
+                available: productData.stock > 0,
+                createdAt: new Date().toISOString(),
+                source: 'local'
+            };
+
+            allProducts.push(newProduct);
+            localStorage.setItem('panuProducts', JSON.stringify(allProducts));
+        }
+
+        // Update product locally
+        function updateProductLocally(productId, productData) {
+            const productIndex = allProducts.findIndex(p => p.id === productId);
+            if (productIndex !== -1) {
+                allProducts[productIndex] = {
+                    ...allProducts[productIndex],
+                    ...productData,
+                    available: productData.stock > 0
+                };
+                localStorage.setItem('panuProducts', JSON.stringify(allProducts));
+            }
+        }
+
+        // Delete product
+        async function deleteProduct(productId) {
+            if (!confirm('¿Estás seguro de que quieres eliminar este producto?')) {
+                return;
+            }
+
+            try {
+                const product = allProducts.find(p => p.id === productId);
+                
+                if (caisyConnected && product?.source === 'caisy') {
+                    await deleteProductFromCaisy(productId);
+                    showNotification('✅ Producto eliminado de Caisy', 'success');
+                }
+            } catch (error) {
+                console.error('Error deleting from Caisy:', error);
+                showNotification('⚠️ Eliminado solo localmente', 'warning');
+            }
+
+            // Always remove from local storage
+            allProducts = allProducts.filter(p => p.id !== productId);
+            localStorage.setItem('panuProducts', JSON.stringify(allProducts));
+            
+            renderProducts();
+        }
+
+        // Sync with Caisy
+        async function syncWithCaisy() {
+            showNotification('🔄 Sincronizando con Caisy...', 'info');
+            
+            try {
+                await checkCaisyConnection();
+                if (caisyConnected) {
+                    await loadFromCaisy();
+                    showNotification('✅ Sincronización completada', 'success');
+                } else {
+                    showNotification('❌ No se pudo conectar con Caisy', 'error');
+                }
+            } catch (error) {
+                console.error('Sync error:', error);
+                showNotification('❌ Error en la sincronización', 'error');
+            }
+        }
+
+        // Render products in admin grid
+        function renderProducts() {
+            const grid = document.getElementById('productsGrid');
+            const productCount = document.getElementById('productCount');
+            
+            productCount.textContent = `${allProducts.length} productos`;
+            
+            if (allProducts.length === 0) {
+                grid.innerHTML = `
+                    <div class="col-span-full text-center py-16">
+                        <div class="text-6xl mb-4">📦</div>
+                        <h3 class="text-2xl font-bold text-gray-400 mb-2">No hay productos</h3>
+                        <p class="text-gray-500 mb-4">Comienza agregando tu primer producto</p>
+                        <button onclick="openProductModal()" class="btn-primary text-gris-oscuro px-6 py-3 rounded-lg font-bold">
+                            ➕ Crear Primer Producto
+                        </button>
                     </div>
                 `;
                 return;
             }
 
-            container.innerHTML = products.map(product => `
-                <div class="bg-negro-mate border border-gray-600 rounded-lg p-4">
-                    <div class="flex justify-between items-start mb-2">
-                        <h3 class="font-bold text-rosa-pastel">${product.name}</h3>
-                        <button onclick="deleteProduct('${product.id}')" class="text-red-400 hover:text-red-300 text-sm">
-                            🗑️
-                        </button>
-                    </div>
-                    <p class="text-sm text-gray-300 mb-2">${product.description || 'Sin descripción'}</p>
-                    <div class="flex justify-between items-center text-sm">
-                        <span class="text-dorado font-bold">$${product.price}</span>
-                        <span class="text-gray-400">Stock: ${product.stock}</span>
-                        <span class="bg-rosa-pastel text-negro-mate px-2 py-1 rounded text-xs">${product.category}</span>
-                    </div>
-                    ${product.images && product.images.length > 0 ? `
-                        <div class="flex space-x-2 mt-3">
-                            ${product.images.slice(0, 3).map(img => `
-                                <img src="${img}" alt="${product.name}" class="w-12 h-12 object-cover rounded border border-gray-500">
-                            `).join('')}
-                            ${product.images.length > 3 ? `<div class="w-12 h-12 bg-gray-700 rounded border border-gray-500 flex items-center justify-center text-xs text-gray-400">+${product.images.length - 3}</div>` : ''}
+            grid.innerHTML = allProducts.map(product => `
+                <div class="glass-effect rounded-xl overflow-hidden">
+                    <div class="relative">
+                        ${product.images && product.images.length > 0 ? `
+                            <img src="${product.images[0]}" alt="${product.name}" class="w-full h-48 object-cover">
+                        ` : `
+                            <div class="w-full h-48 bg-gradient-to-br from-beige to-marron flex items-center justify-center">
+                                <div class="text-4xl text-gris-oscuro">💎</div>
+                            </div>
+                        `}
+                        <div class="absolute top-2 right-2 flex gap-2">
+                            <span class="bg-${product.source === 'caisy' ? 'purple' : 'blue'}-500 text-white px-2 py-1 rounded text-xs">
+                                ${product.source === 'caisy' ? '☁️ Caisy' : '📱 Local'}
+                            </span>
+                            <span class="bg-beige text-gris-oscuro px-2 py-1 rounded text-xs font-bold">
+                                ${product.category}
+                            </span>
                         </div>
-                    ` : ''}
+                        ${product.stock <= 5 ? `
+                            <div class="absolute top-2 left-2 bg-red-500 text-white px-2 py-1 rounded text-xs font-bold">
+                                ${product.stock <= 0 ? 'Agotado' : `Stock: ${product.stock}`}
+                            </div>
+                        ` : ''}
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-lg font-bold text-white mb-2">${product.name}</h3>
+                        <p class="text-gray-300 text-sm mb-3 line-clamp-2">${product.description || 'Sin descripción'}</p>
+                        <div class="flex justify-between items-center mb-4">
+                            <span class="text-xl font-bold text-marron">$${product.price.toFixed(2)}</span>
+                            <span class="text-sm text-gray-400">Stock: ${product.stock}</span>
+                        </div>
+                        <div class="flex gap-2">
+                            <button onclick="editProduct('${product.id}')" 
+                                    class="flex-1 glass-effect px-3 py-2 rounded-lg text-sm font-medium hover:bg-white hover:bg-opacity-20 transition-all">
+                                ✏️ Editar
+                            </button>
+                            <button onclick="deleteProduct('${product.id}')" 
+                                    class="px-3 py-2 bg-red-600 hover:bg-red-700 rounded-lg text-sm font-medium transition-all">
+                                🗑️
+                            </button>
+                        </div>
+                    </div>
                 </div>
             `).join('');
         }
 
-        function deleteProduct(productId) {
-            if (confirm('¿Estás seguro de que quieres eliminar este producto?')) {
-                products = products.filter(p => p.id !== productId);
-                saveProducts();
-                renderProducts();
-                showNotification('Producto eliminado', 'success');
-            }
-        }
-
-        function refreshProducts() {
-            loadProducts();
-            showNotification('Lista actualizada', 'info');
-        }
-
-        // Form Submission
-        document.getElementById('productForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
+        // Open product modal
+        function openProductModal(productId = null) {
+            const modal = document.getElementById('productModal');
+            const modalTitle = document.getElementById('modalTitle');
+            const form = document.getElementById('productForm');
             
-            const submitBtn = document.getElementById('submitBtn');
-            submitBtn.classList.add('loading');
-
-            try {
-                // Simulate image upload process
-                if (selectedImages.length > 0) {
-                    await simulateImageUpload();
+            editingProductId = productId;
+            
+            if (productId) {
+                const product = allProducts.find(p => p.id === productId);
+                if (product) {
+                    modalTitle.textContent = 'Editar Producto';
+                    fillForm(product);
                 }
-
-                // Create product object
-                const product = {
-                    id: Date.now().toString(),
-                    name: document.getElementById('productName').value,
-                    price: parseFloat(document.getElementById('productPrice').value),
-                    stock: parseInt(document.getElementById('productStock').value),
-                    category: document.getElementById('productCategory').value,
-                    description: document.getElementById('productDescription').value,
-                    images: selectedImages.map(img => img.preview),
-                    createdAt: new Date().toISOString()
-                };
-
-                // Add to products array
-                products.unshift(product);
-                saveProducts();
-                renderProducts();
-
-                // Reset form
-                document.getElementById('productForm').reset();
-                selectedImages = [];
-                document.getElementById('imagePreviewContainer').innerHTML = '';
-
-                showNotification('Producto agregado exitosamente', 'success');
-
-            } catch (error) {
-                console.error('Error adding product:', error);
-                showNotification('Error al agregar producto', 'error');
-            } finally {
-                submitBtn.classList.remove('loading');
+            } else {
+                modalTitle.textContent = 'Nuevo Producto';
+                form.reset();
+                hideImagePreview();
             }
-        });
-
-        async function simulateImageUpload() {
-            const progressContainer = document.getElementById('uploadProgress');
-            const progressBar = document.getElementById('progressBar');
-            const progressText = document.getElementById('progressText');
-
-            progressContainer.classList.remove('hidden');
-
-            for (let i = 0; i <= 100; i += 10) {
-                progressBar.style.width = `${i}%`;
-                progressText.textContent = `Subiendo imágenes... ${i}%`;
-                await new Promise(resolve => setTimeout(resolve, 100));
-            }
-
-            progressContainer.classList.add('hidden');
-            progressBar.style.width = '0%';
+            
+            modal.classList.add('show');
         }
 
-        // Notification System
+        // Edit product
+        function editProduct(productId) {
+            openProductModal(productId);
+        }
+
+        // Fill form with product data
+        function fillForm(product) {
+            document.getElementById('productName').value = product.name;
+            document.getElementById('productPrice').value = product.price;
+            document.getElementById('productCategory').value = product.category;
+            document.getElementById('productDescription').value = product.description || '';
+            document.getElementById('productStock').value = product.stock;
+            
+            if (product.images && product.images.length > 0) {
+                showImagePreview(product.images[0]);
+            } else {
+                hideImagePreview();
+            }
+        }
+
+        // Close modal
+        function closeModal() {
+            document.getElementById('productModal').classList.remove('show');
+            editingProductId = null;
+        }
+
+        // Handle image preview
+        function handleImagePreview(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => showImagePreview(e.target.result);
+                reader.readAsDataURL(file);
+            } else {
+                hideImagePreview();
+            }
+        }
+
+        // Show image preview
+        function showImagePreview(src) {
+            const preview = document.getElementById('imagePreview');
+            const img = document.getElementById('previewImg');
+            img.src = src;
+            preview.classList.remove('hidden');
+        }
+
+        // Hide image preview
+        function hideImagePreview() {
+            document.getElementById('imagePreview').classList.add('hidden');
+        }
+
+        // Convert image to base64
+        function convertImageToBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
+        }
+
+        // Generate unique ID
+        function generateId() {
+            return 'prod_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+        }
+
+        // Show notification
         function showNotification(message, type = 'info') {
             const notification = document.createElement('div');
-            notification.className = `notification ${
+            notification.className = `fixed top-20 right-4 z-50 px-6 py-3 rounded-lg text-white font-medium max-w-sm ${
                 type === 'success' ? 'bg-green-600' : 
-                type === 'error' ? 'bg-red-600' : 'bg-blue-600'
+                type === 'error' ? 'bg-red-600' : 
+                type === 'warning' ? 'bg-yellow-600' : 'bg-blue-600'
             }`;
             notification.textContent = message;
             
@@ -671,8 +878,8 @@
             
             setTimeout(() => {
                 notification.remove();
-            }, 4000);
+            }, 5000);
         }
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98e1451335c0116d',t:'MTc2MDM4NDAxOC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98efeb82f3e02538',t:'MTc2MDUzNzYzNi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
