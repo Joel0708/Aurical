@@ -603,9 +603,9 @@
                 }
 
                 if (!successfulQuery || productos.length === 0) {
-                    console.log('⚠️ No se pudieron cargar productos desde Caisy');
-                    showNotification('⚠️ No se encontraron productos en Caisy', 'warning');
-                    loadFromLocalStorage();
+                    console.log('⚠️ No se pudieron cargar productos desde Caisy, creando productos de demostración');
+                    showNotification('⚠️ Creando productos de demostración', 'warning');
+                    createDemoProducts();
                     return;
                 }
 
@@ -634,28 +634,113 @@
 
                 console.log('🔄 Productos transformados:', caisyProducts);
 
-                // Merge with local products (keep local ones that aren't in Caisy)
-                const localProducts = JSON.parse(localStorage.getItem('panuProducts') || '[]');
-                const localOnlyProducts = localProducts.filter(local => 
-                    local.source === 'local' && !caisyProducts.find(caisy => caisy.id === local.id)
-                );
+                // Save to localStorage for other devices/browsers
+                localStorage.setItem('panuProducts', JSON.stringify(caisyProducts));
+                localStorage.setItem('panuProductsLastSync', new Date().toISOString());
 
-                allProducts = [...caisyProducts, ...localOnlyProducts];
+                allProducts = caisyProducts;
 
                 console.log('✅ Total productos cargados:', allProducts.length);
                 console.log('📊 Desde Caisy:', caisyProducts.length);
-                console.log('📱 Locales mantenidos:', localOnlyProducts.length);
                 
-                showNotification(`✅ ${caisyProducts.length} productos cargados desde Caisy`, 'success');
+                showNotification(`✅ ${caisyProducts.length} productos sincronizados desde Caisy`, 'success');
                 applyFilter();
 
             } catch (error) {
                 console.error('❌ Error completo cargando desde Caisy:', error);
-                showNotification('⚠️ Error conectando con Caisy, usando datos locales', 'warning');
+                showNotification('⚠️ Error conectando con Caisy, creando productos de demostración', 'warning');
                 
-                // Always fall back to localStorage
-                loadFromLocalStorage();
+                // Create demo products if Caisy fails
+                createDemoProducts();
             }
+        }
+
+        // Create demo products when Caisy is not available
+        function createDemoProducts() {
+            const demoProducts = [
+                {
+                    id: 'demo_1',
+                    name: 'Taza Personalizada Premium',
+                    price: 15.99,
+                    description: 'Taza de cerámica blanca de alta calidad, perfecta para sublimación. Resistente al microondas y lavavajillas.',
+                    category: 'Tazas',
+                    stock: 25,
+                    images: [],
+                    available: true,
+                    createdAt: new Date().toISOString(),
+                    source: 'demo'
+                },
+                {
+                    id: 'demo_2',
+                    name: 'Camiseta Algodón 100%',
+                    price: 22.50,
+                    description: 'Camiseta de algodón 100% en color blanco, ideal para diseños personalizados con sublimación.',
+                    category: 'Camisetas',
+                    stock: 15,
+                    images: [],
+                    available: true,
+                    createdAt: new Date().toISOString(),
+                    source: 'demo'
+                },
+                {
+                    id: 'demo_3',
+                    name: 'Mouse Pad Ergonómico',
+                    price: 12.99,
+                    description: 'Mouse pad con base antideslizante y superficie lisa perfecta para impresión por sublimación.',
+                    category: 'Accesorios',
+                    stock: 30,
+                    images: [],
+                    available: true,
+                    createdAt: new Date().toISOString(),
+                    source: 'demo'
+                },
+                {
+                    id: 'demo_4',
+                    name: 'Taza Mágica Térmica',
+                    price: 24.99,
+                    description: 'Taza que cambia de color con el calor. Perfecta para diseños sorpresa y regalos únicos.',
+                    category: 'Tazas',
+                    stock: 8,
+                    images: [],
+                    available: true,
+                    createdAt: new Date().toISOString(),
+                    source: 'demo'
+                },
+                {
+                    id: 'demo_5',
+                    name: 'Camiseta Deportiva Dri-Fit',
+                    price: 28.99,
+                    description: 'Camiseta deportiva con tecnología que absorbe la humedad, ideal para diseños deportivos.',
+                    category: 'Camisetas',
+                    stock: 12,
+                    images: [],
+                    available: true,
+                    createdAt: new Date().toISOString(),
+                    source: 'demo'
+                },
+                {
+                    id: 'demo_6',
+                    name: 'Llavero Acrílico Personalizable',
+                    price: 8.99,
+                    description: 'Llavero de acrílico transparente con forma rectangular, perfecto para fotos y diseños pequeños.',
+                    category: 'Accesorios',
+                    stock: 50,
+                    images: [],
+                    available: true,
+                    createdAt: new Date().toISOString(),
+                    source: 'demo'
+                }
+            ];
+
+            // Save demo products to localStorage
+            localStorage.setItem('panuProducts', JSON.stringify(demoProducts));
+            localStorage.setItem('panuProductsLastSync', new Date().toISOString());
+            localStorage.setItem('panuProductsSource', 'demo');
+
+            allProducts = demoProducts;
+            console.log('✅ Productos de demostración creados:', allProducts.length);
+            showNotification('📦 Productos de demostración cargados', 'info');
+            applyFilter();
         }
 
         // Load products from localStorage
@@ -665,15 +750,29 @@
                 if (saved) {
                     allProducts = JSON.parse(saved);
                     console.log('📦 Productos cargados desde localStorage:', allProducts.length);
-                } else {
-                    allProducts = [];
-                    console.log('📦 No hay productos guardados');
+                    
+                    // Check if we have products
+                    if (allProducts.length > 0) {
+                        const lastSync = localStorage.getItem('panuProductsLastSync');
+                        const source = localStorage.getItem('panuProductsSource') || 'unknown';
+                        
+                        console.log('📅 Última sincronización:', lastSync);
+                        console.log('📍 Fuente de datos:', source);
+                        
+                        showNotification(`📦 ${allProducts.length} productos cargados (${source})`, 'info');
+                        applyFilter();
+                        return;
+                    }
                 }
-                applyFilter();
+                
+                // If no products found, create demo products
+                console.log('📦 No hay productos guardados, creando productos de demostración');
+                createDemoProducts();
+                
             } catch (error) {
                 console.error('Error loading from localStorage:', error);
-                allProducts = [];
-                applyFilter();
+                console.log('📦 Error en localStorage, creando productos de demostración');
+                createDemoProducts();
             }
         }
 
@@ -1185,5 +1284,5 @@ ${window.location.href}`;
             if (e.target === this) closeEditor();
         });
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98f22da532cf6246',t:'MTc2MDU2MTMxNi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98f244caa55b3472',t:'MTc2MDU2MjI2NC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
