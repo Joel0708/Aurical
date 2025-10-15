@@ -137,7 +137,9 @@
         <div class="max-w-7xl mx-auto px-6 py-4">
             <div class="flex justify-between items-center">
                 <div class="flex items-center space-x-4">
-                    <img src="./image/Aurical.svg" alt="Panu Logo" class="w-10 h-10" onerror="this.style.display='none'">
+                    <div class="w-10 h-10 bg-gradient-to-br from-accent to-brown rounded-lg flex items-center justify-center">
+                        <span class="text-cream font-bold text-lg">P</span>
+                    </div>
                     <div>
                         <h1 class="text-2xl font-bold text-black">Panu Sublimaciones</h1>
                         <p class="text-sm text-brown">Productos únicos y personalizados</p>
@@ -430,14 +432,26 @@
 
         // Initialize page
         async function initializePage() {
+            console.log('🚀 Iniciando aplicación Panu Sublimaciones...');
             updateConnectionStatus('connecting');
+            
+            // Test connection first
+            const connected = await checkCaisyConnection();
+            console.log('🔗 Estado de conexión:', connected ? 'CONECTADO' : 'DESCONECTADO');
+            
+            // Load products
             await loadProducts();
-            checkCaisyConnection();
+            
+            console.log('✅ Aplicación inicializada correctamente');
         }
 
         // Check Caisy connection
         async function checkCaisyConnection() {
             try {
+                console.log('🔍 Verificando conexión a Caisy...');
+                console.log('🔗 Endpoint:', CAISY_CONFIG.endpoint);
+                console.log('🔑 API Key presente:', !!CAISY_CONFIG.apiKey);
+                
                 const testQuery = `query { __typename }`;
                 const response = await fetch(CAISY_CONFIG.endpoint, {
                     method: 'POST',
@@ -448,17 +462,32 @@
                     body: JSON.stringify({ query: testQuery })
                 });
 
+                console.log('📡 Respuesta HTTP:', response.status, response.statusText);
+
                 if (response.ok) {
-                    caisyConnected = true;
-                    updateConnectionStatus('caisy');
-                    console.log('✅ Conectado a Caisy CMS');
+                    const data = await response.json();
+                    console.log('📥 Datos de respuesta:', data);
+                    
+                    if (data && !data.errors) {
+                        caisyConnected = true;
+                        updateConnectionStatus('caisy');
+                        console.log('✅ Conectado exitosamente a Caisy CMS');
+                        return true;
+                    } else {
+                        console.log('⚠️ Respuesta con errores:', data.errors);
+                        throw new Error('Response contains errors');
+                    }
                 } else {
-                    throw new Error('Connection failed');
+                    const errorText = await response.text();
+                    console.log('❌ Error HTTP:', errorText);
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
                 }
             } catch (error) {
+                console.error('❌ Error de conexión:', error);
                 caisyConnected = false;
                 updateConnectionStatus('offline');
                 console.log('❌ Sin conexión a Caisy, modo offline');
+                return false;
             }
         }
 
@@ -485,15 +514,18 @@
         // Load products from Caisy and localStorage
         async function loadProducts() {
             try {
-                // Try to load from Caisy first
+                // Always try to load from Caisy first if connected
                 if (caisyConnected) {
+                    console.log('🔄 Intentando cargar productos desde Caisy...');
                     await loadFromCaisy();
                 } else {
+                    console.log('📱 Caisy no conectado, cargando desde localStorage...');
                     // Fallback to localStorage
                     loadFromLocalStorage();
                 }
             } catch (error) {
-                console.error('Error loading products:', error);
+                console.error('❌ Error loading products:', error);
+                console.log('🔄 Fallback a localStorage por error...');
                 loadFromLocalStorage();
             }
         }
@@ -749,11 +781,58 @@
                 
                 if (!successfulQuery || productos.length === 0) {
                     console.log('❌ No se pudieron obtener productos desde Caisy');
-                    console.log('🔄 Creando productos de demostración...');
-                    updateConnectionStatus('offline');
-                    showNotification('❌ No se encontraron productos en Caisy. Mostrando productos de demostración.', 'warning');
-                    createDemoProducts();
-                    return;
+                    console.log('📋 Consultas disponibles encontradas:', productQueries.map(q => q.name));
+                    console.log('🔍 Intentando consultas alternativas...');
+                    
+                    // Try alternative queries
+                    const alternativeQueries = ['allProduct', 'products', 'allProducts', 'Product', 'Producto'];
+                    
+                    for (const queryName of alternativeQueries) {
+                        try {
+                            console.log(`🔍 Probando consulta alternativa: ${queryName}`);
+                            const altQuery = `
+                                query {
+                                    ${queryName} {
+                                        id
+                                        nombre
+                                        name
+                                        title
+                                    }
+                                }
+                            `;
+                            
+                            const altResponse = await fetch(CAISY_CONFIG.endpoint, {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'x-caisy-apikey': CAISY_CONFIG.apiKey
+                                },
+                                body: JSON.stringify({ query: altQuery })
+                            });
+
+                            const altData = await altResponse.json();
+                            console.log(`📥 Respuesta de ${queryName}:`, altData);
+                            
+                            if (!altData.errors && altData.data?.[queryName]) {
+                                productos = Array.isArray(altData.data[queryName]) ? 
+                                    altData.data[queryName] : [altData.data[queryName]];
+                                successfulQuery = queryName;
+                                console.log(`✅ ¡Productos encontrados con ${queryName}!`, productos.length);
+                                break;
+                            }
+                        } catch (altError) {
+                            console.log(`❌ Error con ${queryName}:`, altError.message);
+                        }
+                    }
+                    
+                    if (!successfulQuery || productos.length === 0) {
+                        console.log('❌ Todas las consultas fallaron');
+                        console.log('🔄 Creando productos de demostración...');
+                        updateConnectionStatus('offline');
+                        showNotification('❌ No se encontraron productos en Caisy. Verifica que tengas productos creados en tu CMS.', 'warning');
+                        createDemoProducts();
+                        return;
+                    }
                 }
 
                 console.log(`✅ Productos obtenidos exitosamente desde: ${successfulQuery}`);
@@ -1476,5 +1555,5 @@ ${window.location.href}`;
             if (e.target === this) closeEditor();
         });
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98f24d5255de3472',t:'MTc2MDU2MjYxNC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98f25612672a3472',t:'MTc2MDU2Mjk3Mi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
