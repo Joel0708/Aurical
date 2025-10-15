@@ -137,7 +137,8 @@
         <div class="max-w-7xl mx-auto px-6 py-4">
             <div class="flex justify-between items-center">
                 <div class="flex items-center space-x-4">
-                    <div class="w-10 h-10 bg-gradient-to-br from-accent to-brown rounded-lg flex items-center justify-center">
+                    <img src="https://aurical.org/images/Aurical.svg" alt="Aurical Logo" class="w-12 h-12 object-contain" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                    <div class="w-10 h-10 bg-gradient-to-br from-accent to-brown rounded-lg items-center justify-center hidden">
                         <span class="text-cream font-bold text-lg">P</span>
                     </div>
                     <div>
@@ -675,12 +676,18 @@
                                     categoria
                                     imagen_principal {
                                         src
-                                        url
+                                        title
+                                        description
+                                        width
+                                        height
                                     }
                                     imagenes_galeria {
                                         ... on Asset {
                                             src
-                                            url
+                                            title
+                                            description
+                                            width
+                                            height
                                         }
                                     }
                                     disponible
@@ -714,6 +721,15 @@
                                     ${queryField.name} {
                                         id
                                         nombre
+                                        precio
+                                        categoria
+                                        descripcion {
+                                            json
+                                        }
+                                        imagen_principal {
+                                            src
+                                        }
+                                        disponible
                                     }
                                 }
                             `;
@@ -819,12 +835,29 @@
                 // Transform products
                 const caisyProducts = productos.map((producto, index) => {
                     console.log(`🔄 Transformando producto ${index + 1}:`, producto);
+                    console.log(`📋 Campos disponibles en producto:`, Object.keys(producto));
+                    console.log(`🏷️ Nombre raw:`, producto.nombre);
+                    console.log(`💰 Precio raw:`, producto.precio);
+                    console.log(`🖼️ Imagen principal raw:`, producto.imagen_principal);
+                    console.log(`📝 Descripción raw:`, producto.descripcion);
                     
                     // Extract name (try different fields)
                     const name = producto.nombre || producto.name || producto.title || `Producto ${index + 1}`;
                     
-                    // Extract price (try different fields)
-                    const price = parseFloat(producto.precio || producto.price || 0);
+                    // Extract price (try different fields and handle different formats)
+                    let price = 0;
+                    if (producto.precio !== undefined && producto.precio !== null) {
+                        price = parseFloat(producto.precio);
+                    } else if (producto.price !== undefined && producto.price !== null) {
+                        price = parseFloat(producto.price);
+                    }
+                    
+                    // If price is still 0 or NaN, set a default
+                    if (isNaN(price) || price <= 0) {
+                        price = 25.99; // Default price for demo
+                    }
+                    
+                    console.log(`💰 Precio extraído para ${name}: ${price} (original: ${producto.precio})`);
                     
                     // Extract description
                     const descripcion = producto.descripcion || producto.description;
@@ -835,24 +868,37 @@
                     
                     // Extract images
                     const images = [];
-                    if (producto.imagen_principal?.src) images.push(producto.imagen_principal.src);
-                    if (producto.imagen_principal?.url) images.push(producto.imagen_principal.url);
-                    if (producto.image?.src) images.push(producto.image.src);
-                    if (producto.image?.url) images.push(producto.image.url);
                     
-                    if (producto.imagenes_galeria) {
+                    // Try different image field formats
+                    if (producto.imagen_principal?.src) {
+                        images.push(producto.imagen_principal.src);
+                    }
+                    if (producto.imagen_principal?.url) {
+                        images.push(producto.imagen_principal.url);
+                    }
+                    if (producto.image?.src) {
+                        images.push(producto.image.src);
+                    }
+                    if (producto.image?.url) {
+                        images.push(producto.image.url);
+                    }
+                    
+                    // Gallery images
+                    if (producto.imagenes_galeria && Array.isArray(producto.imagenes_galeria)) {
                         producto.imagenes_galeria.forEach(img => {
-                            if (img.src) images.push(img.src);
-                            if (img.url) images.push(img.url);
+                            if (img?.src) images.push(img.src);
+                            if (img?.url) images.push(img.url);
                         });
                     }
                     
-                    if (producto.images) {
+                    if (producto.images && Array.isArray(producto.images)) {
                         producto.images.forEach(img => {
-                            if (img.src) images.push(img.src);
-                            if (img.url) images.push(img.url);
+                            if (img?.src) images.push(img.src);
+                            if (img?.url) images.push(img.url);
                         });
                     }
+                    
+                    console.log(`🖼️ Imágenes encontradas para ${name}:`, images);
                     
                     // Extract availability
                     const available = producto.disponible !== false && producto.available !== false;
@@ -1533,5 +1579,5 @@ ${window.location.href}`;
             if (e.target === this) closeEditor();
         });
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98f28fdda540f1a7',t:'MTc2MDU2NTMzOS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98f2a52e44de1161',t:'MTc2MDU2NjIxMy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
