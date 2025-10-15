@@ -629,23 +629,6 @@
                 showNotification(`✅ ${caisyProducts.length} productos desde Caisy + ${localOnlyProducts.length} locales`, 'success');
                 renderProducts();
 
-                // Merge with local products (keep local ones that aren't in Caisy)
-                const localProducts = JSON.parse(localStorage.getItem('panuProducts') || '[]');
-                const localOnlyProducts = localProducts.filter(local => 
-                    local.source === 'local' && !caisyProducts.find(caisy => caisy.id === local.id)
-                );
-
-                allProducts = [...caisyProducts, ...localOnlyProducts];
-
-                // Sync with localStorage
-                localStorage.setItem('panuProducts', JSON.stringify(allProducts));
-                
-                console.log('✅ Productos cargados desde Caisy:', caisyProducts.length);
-                console.log('📱 Productos locales mantenidos:', localOnlyProducts.length);
-                
-                showNotification(`✅ ${caisyProducts.length} productos desde Caisy + ${localOnlyProducts.length} locales`, 'success');
-                renderProducts();
-
             } catch (error) {
                 console.error('Error loading from Caisy:', error);
                 showNotification('⚠️ Error conectando con Caisy, usando datos locales', 'warning');
@@ -1038,5 +1021,5 @@
             }, 5000);
         }
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98f1a5ab21052538',t:'MTc2MDU1NTc0Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98f1b0a5d74f1161',t:'MTc2MDU1NjE5Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
