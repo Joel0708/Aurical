@@ -342,6 +342,46 @@
         let editingProductId = null;
         let caisyConnected = false;
 
+        // Helper function to extract text from Caisy rich text field
+        function extractTextFromDescription(descripcion) {
+            if (!descripcion) return '';
+            
+            // If it's already a string, return it
+            if (typeof descripcion === 'string') return descripcion;
+            
+            // If it has json field, try to extract text from it
+            if (descripcion.json) {
+                try {
+                    const jsonData = typeof descripcion.json === 'string' ? 
+                        JSON.parse(descripcion.json) : descripcion.json;
+                    
+                    // Extract text from Caisy's rich text JSON structure
+                    function extractTextFromNodes(nodes) {
+                        if (!nodes || !Array.isArray(nodes)) return '';
+                        
+                        return nodes.map(node => {
+                            if (node.type === 'text') return node.text || '';
+                            if (node.children) return extractTextFromNodes(node.children);
+                            return '';
+                        }).join(' ').trim();
+                    }
+                    
+                    if (jsonData.children) {
+                        return extractTextFromNodes(jsonData.children);
+                    }
+                    
+                    // Fallback: convert JSON to string
+                    return JSON.stringify(jsonData).replace(/[{}"\[\]]/g, ' ').trim();
+                } catch (error) {
+                    console.log('Error parsing description JSON:', error);
+                    return String(descripcion.json);
+                }
+            }
+            
+            // Fallback to string conversion
+            return String(descripcion);
+        }
+
         // Caisy configuration
         const CAISY_CONFIG = {
             endpoint: 'https://cloud.caisy.io/api/v3/e/d5020874-9338-4ce1-9f01-872741713f01/graphql',
@@ -493,195 +533,101 @@
             }
         }
 
-        // Load products from Caisy with better error handling
+        // Load products from Caisy with exact blueprint structure
         async function loadFromCaisy() {
             try {
-                console.log('🔍 Buscando blueprints de productos en Caisy...');
+                console.log('🔍 Conectando con blueprint "Producto" en Caisy...');
                 
-                // Try different possible blueprint names (Caisy suggests "Producto")
-                const possibleQueries = [
-                    'Producto',
-                    'allProducto',
-                    'allProduct', 
-                    'allProducts',
-                    'allProductos'
-                ];
-
-                let successfulQuery = null;
-                let queryResult = null;
-                let lastError = null;
-
-                for (const queryName of possibleQueries) {
-                    try {
-                        console.log(`🔍 Probando blueprint: ${queryName}`);
-                        
-                        // Handle different query structures
-                        let query;
-                        if (queryName === 'Producto') {
-                            // Single blueprint query (no edges/node structure)
-                            query = `
-                                query {
-                                    ${queryName} {
-                                        id
-                                        nombre
-                                        descripcion {
-                                            json
-                                            plainText
-                                        }
-                                        precio
-                                        categoria
-                                        imagen_principal {
-                                            src
-                                            alt
-                                        }
-                                        imagenes_galeria {
-                                            src
-                                            alt
-                                        }
-                                        disponible
-                                        fecha_creacion
+                // Use the exact blueprint structure you provided
+                const query = `
+                    query {
+                        allProducto {
+                            edges {
+                                node {
+                                    id
+                                    nombre
+                                    descripcion
+                                    precio
+                                    categoria
+                                    imagen_principal {
+                                        src
+                                        alt
                                     }
-                                }
-                            `;
-                        } else {
-                            // Collection query (with edges/node structure)
-                            query = `
-                                query {
-                                    ${queryName} {
-                                        edges {
-                                            node {
-                                                id
-                                                nombre
-                                                descripcion {
-                                                    json
-                                                    plainText
-                                                }
-                                                precio
-                                                categoria
-                                                imagen_principal {
-                                                    src
-                                                    alt
-                                                }
-                                                imagenes_galeria {
-                                                    src
-                                                    alt
-                                                }
-                                                disponible
-                                                fecha_creacion
-                                            }
-                                        }
+                                    imagenes_galeria {
+                                        src
+                                        alt
                                     }
+                                    disponible
+                                    fecha_creacion
                                 }
-                            `;
+                            }
                         }
-
-                        const response = await fetch(CAISY_CONFIG.endpoint, {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'x-caisy-apikey': CAISY_CONFIG.apiKey
-                            },
-                            body: JSON.stringify({ query })
-                        });
-
-                        if (!response.ok) {
-                            console.log(`❌ HTTP Error ${response.status} para ${queryName}`);
-                            continue;
-                        }
-
-                        const data = await response.json();
-                        
-                        if (data.errors) {
-                            console.log(`❌ GraphQL Error para ${queryName}:`, data.errors[0]?.message || 'Unknown error');
-                            lastError = data.errors[0]?.message || 'GraphQL Error';
-                            continue;
-                        }
-
-                        if (data.data && data.data[queryName]) {
-                            successfulQuery = queryName;
-                            queryResult = data.data[queryName];
-                            console.log(`✅ Blueprint encontrado: ${queryName}`);
-                            console.log('📊 Estructura de datos:', queryResult);
-                            break;
-                        } else {
-                            console.log(`❌ No data returned for ${queryName}`);
-                        }
-                    } catch (error) {
-                        console.log(`❌ Exception para ${queryName}:`, error.message);
-                        lastError = error.message;
-                        continue;
                     }
+                `;
+
+                console.log('📡 Ejecutando consulta GraphQL...');
+                
+                const response = await fetch(CAISY_CONFIG.endpoint, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-caisy-apikey': CAISY_CONFIG.apiKey
+                    },
+                    body: JSON.stringify({ query })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP Error ${response.status}: ${response.statusText}`);
                 }
 
-                if (!successfulQuery || !queryResult) {
-                    console.log('❌ No se encontró ningún blueprint de productos válido');
-                    showNotification('⚠️ No hay blueprint de productos en Caisy - usando modo local', 'warning');
-                    
-                    // Don't throw error, just fall back to localStorage
+                const data = await response.json();
+                
+                if (data.errors) {
+                    console.error('❌ GraphQL Errors:', data.errors);
+                    throw new Error(`GraphQL Error: ${data.errors[0]?.message || 'Unknown error'}`);
+                }
+
+                if (!data.data || !data.data.allProducto) {
+                    console.log('⚠️ No se encontraron productos en Caisy');
                     loadFromLocalStorage();
                     return;
                 }
 
-                console.log(`✅ Usando blueprint: ${successfulQuery}`);
+                console.log('✅ Datos recibidos de Caisy:', data.data.allProducto);
 
-                // Transform Caisy data based on structure
-                let caisyProducts = [];
+                // Transform Caisy data to our format
+                const caisyProducts = data.data.allProducto.edges.map(edge => ({
+                    id: edge.node.id,
+                    name: edge.node.nombre,
+                    price: parseInt(edge.node.precio) || 0,
+                    description: edge.node.descripcion || '',
+                    category: edge.node.categoria || 'Otros',
+                    stock: edge.node.disponible ? 10 : 0,
+                    images: [
+                        ...(edge.node.imagen_principal?.src ? [edge.node.imagen_principal.src] : []),
+                        ...(edge.node.imagenes_galeria?.map(img => img.src) || [])
+                    ],
+                    available: edge.node.disponible,
+                    createdAt: edge.node.fecha_creacion || new Date().toISOString(),
+                    source: 'caisy'
+                }));
+
+                // Merge with local products (keep local ones that aren't in Caisy)
+                const localProducts = JSON.parse(localStorage.getItem('panuProducts') || '[]');
+                const localOnlyProducts = localProducts.filter(local => 
+                    local.source === 'local' && !caisyProducts.find(caisy => caisy.id === local.id)
+                );
+
+                allProducts = [...caisyProducts, ...localOnlyProducts];
+
+                // Sync with localStorage
+                localStorage.setItem('panuProducts', JSON.stringify(allProducts));
                 
-                if (successfulQuery === 'Producto') {
-                    // Single blueprint - data is directly in queryResult
-                    if (Array.isArray(queryResult)) {
-                        // Multiple products
-                        caisyProducts = queryResult.map(product => ({
-                            id: product.id,
-                            name: product.nombre,
-                            price: parseInt(product.precio) || 0,
-                            description: product.descripcion?.plainText || product.descripcion?.json || '',
-                            category: product.categoria || 'Otros',
-                            stock: product.disponible ? 10 : 0,
-                            images: [
-                                ...(product.imagen_principal?.src ? [product.imagen_principal.src] : []),
-                                ...(product.imagenes_galeria?.map(img => img.src) || [])
-                            ],
-                            available: product.disponible,
-                            createdAt: product.fecha_creacion || new Date().toISOString(),
-                            source: 'caisy'
-                        }));
-                    } else if (queryResult.id) {
-                        // Single product
-                        caisyProducts = [{
-                            id: queryResult.id,
-                            name: queryResult.nombre,
-                            price: parseInt(queryResult.precio) || 0,
-                            description: queryResult.descripcion?.plainText || queryResult.descripcion?.json || '',
-                            category: queryResult.categoria || 'Otros',
-                            stock: queryResult.disponible ? 10 : 0,
-                            images: [
-                                ...(queryResult.imagen_principal?.src ? [queryResult.imagen_principal.src] : []),
-                                ...(queryResult.imagenes_galeria?.map(img => img.src) || [])
-                            ],
-                            available: queryResult.disponible,
-                            createdAt: queryResult.fecha_creacion || new Date().toISOString(),
-                            source: 'caisy'
-                        }];
-                    }
-                } else {
-                    // Collection blueprint - data has edges/node structure
-                    caisyProducts = queryResult.edges.map(edge => ({
-                        id: edge.node.id,
-                        name: edge.node.nombre,
-                        price: parseInt(edge.node.precio) || 0,
-                        description: edge.node.descripcion?.plainText || edge.node.descripcion?.json || '',
-                        category: edge.node.categoria || 'Otros',
-                        stock: edge.node.disponible ? 10 : 0,
-                        images: [
-                            ...(edge.node.imagen_principal?.src ? [edge.node.imagen_principal.src] : []),
-                            ...(edge.node.imagenes_galeria?.map(img => img.src) || [])
-                        ],
-                        available: edge.node.disponible,
-                        createdAt: edge.node.fecha_creacion || new Date().toISOString(),
-                        source: 'caisy'
-                    }));
-                }
+                console.log('✅ Productos cargados desde Caisy:', caisyProducts.length);
+                console.log('📱 Productos locales mantenidos:', localOnlyProducts.length);
+                
+                showNotification(`✅ ${caisyProducts.length} productos desde Caisy + ${localOnlyProducts.length} locales`, 'success');
+                renderProducts();
 
                 // Merge with local products (keep local ones that aren't in Caisy)
                 const localProducts = JSON.parse(localStorage.getItem('panuProducts') || '[]');
@@ -1092,5 +1038,5 @@
             }, 5000);
         }
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98f1947007963472',t:'MTc2MDU1NTA0MS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98f1a5ab21052538',t:'MTc2MDU1NTc0Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
