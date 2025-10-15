@@ -541,26 +541,22 @@
                 // Use the exact blueprint structure you provided
                 const query = `
                     query {
-                        allProducto {
-                            edges {
-                                node {
-                                    id
-                                    nombre
-                                    descripcion
-                                    precio
-                                    categoria
-                                    imagen_principal {
-                                        src
-                                        alt
-                                    }
-                                    imagenes_galeria {
-                                        src
-                                        alt
-                                    }
-                                    disponible
-                                    fecha_creacion
-                                }
+                        Producto {
+                            id
+                            nombre
+                            descripcion
+                            precio
+                            categoria
+                            imagen_principal {
+                                src
+                                alt
                             }
+                            imagenes_galeria {
+                                src
+                                alt
+                            }
+                            disponible
+                            fecha_creacion
                         }
                     }
                 `;
@@ -587,28 +583,29 @@
                     throw new Error(`GraphQL Error: ${data.errors[0]?.message || 'Unknown error'}`);
                 }
 
-                if (!data.data || !data.data.allProducto) {
+                if (!data.data || !data.data.Producto) {
                     console.log('⚠️ No se encontraron productos en Caisy');
                     loadFromLocalStorage();
                     return;
                 }
 
-                console.log('✅ Datos recibidos de Caisy:', data.data.allProducto);
+                console.log('✅ Datos recibidos de Caisy:', data.data.Producto);
 
-                // Transform Caisy data to our format
-                const caisyProducts = data.data.allProducto.edges.map(edge => ({
-                    id: edge.node.id,
-                    name: edge.node.nombre,
-                    price: parseInt(edge.node.precio) || 0,
-                    description: edge.node.descripcion || '',
-                    category: edge.node.categoria || 'Otros',
-                    stock: edge.node.disponible ? 10 : 0,
+                // Transform Caisy data to our format - handle both single item and array
+                const productos = Array.isArray(data.data.Producto) ? data.data.Producto : [data.data.Producto];
+                const caisyProducts = productos.map(producto => ({
+                    id: producto.id,
+                    name: producto.nombre,
+                    price: parseInt(producto.precio) || 0,
+                    description: producto.descripcion || '',
+                    category: producto.categoria || 'Otros',
+                    stock: producto.disponible ? 10 : 0,
                     images: [
-                        ...(edge.node.imagen_principal?.src ? [edge.node.imagen_principal.src] : []),
-                        ...(edge.node.imagenes_galeria?.map(img => img.src) || [])
+                        ...(producto.imagen_principal?.src ? [producto.imagen_principal.src] : []),
+                        ...(producto.imagenes_galeria?.map(img => img.src) || [])
                     ],
-                    available: edge.node.disponible,
-                    createdAt: edge.node.fecha_creacion || new Date().toISOString(),
+                    available: producto.disponible,
+                    createdAt: producto.fecha_creacion || new Date().toISOString(),
                     source: 'caisy'
                 }));
 
@@ -1021,5 +1018,5 @@
             }, 5000);
         }
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98f1b0a5d74f1161',t:'MTc2MDU1NjE5Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98f1b659c6df1161',t:'MTc2MDU1NjQzMC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
