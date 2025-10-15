@@ -129,6 +129,9 @@
                 </div>
                 <div class="flex items-center space-x-4">
                     <span id="productCount" class="text-sm text-gray-400">0 productos</span>
+                    <button onclick="logout()" class="glass-effect px-4 py-2 rounded-lg hover:bg-white hover:bg-opacity-20 transition-all">
+                        🚪 Cerrar Sesión
+                    </button>
                     <a href="index.html" class="glass-effect px-4 py-2 rounded-lg hover:bg-white hover:bg-opacity-20 transition-all">
                         ← Volver al sitio
                     </a>
@@ -165,6 +168,15 @@
             </div>
         </div>
     </main>
+
+    <!-- Developer Footer -->
+    <footer class="mt-16 py-6 border-t border-gray-700">
+        <div class="max-w-7xl mx-auto px-6 text-center">
+            <p class="text-gray-400 text-sm">
+                🚀 <span class="text-beige font-semibold">Esteban Paez Building</span> - Desarrollado con pasión
+            </p>
+        </div>
+    </footer>
 
     <!-- Product Modal -->
     <div id="productModal" class="modal">
@@ -239,6 +251,48 @@
     </div>
 
     <script>
+        // Authentication check
+        function checkAuthentication() {
+            const authData = localStorage.getItem('panuAuth');
+            if (!authData) {
+                showNotification('Acceso denegado. Redirigiendo al login...', 'error');
+                setTimeout(() => {
+                    window.location.href = 'login.html';
+                }, 2000);
+                return false;
+            }
+
+            try {
+                const auth = JSON.parse(authData);
+                const now = new Date().getTime();
+                
+                // Check if session expired (24 hours)
+                if (now - auth.timestamp > 24 * 60 * 60 * 1000) {
+                    localStorage.removeItem('panuAuth');
+                    showNotification('Sesión expirada. Redirigiendo al login...', 'warning');
+                    setTimeout(() => {
+                        window.location.href = 'login.html';
+                    }, 2000);
+                    return false;
+                }
+                
+                return true;
+            } catch (error) {
+                localStorage.removeItem('panuAuth');
+                window.location.href = 'login.html';
+                return false;
+            }
+        }
+
+        // Logout function
+        function logout() {
+            localStorage.removeItem('panuAuth');
+            showNotification('Sesión cerrada correctamente', 'success');
+            setTimeout(() => {
+                window.location.href = 'login.html';
+            }, 1500);
+        }
+
         // Global variables
         let allProducts = [];
         let editingProductId = null;
@@ -246,12 +300,14 @@
 
         // Caisy configuration
         const CAISY_CONFIG = {
-            endpoint: 'https://cloud.caisy.io/api/v3/e/a4ad1aae-57c9-4cd5-9f2e-4c9c8b6c4b4a/graphql',
-            apiKey: '6b4b8e6d-9f2e-4c9c-8b6c-4b4a57c94cd5'
+            endpoint: 'https://cloud.caisy.io/api/v3/e/d5020874-9338-4ce1-9f01-872741713f01/graphql',
+            apiKey: 'DR4cQSjCXwdqZDs20vuKsPmGreNnSu4T'
         };
 
         // Initialize admin panel
         document.addEventListener('DOMContentLoaded', function() {
+            if (!checkAuthentication()) return;
+            
             initializeAdmin();
             setupFormHandlers();
         });
@@ -357,6 +413,10 @@
                                         src
                                         alt
                                     }
+                                    imagenes_galeria {
+                                        src
+                                        alt
+                                    }
                                     disponible
                                     fecha_creacion
                                 }
@@ -388,11 +448,14 @@
                 allProducts = data.data.allProducto.edges.map(edge => ({
                     id: edge.node.id,
                     name: edge.node.nombre,
-                    price: parseFloat(edge.node.precio) || 0,
+                    price: parseInt(edge.node.precio) || 0,
                     description: edge.node.descripcion || '',
                     category: edge.node.categoria || 'Otros',
                     stock: edge.node.disponible ? 10 : 0,
-                    images: edge.node.imagen_principal?.src ? [edge.node.imagen_principal.src] : [],
+                    images: [
+                        ...(edge.node.imagen_principal?.src ? [edge.node.imagen_principal.src] : []),
+                        ...(edge.node.imagenes_galeria?.map(img => img.src) || [])
+                    ],
                     available: edge.node.disponible,
                     createdAt: edge.node.fecha_creacion || new Date().toISOString(),
                     source: 'caisy'
@@ -450,7 +513,7 @@
                     input: {
                         nombre: productData.name,
                         descripcion: productData.description,
-                        precio: productData.price,
+                        precio: parseInt(productData.price),
                         categoria: productData.category,
                         disponible: productData.stock > 0,
                         fecha_creacion: new Date().toISOString()
@@ -667,9 +730,9 @@
 
         // Delete product
         async function deleteProduct(productId) {
-            if (!confirm('¿Estás seguro de que quieres eliminar este producto?')) {
-                return;
-            }
+            // Custom confirmation modal instead of browser confirm
+            const confirmDelete = await showConfirmModal('¿Estás seguro de que quieres eliminar este producto?');
+            if (!confirmDelete) return;
 
             try {
                 const product = allProducts.find(p => p.id === productId);
@@ -688,6 +751,33 @@
             localStorage.setItem('panuProducts', JSON.stringify(allProducts));
             
             renderProducts();
+        }
+
+        // Custom confirmation modal
+        function showConfirmModal(message) {
+            return new Promise((resolve) => {
+                const modal = document.createElement('div');
+                modal.className = 'modal show';
+                modal.innerHTML = `
+                    <div class="modal-content glass-effect max-w-md">
+                        <h3 class="text-xl font-bold text-white mb-4">Confirmar Acción</h3>
+                        <p class="text-gray-300 mb-6">${message}</p>
+                        <div class="flex gap-3 justify-end">
+                            <button onclick="this.closest('.modal').remove(); window.confirmResolve(false)" 
+                                    class="px-4 py-2 glass-effect rounded-lg hover:bg-white hover:bg-opacity-20 transition-all">
+                                Cancelar
+                            </button>
+                            <button onclick="this.closest('.modal').remove(); window.confirmResolve(true)" 
+                                    class="px-4 py-2 bg-red-600 hover:bg-red-700 rounded-lg transition-all">
+                                Eliminar
+                            </button>
+                        </div>
+                    </div>
+                `;
+                
+                window.confirmResolve = resolve;
+                document.body.appendChild(modal);
+            });
         }
 
         // Sync with Caisy
@@ -881,5 +971,5 @@
             }, 5000);
         }
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98efeb82f3e02538',t:'MTc2MDUzNzYzNi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98f10e0231822538',t:'MTc2MDU0OTUzNS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
