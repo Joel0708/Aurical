@@ -292,19 +292,15 @@
         async function loadProductsFromCaisy() {
             const query = `
                 query {
-                    allProducto {
-                        edges {
-                            node {
-                                id
-                                nombre
-                                precio
-                                categoria
-                                descripcion {
-                                    plaintext
-                                }
-                                disponible
-                            }
+                    Producto {
+                        id
+                        nombre
+                        precio
+                        categoria
+                        descripcion {
+                            plaintext
                         }
+                        disponible
                     }
                 }
             `;
@@ -324,13 +320,13 @@
                 throw new Error(result.errors[0]?.message || 'Error loading from Caisy');
             }
 
-            return result.data?.allProducto?.edges?.map(edge => ({
-                id: edge.node.id,
-                name: edge.node.nombre,
-                price: edge.node.precio,
-                category: edge.node.categoria,
-                description: edge.node.descripcion?.plaintext || '',
-                available: edge.node.disponible,
+            return result.data?.Producto?.map(producto => ({
+                id: producto.id,
+                name: producto.nombre,
+                price: producto.precio,
+                category: producto.categoria,
+                description: producto.descripcion?.plaintext || '',
+                available: producto.disponible,
                 source: 'caisy'
             })) || [];
         }
@@ -711,5 +707,5 @@
             }
         });
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98f334b44337116c',t:'MTc2MDU3MjA5MS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98f33a5d711e116c',t:'MTc2MDU3MjMyMy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
