@@ -496,6 +496,8 @@
         // Load products from Caisy with better error handling
         async function loadFromCaisy() {
             try {
+                console.log('🔍 Buscando blueprints de productos en Caisy...');
+                
                 // Try different possible blueprint names
                 const possibleQueries = [
                     'allProducto',
@@ -506,9 +508,12 @@
 
                 let successfulQuery = null;
                 let queryResult = null;
+                let lastError = null;
 
                 for (const queryName of possibleQueries) {
                     try {
+                        console.log(`🔍 Probando blueprint: ${queryName}`);
+                        
                         const query = `
                             query {
                                 ${queryName} {
@@ -545,35 +550,46 @@
                         });
 
                         if (!response.ok) {
-                            continue; // Try next query
+                            console.log(`❌ HTTP Error ${response.status} para ${queryName}`);
+                            continue;
                         }
 
                         const data = await response.json();
                         
                         if (data.errors) {
-                            console.log(`Query ${queryName} failed:`, data.errors);
-                            continue; // Try next query
+                            console.log(`❌ GraphQL Error para ${queryName}:`, data.errors[0]?.message || 'Unknown error');
+                            lastError = data.errors[0]?.message || 'GraphQL Error';
+                            continue;
                         }
 
                         if (data.data && data.data[queryName]) {
                             successfulQuery = queryName;
                             queryResult = data.data[queryName];
+                            console.log(`✅ Blueprint encontrado: ${queryName}`);
                             break;
+                        } else {
+                            console.log(`❌ No data returned for ${queryName}`);
                         }
                     } catch (error) {
-                        console.log(`Error trying query ${queryName}:`, error);
+                        console.log(`❌ Exception para ${queryName}:`, error.message);
+                        lastError = error.message;
                         continue;
                     }
                 }
 
                 if (!successfulQuery || !queryResult) {
-                    throw new Error('No se encontró un blueprint de productos válido en Caisy');
+                    console.log('❌ No se encontró ningún blueprint de productos válido');
+                    showNotification('⚠️ No hay blueprint de productos en Caisy - usando modo local', 'warning');
+                    
+                    // Don't throw error, just fall back to localStorage
+                    loadFromLocalStorage();
+                    return;
                 }
 
                 console.log(`✅ Usando blueprint: ${successfulQuery}`);
 
                 // Transform Caisy data
-                allProducts = queryResult.edges.map(edge => ({
+                const caisyProducts = queryResult.edges.map(edge => ({
                     id: edge.node.id,
                     name: edge.node.nombre,
                     price: parseInt(edge.node.precio) || 0,
@@ -589,17 +605,29 @@
                     source: 'caisy'
                 }));
 
+                // Merge with local products (keep local ones that aren't in Caisy)
+                const localProducts = JSON.parse(localStorage.getItem('panuProducts') || '[]');
+                const localOnlyProducts = localProducts.filter(local => 
+                    local.source === 'local' && !caisyProducts.find(caisy => caisy.id === local.id)
+                );
+
+                allProducts = [...caisyProducts, ...localOnlyProducts];
+
                 // Sync with localStorage
                 localStorage.setItem('panuProducts', JSON.stringify(allProducts));
                 
-                console.log('✅ Productos cargados desde Caisy:', allProducts.length);
-                showNotification(`✅ ${allProducts.length} productos sincronizados desde Caisy`, 'success');
+                console.log('✅ Productos cargados desde Caisy:', caisyProducts.length);
+                console.log('📱 Productos locales mantenidos:', localOnlyProducts.length);
+                
+                showNotification(`✅ ${caisyProducts.length} productos desde Caisy + ${localOnlyProducts.length} locales`, 'success');
                 renderProducts();
 
             } catch (error) {
                 console.error('Error loading from Caisy:', error);
                 showNotification('⚠️ Error conectando con Caisy, usando datos locales', 'warning');
-                throw error;
+                
+                // Always fall back to localStorage instead of throwing
+                loadFromLocalStorage();
             }
         }
 
@@ -986,5 +1014,5 @@
             }, 5000);
         }
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98f159e2a5deb3ec',t:'MTc2MDU1MjY0My4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98f17199c09f1161',t:'MTc2MDU1MzYxNC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
