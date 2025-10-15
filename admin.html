@@ -252,8 +252,34 @@
 
     <script>
         // Authentication check
-        function checkAuthentication() {
-            const authData = localStorage.getItem('panuAuth');
+        async function checkAuthentication() {
+            try {
+                // First, try to verify with backend session
+                const response = await fetch('/admin/verify-session', {
+                    method: 'GET',
+                    credentials: 'include', // Include cookies for session
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.authenticated) {
+                        console.log('✅ Autenticado via backend session');
+                        return true;
+                    }
+                }
+            } catch (error) {
+                console.log('Backend session check failed, trying localStorage...');
+            }
+
+            // Fallback: Check localStorage for frontend auth
+            const authData = localStorage.getItem('panuAuth') || 
+                           localStorage.getItem('adminAuth') || 
+                           localStorage.getItem('isLoggedIn') ||
+                           localStorage.getItem('admin_logged_in');
+            
             if (!authData) {
                 showNotification('Acceso denegado. Redirigiendo al login...', 'error');
                 setTimeout(() => {
@@ -262,25 +288,43 @@
                 return false;
             }
 
+            // Handle different auth formats
             try {
-                const auth = JSON.parse(authData);
-                const now = new Date().getTime();
-                
-                // Check if session expired (24 hours)
-                if (now - auth.timestamp > 24 * 60 * 60 * 1000) {
-                    localStorage.removeItem('panuAuth');
-                    showNotification('Sesión expirada. Redirigiendo al login...', 'warning');
-                    setTimeout(() => {
-                        window.location.href = 'login.html';
-                    }, 2000);
-                    return false;
+                // If it's just "true" string (simple format)
+                if (authData === 'true' || authData === 'yes') {
+                    console.log('✅ Autenticado via localStorage');
+                    return true;
                 }
                 
+                // If it's JSON format
+                const auth = JSON.parse(authData);
+                
+                // Check if it has timestamp for expiration
+                if (auth.timestamp) {
+                    const now = new Date().getTime();
+                    // Check if session expired (24 hours)
+                    if (now - auth.timestamp > 24 * 60 * 60 * 1000) {
+                        localStorage.removeItem('panuAuth');
+                        localStorage.removeItem('adminAuth');
+                        localStorage.removeItem('isLoggedIn');
+                        localStorage.removeItem('admin_logged_in');
+                        showNotification('Sesión expirada. Redirigiendo al login...', 'warning');
+                        setTimeout(() => {
+                            window.location.href = 'login.html';
+                        }, 2000);
+                        return false;
+                    }
+                }
+                
+                console.log('✅ Autenticado via localStorage JSON');
                 return true;
             } catch (error) {
-                localStorage.removeItem('panuAuth');
-                window.location.href = 'login.html';
-                return false;
+                // If parsing fails, treat as simple boolean
+                const isAuth = authData === 'true' || authData === 'yes';
+                if (isAuth) {
+                    console.log('✅ Autenticado via localStorage simple');
+                }
+                return isAuth;
             }
         }
 
@@ -305,8 +349,9 @@
         };
 
         // Initialize admin panel
-        document.addEventListener('DOMContentLoaded', function() {
-            if (!checkAuthentication()) return;
+        document.addEventListener('DOMContentLoaded', async function() {
+            const isAuthenticated = await checkAuthentication();
+            if (!isAuthenticated) return;
             
             initializeAdmin();
             setupFormHandlers();
@@ -971,5 +1016,5 @@
             }, 5000);
         }
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98f10e0231822538',t:'MTc2MDU0OTUzNS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98f11dd3039e1161',t:'MTc2MDU1MDE4My4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
