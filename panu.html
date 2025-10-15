@@ -498,83 +498,141 @@
             }
         }
 
-        // Load products from Caisy (exact same query as admin.html)
+        // Load products from Caisy with better error handling and debugging
         async function loadFromCaisy() {
             try {
                 console.log('🔍 Conectando con blueprint "Producto" en Caisy...');
                 
-                // Use the exact same working query from admin.html
-                const query = `
+                // First, let's try a simple introspection query to see what's available
+                const introspectionQuery = `
                     query {
-                        Producto {
-                            id
-                            nombre
-                            descripcion {
-                                json
-                            }
-                            precio
-                            categoria
-                            imagen_principal {
-                                src
-                            }
-                            imagenes_galeria {
-                                ... on Asset {
-                                    src
+                        __schema {
+                            queryType {
+                                fields {
+                                    name
+                                    type {
+                                        name
+                                    }
                                 }
                             }
-                            disponible
-                            fecha_creacion
                         }
                     }
                 `;
 
-                console.log('📡 Ejecutando consulta GraphQL...');
-                
-                const response = await fetch(CAISY_CONFIG.endpoint, {
+                console.log('🔍 Verificando esquema disponible...');
+                const introspectionResponse = await fetch(CAISY_CONFIG.endpoint, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                         'x-caisy-apikey': CAISY_CONFIG.apiKey
                     },
-                    body: JSON.stringify({ query })
+                    body: JSON.stringify({ query: introspectionQuery })
                 });
 
-                if (!response.ok) {
-                    throw new Error(`HTTP Error ${response.status}: ${response.statusText}`);
+                const introspectionData = await introspectionResponse.json();
+                console.log('📋 Campos disponibles:', introspectionData.data?.__schema?.queryType?.fields?.map(f => f.name));
+
+                // Now try different possible query names
+                const possibleQueries = [
+                    'allProducto',
+                    'Producto', 
+                    'productos',
+                    'allProductos',
+                    'Product',
+                    'allProduct'
+                ];
+
+                let successfulQuery = null;
+                let productos = [];
+
+                for (const queryName of possibleQueries) {
+                    try {
+                        console.log(`🔍 Probando consulta: ${queryName}`);
+                        
+                        const testQuery = `
+                            query {
+                                ${queryName} {
+                                    id
+                                    nombre
+                                    descripcion {
+                                        json
+                                    }
+                                    precio
+                                    categoria
+                                    imagen_principal {
+                                        src
+                                    }
+                                    imagenes_galeria {
+                                        ... on Asset {
+                                            src
+                                        }
+                                    }
+                                    disponible
+                                    fecha_creacion
+                                }
+                            }
+                        `;
+
+                        const testResponse = await fetch(CAISY_CONFIG.endpoint, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'x-caisy-apikey': CAISY_CONFIG.apiKey
+                            },
+                            body: JSON.stringify({ query: testQuery })
+                        });
+
+                        const testData = await testResponse.json();
+                        
+                        if (!testData.errors && testData.data && testData.data[queryName]) {
+                            console.log(`✅ Consulta exitosa con: ${queryName}`);
+                            console.log('📦 Datos recibidos:', testData.data[queryName]);
+                            
+                            productos = Array.isArray(testData.data[queryName]) ? 
+                                testData.data[queryName] : [testData.data[queryName]];
+                            successfulQuery = queryName;
+                            break;
+                        } else if (testData.errors) {
+                            console.log(`❌ Error con ${queryName}:`, testData.errors[0]?.message);
+                        } else {
+                            console.log(`⚠️ ${queryName} no devolvió datos`);
+                        }
+                    } catch (queryError) {
+                        console.log(`❌ Error ejecutando ${queryName}:`, queryError.message);
+                    }
                 }
 
-                const data = await response.json();
-                
-                if (data.errors) {
-                    console.error('❌ GraphQL Errors:', data.errors);
-                    throw new Error(`GraphQL Error: ${data.errors[0]?.message || 'Unknown error'}`);
-                }
-
-                if (!data.data || !data.data.Producto) {
-                    console.log('⚠️ No se encontraron productos en Caisy');
+                if (!successfulQuery || productos.length === 0) {
+                    console.log('⚠️ No se pudieron cargar productos desde Caisy');
+                    showNotification('⚠️ No se encontraron productos en Caisy', 'warning');
                     loadFromLocalStorage();
                     return;
                 }
 
-                console.log('✅ Datos recibidos de Caisy:', data.data.Producto);
+                console.log(`✅ Productos encontrados con consulta "${successfulQuery}":`, productos.length);
 
-                // Transform Caisy data to our format - handle both single item and array
-                const productos = Array.isArray(data.data.Producto) ? data.data.Producto : [data.data.Producto];
-                const caisyProducts = productos.map(producto => ({
-                    id: producto.id,
-                    name: producto.nombre,
-                    price: parseInt(producto.precio) || 0,
-                    description: extractTextFromDescription(producto.descripcion) || '',
-                    category: producto.categoria || 'Otros',
-                    stock: producto.disponible ? 10 : 0,
-                    images: [
-                        ...(producto.imagen_principal?.src ? [producto.imagen_principal.src] : []),
-                        ...(producto.imagenes_galeria?.map(img => img.src) || [])
-                    ],
-                    available: producto.disponible,
-                    createdAt: producto.fecha_creacion || new Date().toISOString(),
-                    source: 'caisy'
-                }));
+                // Transform Caisy data to our format
+                const caisyProducts = productos.map((producto, index) => {
+                    console.log(`🔄 Procesando producto ${index + 1}:`, producto);
+                    
+                    return {
+                        id: producto.id || `caisy_${index}`,
+                        name: producto.nombre || `Producto ${index + 1}`,
+                        price: parseFloat(producto.precio) || 0,
+                        description: extractTextFromDescription(producto.descripcion) || 'Producto de sublimación',
+                        category: producto.categoria || 'Otros',
+                        stock: producto.disponible ? 10 : 0,
+                        images: [
+                            ...(producto.imagen_principal?.src ? [producto.imagen_principal.src] : []),
+                            ...(producto.imagenes_galeria?.map(img => img.src).filter(Boolean) || [])
+                        ],
+                        available: producto.disponible !== false,
+                        createdAt: producto.fecha_creacion || new Date().toISOString(),
+                        source: 'caisy'
+                    };
+                });
+
+                console.log('🔄 Productos transformados:', caisyProducts);
 
                 // Merge with local products (keep local ones that aren't in Caisy)
                 const localProducts = JSON.parse(localStorage.getItem('panuProducts') || '[]');
@@ -584,17 +642,18 @@
 
                 allProducts = [...caisyProducts, ...localOnlyProducts];
 
-                console.log('✅ Productos cargados desde Caisy:', caisyProducts.length);
-                console.log('📱 Productos locales mantenidos:', localOnlyProducts.length);
+                console.log('✅ Total productos cargados:', allProducts.length);
+                console.log('📊 Desde Caisy:', caisyProducts.length);
+                console.log('📱 Locales mantenidos:', localOnlyProducts.length);
                 
                 showNotification(`✅ ${caisyProducts.length} productos cargados desde Caisy`, 'success');
                 applyFilter();
 
             } catch (error) {
-                console.error('Error loading from Caisy:', error);
+                console.error('❌ Error completo cargando desde Caisy:', error);
                 showNotification('⚠️ Error conectando con Caisy, usando datos locales', 'warning');
                 
-                // Always fall back to localStorage instead of throwing
+                // Always fall back to localStorage
                 loadFromLocalStorage();
             }
         }
@@ -1126,5 +1185,5 @@ ${window.location.href}`;
             if (e.target === this) closeEditor();
         });
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98f22a6c70636246',t:'MTc2MDU2MTE4NC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98f22da532cf6246',t:'MTc2MDU2MTMxNi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
