@@ -498,20 +498,50 @@
             }
         }
 
-        // Load products from Caisy with better error handling and debugging
+        // Load products from Caisy with comprehensive debugging
         async function loadFromCaisy() {
             try {
-                console.log('🔍 Conectando con blueprint "Producto" en Caisy...');
+                console.log('🔍 Iniciando conexión con Caisy CMS...');
+                console.log('🔗 Endpoint:', CAISY_CONFIG.endpoint);
+                console.log('🔑 API Key configurada:', CAISY_CONFIG.apiKey ? 'Sí' : 'No');
                 
-                // First, let's try a simple introspection query to see what's available
-                const introspectionQuery = `
+                // Step 1: Test basic connection
+                console.log('\n--- PASO 1: Verificando conexión básica ---');
+                const basicQuery = `query { __typename }`;
+                const basicResponse = await fetch(CAISY_CONFIG.endpoint, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-caisy-apikey': CAISY_CONFIG.apiKey
+                    },
+                    body: JSON.stringify({ query: basicQuery })
+                });
+
+                console.log('📡 Status de respuesta:', basicResponse.status);
+                console.log('📡 Headers de respuesta:', Object.fromEntries(basicResponse.headers.entries()));
+
+                if (!basicResponse.ok) {
+                    throw new Error(`HTTP ${basicResponse.status}: ${basicResponse.statusText}`);
+                }
+
+                const basicData = await basicResponse.json();
+                console.log('✅ Conexión básica exitosa:', basicData);
+
+                // Step 2: Get schema information
+                console.log('\n--- PASO 2: Obteniendo esquema de Caisy ---');
+                const schemaQuery = `
                     query {
                         __schema {
                             queryType {
                                 fields {
                                     name
+                                    description
                                     type {
                                         name
+                                        kind
+                                        ofType {
+                                            name
+                                        }
                                     }
                                 }
                             }
@@ -519,138 +549,300 @@
                     }
                 `;
 
-                console.log('🔍 Verificando esquema disponible...');
-                const introspectionResponse = await fetch(CAISY_CONFIG.endpoint, {
+                const schemaResponse = await fetch(CAISY_CONFIG.endpoint, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                         'x-caisy-apikey': CAISY_CONFIG.apiKey
                     },
-                    body: JSON.stringify({ query: introspectionQuery })
+                    body: JSON.stringify({ query: schemaQuery })
                 });
 
-                const introspectionData = await introspectionResponse.json();
-                console.log('📋 Campos disponibles:', introspectionData.data?.__schema?.queryType?.fields?.map(f => f.name));
+                const schemaData = await schemaResponse.json();
+                const availableFields = schemaData.data?.__schema?.queryType?.fields || [];
+                
+                console.log('📋 Campos disponibles en el esquema:');
+                availableFields.forEach(field => {
+                    console.log(`  - ${field.name} (${field.type?.name || field.type?.kind})`);
+                });
 
-                // Now try different possible query names
-                const possibleQueries = [
-                    'allProducto',
-                    'Producto', 
-                    'productos',
-                    'allProductos',
-                    'Product',
-                    'allProduct'
-                ];
+                // Step 3: Find product-related queries
+                console.log('\n--- PASO 3: Buscando consultas de productos ---');
+                const productQueries = availableFields.filter(field => 
+                    field.name.toLowerCase().includes('product') || 
+                    field.name.toLowerCase().includes('producto')
+                );
 
-                let successfulQuery = null;
+                console.log('🔍 Consultas relacionadas con productos encontradas:');
+                productQueries.forEach(query => {
+                    console.log(`  - ${query.name}: ${query.description || 'Sin descripción'}`);
+                });
+
+                if (productQueries.length === 0) {
+                    console.log('❌ No se encontraron consultas de productos en el esquema');
+                    console.log('📝 Campos disponibles que podrían ser útiles:');
+                    availableFields.slice(0, 10).forEach(field => {
+                        console.log(`  - ${field.name}`);
+                    });
+                    throw new Error('No se encontraron consultas de productos en Caisy');
+                }
+
+                // Step 4: Try each product query
+                console.log('\n--- PASO 4: Probando consultas de productos ---');
                 let productos = [];
+                let successfulQuery = null;
 
-                for (const queryName of possibleQueries) {
+                for (const queryField of productQueries) {
                     try {
-                        console.log(`🔍 Probando consulta: ${queryName}`);
+                        console.log(`\n🔍 Probando consulta: ${queryField.name}`);
                         
-                        const testQuery = `
+                        // Try a simple query first to see the structure
+                        const simpleQuery = `
                             query {
-                                ${queryName} {
-                                    id
-                                    nombre
-                                    descripcion {
-                                        json
-                                    }
-                                    precio
-                                    categoria
-                                    imagen_principal {
-                                        src
-                                    }
-                                    imagenes_galeria {
-                                        ... on Asset {
-                                            src
-                                        }
-                                    }
-                                    disponible
-                                    fecha_creacion
+                                ${queryField.name} {
+                                    __typename
                                 }
                             }
                         `;
 
-                        const testResponse = await fetch(CAISY_CONFIG.endpoint, {
+                        console.log('📤 Enviando consulta simple:', simpleQuery);
+                        const simpleResponse = await fetch(CAISY_CONFIG.endpoint, {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json',
                                 'x-caisy-apikey': CAISY_CONFIG.apiKey
                             },
-                            body: JSON.stringify({ query: testQuery })
+                            body: JSON.stringify({ query: simpleQuery })
                         });
 
-                        const testData = await testResponse.json();
-                        
-                        if (!testData.errors && testData.data && testData.data[queryName]) {
-                            console.log(`✅ Consulta exitosa con: ${queryName}`);
-                            console.log('📦 Datos recibidos:', testData.data[queryName]);
-                            
-                            productos = Array.isArray(testData.data[queryName]) ? 
-                                testData.data[queryName] : [testData.data[queryName]];
-                            successfulQuery = queryName;
-                            break;
-                        } else if (testData.errors) {
-                            console.log(`❌ Error con ${queryName}:`, testData.errors[0]?.message);
-                        } else {
-                            console.log(`⚠️ ${queryName} no devolvió datos`);
+                        const simpleData = await simpleResponse.json();
+                        console.log('📥 Respuesta simple:', simpleData);
+
+                        if (simpleData.errors) {
+                            console.log(`❌ Error en consulta simple: ${simpleData.errors[0]?.message}`);
+                            continue;
                         }
+
+                        if (!simpleData.data || !simpleData.data[queryField.name]) {
+                            console.log(`⚠️ ${queryField.name} no devolvió datos`);
+                            continue;
+                        }
+
+                        // Now try the full query
+                        console.log('✅ Consulta simple exitosa, probando consulta completa...');
+                        
+                        const fullQuery = `
+                            query {
+                                ${queryField.name} {
+                                    id
+                                    nombre
+                                    name
+                                    title
+                                    descripcion {
+                                        json
+                                    }
+                                    description {
+                                        json
+                                    }
+                                    precio
+                                    price
+                                    categoria
+                                    category
+                                    imagen_principal {
+                                        src
+                                        url
+                                    }
+                                    image {
+                                        src
+                                        url
+                                    }
+                                    imagenes_galeria {
+                                        ... on Asset {
+                                            src
+                                            url
+                                        }
+                                    }
+                                    images {
+                                        ... on Asset {
+                                            src
+                                            url
+                                        }
+                                    }
+                                    disponible
+                                    available
+                                    fecha_creacion
+                                    createdAt
+                                    _meta {
+                                        createdAt
+                                        updatedAt
+                                    }
+                                }
+                            }
+                        `;
+
+                        console.log('📤 Enviando consulta completa...');
+                        const fullResponse = await fetch(CAISY_CONFIG.endpoint, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'x-caisy-apikey': CAISY_CONFIG.apiKey
+                            },
+                            body: JSON.stringify({ query: fullQuery })
+                        });
+
+                        const fullData = await fullResponse.json();
+                        console.log('📥 Respuesta completa:', fullData);
+
+                        if (fullData.errors) {
+                            console.log(`❌ Error en consulta completa: ${fullData.errors[0]?.message}`);
+                            
+                            // Try a more basic query
+                            const basicProductQuery = `
+                                query {
+                                    ${queryField.name} {
+                                        id
+                                        nombre
+                                        name
+                                        title
+                                    }
+                                }
+                            `;
+                            
+                            console.log('🔄 Probando consulta básica...');
+                            const basicProductResponse = await fetch(CAISY_CONFIG.endpoint, {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'x-caisy-apikey': CAISY_CONFIG.apiKey
+                                },
+                                body: JSON.stringify({ query: basicProductQuery })
+                            });
+
+                            const basicProductData = await basicProductResponse.json();
+                            console.log('📥 Respuesta básica:', basicProductData);
+                            
+                            if (!basicProductData.errors && basicProductData.data?.[queryField.name]) {
+                                productos = Array.isArray(basicProductData.data[queryField.name]) ? 
+                                    basicProductData.data[queryField.name] : [basicProductData.data[queryField.name]];
+                                successfulQuery = queryField.name;
+                                console.log(`✅ Consulta básica exitosa con ${productos.length} productos`);
+                                break;
+                            }
+                            continue;
+                        }
+
+                        if (fullData.data && fullData.data[queryField.name]) {
+                            productos = Array.isArray(fullData.data[queryField.name]) ? 
+                                fullData.data[queryField.name] : [fullData.data[queryField.name]];
+                            successfulQuery = queryField.name;
+                            console.log(`✅ Consulta completa exitosa con ${productos.length} productos`);
+                            break;
+                        }
+
                     } catch (queryError) {
-                        console.log(`❌ Error ejecutando ${queryName}:`, queryError.message);
+                        console.log(`❌ Error ejecutando ${queryField.name}:`, queryError.message);
                     }
                 }
 
+                // Step 5: Process results
+                console.log('\n--- PASO 5: Procesando resultados ---');
+                
                 if (!successfulQuery || productos.length === 0) {
-                    console.log('⚠️ No se pudieron cargar productos desde Caisy, creando productos de demostración');
-                    showNotification('⚠️ Creando productos de demostración', 'warning');
+                    console.log('❌ No se pudieron obtener productos desde Caisy');
+                    console.log('🔄 Creando productos de demostración...');
+                    updateConnectionStatus('offline');
+                    showNotification('❌ No se encontraron productos en Caisy. Mostrando productos de demostración.', 'warning');
                     createDemoProducts();
                     return;
                 }
 
-                console.log(`✅ Productos encontrados con consulta "${successfulQuery}":`, productos.length);
+                console.log(`✅ Productos obtenidos exitosamente desde: ${successfulQuery}`);
+                console.log('📦 Productos raw:', productos);
 
-                // Transform Caisy data to our format
+                // Transform products
                 const caisyProducts = productos.map((producto, index) => {
-                    console.log(`🔄 Procesando producto ${index + 1}:`, producto);
+                    console.log(`🔄 Transformando producto ${index + 1}:`, producto);
                     
-                    return {
+                    // Extract name (try different fields)
+                    const name = producto.nombre || producto.name || producto.title || `Producto ${index + 1}`;
+                    
+                    // Extract price (try different fields)
+                    const price = parseFloat(producto.precio || producto.price || 0);
+                    
+                    // Extract description
+                    const descripcion = producto.descripcion || producto.description;
+                    const description = extractTextFromDescription(descripcion) || 'Producto de sublimación personalizable';
+                    
+                    // Extract category
+                    const category = producto.categoria || producto.category || 'Otros';
+                    
+                    // Extract images
+                    const images = [];
+                    if (producto.imagen_principal?.src) images.push(producto.imagen_principal.src);
+                    if (producto.imagen_principal?.url) images.push(producto.imagen_principal.url);
+                    if (producto.image?.src) images.push(producto.image.src);
+                    if (producto.image?.url) images.push(producto.image.url);
+                    
+                    if (producto.imagenes_galeria) {
+                        producto.imagenes_galeria.forEach(img => {
+                            if (img.src) images.push(img.src);
+                            if (img.url) images.push(img.url);
+                        });
+                    }
+                    
+                    if (producto.images) {
+                        producto.images.forEach(img => {
+                            if (img.src) images.push(img.src);
+                            if (img.url) images.push(img.url);
+                        });
+                    }
+                    
+                    // Extract availability
+                    const available = producto.disponible !== false && producto.available !== false;
+                    
+                    // Extract creation date
+                    const createdAt = producto.fecha_creacion || producto.createdAt || producto._meta?.createdAt || new Date().toISOString();
+                    
+                    const transformedProduct = {
                         id: producto.id || `caisy_${index}`,
-                        name: producto.nombre || `Producto ${index + 1}`,
-                        price: parseFloat(producto.precio) || 0,
-                        description: extractTextFromDescription(producto.descripcion) || 'Producto de sublimación',
-                        category: producto.categoria || 'Otros',
-                        stock: producto.disponible ? 10 : 0,
-                        images: [
-                            ...(producto.imagen_principal?.src ? [producto.imagen_principal.src] : []),
-                            ...(producto.imagenes_galeria?.map(img => img.src).filter(Boolean) || [])
-                        ],
-                        available: producto.disponible !== false,
-                        createdAt: producto.fecha_creacion || new Date().toISOString(),
-                        source: 'caisy'
+                        name: name,
+                        price: price,
+                        description: description,
+                        category: category,
+                        stock: available ? 10 : 0,
+                        images: [...new Set(images)], // Remove duplicates
+                        available: available,
+                        createdAt: createdAt,
+                        source: 'caisy',
+                        rawData: producto // Keep original for debugging
                     };
+                    
+                    console.log(`✅ Producto transformado:`, transformedProduct);
+                    return transformedProduct;
                 });
 
-                console.log('🔄 Productos transformados:', caisyProducts);
-
-                // Save to localStorage for other devices/browsers
+                console.log('\n--- RESULTADO FINAL ---');
+                console.log(`✅ ${caisyProducts.length} productos procesados exitosamente`);
+                
+                // Save to localStorage
                 localStorage.setItem('panuProducts', JSON.stringify(caisyProducts));
                 localStorage.setItem('panuProductsLastSync', new Date().toISOString());
+                localStorage.setItem('panuProductsSource', 'caisy');
+                localStorage.setItem('panuProductsQuery', successfulQuery);
 
                 allProducts = caisyProducts;
-
-                console.log('✅ Total productos cargados:', allProducts.length);
-                console.log('📊 Desde Caisy:', caisyProducts.length);
                 
                 showNotification(`✅ ${caisyProducts.length} productos sincronizados desde Caisy`, 'success');
                 applyFilter();
 
             } catch (error) {
-                console.error('❌ Error completo cargando desde Caisy:', error);
-                showNotification('⚠️ Error conectando con Caisy, creando productos de demostración', 'warning');
+                console.error('\n❌ ERROR COMPLETO:', error);
+                console.error('Stack trace:', error.stack);
                 
-                // Create demo products if Caisy fails
+                updateConnectionStatus('offline');
+                showNotification(`❌ Error conectando con Caisy: ${error.message}`, 'error');
+                
+                // Fallback to demo products
                 createDemoProducts();
             }
         }
@@ -1284,5 +1476,5 @@ ${window.location.href}`;
             if (e.target === this) closeEditor();
         });
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98f244caa55b3472',t:'MTc2MDU2MjI2NC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98f24d5255de3472',t:'MTc2MDU2MjYxNC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
