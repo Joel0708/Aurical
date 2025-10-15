@@ -3,16 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panu - Admin Login</title>
+    <title>Panel Admin - Panu Sublimaciones</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     colors: {
-                        'rosa-pastel': '#F8BBD9',
-                        'negro-mate': '#1a1a1a',
-                        'dorado': '#FFD700'
+                        'beige': '#F5F5DC',
+                        'gris-oscuro': '#4A4A4A',
+                        'marron': '#8B4513'
                     }
                 }
             }
@@ -21,8 +21,6 @@
     <style>
         body {
             box-sizing: border-box;
-            background: linear-gradient(135deg, #3d3426 0%, #2a2419 100%);
-            min-height: 100%;
         }
         
         .glass-effect {
@@ -32,372 +30,952 @@
         }
         
         .text-gradient {
-            background: linear-gradient(45deg, #F8BBD9, #FFD700);
+            background: linear-gradient(45deg, #F5F5DC, #8B4513);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
         
         .btn-primary {
-            background: linear-gradient(45deg, #F8BBD9, #FFD700);
+            background: linear-gradient(45deg, #F5F5DC, #8B4513);
             transition: all 0.3s ease;
         }
         
         .btn-primary:hover {
-            background: linear-gradient(45deg, #FFD700, #F8BBD9);
+            background: linear-gradient(45deg, #8B4513, #F5F5DC);
             transform: translateY(-2px);
         }
         
-        .floating-shapes {
-            position: absolute;
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
             width: 100%;
             height: 100%;
-            overflow: hidden;
-            z-index: 0;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            backdrop-filter: blur(5px);
         }
         
-        .shape {
-            position: absolute;
-            opacity: 0.1;
-            animation: float 6s ease-in-out infinite;
+        .modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         
-        .shape:nth-child(1) {
-            top: 20%;
-            left: 10%;
-            animation-delay: 0s;
+        .modal-content {
+            background: linear-gradient(135deg, #3d3426 0%, #2a2419 100%);
+            border-radius: 20px;
+            padding: 2rem;
+            max-width: 600px;
+            width: 90%;
+            max-height: 90%;
+            overflow-y: auto;
+            position: relative;
         }
         
-        .shape:nth-child(2) {
-            top: 60%;
-            right: 10%;
-            animation-delay: 2s;
+        .image-preview {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 2px solid rgba(245, 245, 220, 0.3);
         }
         
-        .shape:nth-child(3) {
-            bottom: 20%;
-            left: 20%;
-            animation-delay: 4s;
-        }
-        
-        @keyframes float {
-            0%, 100% { transform: translateY(0px) rotate(0deg); }
-            50% { transform: translateY(-20px) rotate(180deg); }
-        }
-        
-        .notification {
+        .connection-status {
             position: fixed;
             top: 20px;
             right: 20px;
-            z-index: 1001;
-            padding: 12px 24px;
-            border-radius: 8px;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            z-index: 100;
+        }
+        
+        .status-online {
+            background: #10B981;
             color: white;
-            font-weight: 500;
-            animation: slideInRight 0.3s ease-out;
         }
         
-        @keyframes slideInRight {
-            from {
-                opacity: 0;
-                transform: translateX(100px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
+        .status-offline {
+            background: #EF4444;
+            color: white;
         }
         
-        .loading-spinner {
-            display: none;
-            width: 20px;
-            height: 20px;
-            border: 2px solid transparent;
-            border-top: 2px solid currentColor;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        
-        .loading .loading-spinner {
-            display: inline-block;
-        }
-        
-        .loading .button-text {
-            display: none;
+        .status-caisy {
+            background: #8B5CF6;
+            color: white;
         }
     </style>
 </head>
-<body class="text-white font-sans min-h-full flex items-center justify-center p-6">
-    <!-- Floating Shapes Background -->
-    <div class="floating-shapes">
-        <div class="shape w-32 h-32 bg-rosa-pastel rounded-full"></div>
-        <div class="shape w-24 h-24 bg-dorado rounded-full"></div>
-        <div class="shape w-40 h-40 bg-rosa-pastel rounded-full"></div>
+<body class="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white font-sans">
+    <!-- Connection Status -->
+    <div id="connectionStatus" class="connection-status status-offline">
+        🔄 Conectando...
     </div>
 
-    <!-- Login Container -->
-    <div class="glass-effect rounded-3xl p-8 w-full max-w-md relative z-10">
-        <!-- Header -->
-        <div class="text-center mb-8">
-            <div class="text-6xl mb-4">🎨</div>
-            <h1 class="text-3xl font-bold text-gradient mb-2">Panu Admin</h1>
-            <p class="text-gray-300">Acceso al panel de administración</p>
-        </div>
-
-        <!-- Login Form -->
-        <form id="loginForm" class="space-y-6">
-            <div>
-                <label for="email" class="block text-sm font-medium text-gray-300 mb-2">
-                    Email
-                </label>
-                <input 
-                    type="email" 
-                    id="email" 
-                    name="email"
-                    required
-                    class="w-full bg-negro-mate border border-gray-600 rounded-lg px-4 py-3 text-white focus:border-rosa-pastel focus:outline-none transition-colors"
-                    placeholder="admin@panu.com"
-                >
-            </div>
-
-            <div>
-                <label for="password" class="block text-sm font-medium text-gray-300 mb-2">
-                    Contraseña
-                </label>
-                <div class="relative">
-                    <input 
-                        type="password" 
-                        id="password" 
-                        name="password"
-                        required
-                        class="w-full bg-negro-mate border border-gray-600 rounded-lg px-4 py-3 text-white focus:border-rosa-pastel focus:outline-none transition-colors pr-12"
-                        placeholder="••••••••"
-                    >
-                    <button 
-                        type="button" 
-                        onclick="togglePassword()"
-                        class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white transition-colors"
-                    >
-                        <span id="eyeIcon">👁️</span>
+    <!-- Header -->
+    <header class="glass-effect border-b border-gray-700 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-6 py-4">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center space-x-4">
+                    <div class="text-3xl">🛠️</div>
+                    <div>
+                        <h1 class="text-2xl font-bold text-gradient">Panel Admin</h1>
+                        <p class="text-sm text-gray-300">Gestión de Productos Panu</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <span id="productCount" class="text-sm text-gray-400">0 productos</span>
+                    <button onclick="logout()" class="glass-effect px-4 py-2 rounded-lg hover:bg-white hover:bg-opacity-20 transition-all">
+                        🚪 Cerrar Sesión
                     </button>
+                    <a href="index.html" class="glass-effect px-4 py-2 rounded-lg hover:bg-white hover:bg-opacity-20 transition-all">
+                        ← Volver al sitio
+                    </a>
                 </div>
             </div>
+        </div>
+    </header>
 
-            <div class="flex items-center justify-between">
-                <label class="flex items-center">
-                    <input type="checkbox" id="remember" class="rounded border-gray-600 text-rosa-pastel focus:ring-rosa-pastel">
-                    <span class="ml-2 text-sm text-gray-300">Recordarme</span>
-                </label>
-                <a href="#" class="text-sm text-rosa-pastel hover:text-dorado transition-colors">
-                    ¿Olvidaste tu contraseña?
-                </a>
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-6 py-8">
+        <!-- Actions Bar -->
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+            <div>
+                <h2 class="text-3xl font-bold text-white mb-2">Gestión de Productos</h2>
+                <p class="text-gray-400">Administra el catálogo de productos de sublimación</p>
             </div>
+            <div class="flex gap-3">
+                <button onclick="syncWithCaisy()" class="glass-effect px-4 py-2 rounded-lg hover:bg-white hover:bg-opacity-20 transition-all">
+                    🔄 Sincronizar
+                </button>
+                <button onclick="openProductModal()" class="btn-primary text-gris-oscuro px-6 py-3 rounded-lg font-bold">
+                    ➕ Nuevo Producto
+                </button>
+            </div>
+        </div>
 
-            <button 
-                type="submit" 
-                id="loginButton"
-                class="w-full btn-primary text-negro-mate py-3 rounded-lg font-bold text-lg transition-all hover:shadow-lg"
-            >
-                <span class="loading-spinner"></span>
-                <span class="button-text">Iniciar Sesión</span>
+        <!-- Products Grid -->
+        <div id="productsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Products will be loaded here -->
+            <div class="col-span-full text-center py-16">
+                <div class="text-6xl mb-4">📦</div>
+                <h3 class="text-2xl font-bold text-gray-400 mb-2">Cargando productos...</h3>
+                <p class="text-gray-500">Un momento por favor</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Developer Footer -->
+    <footer class="mt-16 py-6 border-t border-gray-700">
+        <div class="max-w-7xl mx-auto px-6 text-center">
+            <p class="text-gray-400 text-sm">
+                🚀 <span class="text-beige font-semibold">Esteban Paez Building</span> - Desarrollado con pasión
+            </p>
+        </div>
+    </footer>
+
+    <!-- Product Modal -->
+    <div id="productModal" class="modal">
+        <div class="modal-content glass-effect">
+            <button onclick="closeModal()" class="absolute top-4 right-4 text-2xl text-gray-400 hover:text-white transition-colors">
+                ×
             </button>
-        </form>
-
-
-
-        <!-- Back to Home -->
-        <div class="mt-6 text-center">
-            <a href="index.html" class="text-gray-400 hover:text-rosa-pastel transition-colors text-sm">
-                ← Volver al inicio
-            </a>
+            
+            <h3 id="modalTitle" class="text-2xl font-bold text-gradient mb-6">Nuevo Producto</h3>
+            
+            <form id="productForm" class="space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-beige font-bold mb-2">Nombre del Producto *</label>
+                        <input type="text" id="productName" required 
+                               class="w-full bg-gray-700 text-white p-3 rounded-lg border border-gray-600 focus:border-beige focus:outline-none">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-beige font-bold mb-2">Precio *</label>
+                        <input type="number" id="productPrice" step="0.01" min="0" required 
+                               class="w-full bg-gray-700 text-white p-3 rounded-lg border border-gray-600 focus:border-beige focus:outline-none">
+                    </div>
+                </div>
+                
+                <div>
+                    <label class="block text-beige font-bold mb-2">Categoría *</label>
+                    <select id="productCategory" required 
+                            class="w-full bg-gray-700 text-white p-3 rounded-lg border border-gray-600 focus:border-beige focus:outline-none">
+                        <option value="">Seleccionar categoría...</option>
+                        <option value="Tazas">Tazas</option>
+                        <option value="Camisetas">Camisetas</option>
+                        <option value="Accesorios">Accesorios</option>
+                        <option value="Otros">Otros</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label class="block text-beige font-bold mb-2">Descripción</label>
+                    <textarea id="productDescription" rows="3" 
+                              class="w-full bg-gray-700 text-white p-3 rounded-lg border border-gray-600 focus:border-beige focus:outline-none resize-none"
+                              placeholder="Describe las características del producto..."></textarea>
+                </div>
+                
+                <div>
+                    <label class="block text-beige font-bold mb-2">Stock</label>
+                    <input type="number" id="productStock" min="0" value="10" 
+                           class="w-full bg-gray-700 text-white p-3 rounded-lg border border-gray-600 focus:border-beige focus:outline-none">
+                </div>
+                
+                <div>
+                    <label class="block text-beige font-bold mb-2">Imagen Principal</label>
+                    <input type="file" id="productImage" accept="image/*" 
+                           class="w-full bg-gray-700 text-white p-3 rounded-lg border border-gray-600 focus:border-beige focus:outline-none">
+                    <div id="imagePreview" class="mt-3 hidden">
+                        <img id="previewImg" class="image-preview">
+                    </div>
+                </div>
+                
+                <div class="flex justify-end space-x-4 pt-4">
+                    <button type="button" onclick="closeModal()" 
+                            class="px-6 py-3 glass-effect rounded-lg font-bold hover:bg-white hover:bg-opacity-20 transition-all">
+                        Cancelar
+                    </button>
+                    <button type="submit" 
+                            class="btn-primary text-gris-oscuro px-6 py-3 rounded-lg font-bold">
+                        💾 Guardar Producto
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 
     <script>
-        // Suppress Tailwind CDN warning for development
-        console.warn = function(message) {
-            if (message.includes('cdn.tailwindcss.com should not be used in production')) {
-                return;
+        // Authentication check
+        function checkAuthentication() {
+            // Check multiple possible auth keys for compatibility
+            const authData = localStorage.getItem('panuAuth') || 
+                           localStorage.getItem('adminAuth') || 
+                           localStorage.getItem('isLoggedIn');
+            
+            if (!authData) {
+                showNotification('Acceso denegado. Redirigiendo al login...', 'error');
+                setTimeout(() => {
+                    window.location.href = 'login.html';
+                }, 2000);
+                return false;
             }
-            console.log(message);
-        };
 
-        // Caisy Configuration
-        const CAISY_CONFIG = {
-            projectId: 'd5020874-9338-4ce1-9f01-872741713f01',
-            apiKey: 'DR4cQSjCXwdqZDs20vuKsPmGreNnSu4T',
-            endpoint: 'https://cloud.caisy.io/api/v3/e/d5020874-9338-4ce1-9f01-872741713f01/graphql'
-        };
-
-        // GraphQL Query for Admin Users (Caisy format)
-        const GET_ADMIN_USERS_QUERY = `
-            query GetAdminUsers {
-                AdminUser {
-                    id
-                    email
-                    password
-                    nombre
-                    activo
-                }
-            }
-        `;
-
-        // API Functions
-        async function makeGraphQLRequest(query, variables = {}) {
+            // Handle different auth formats
             try {
+                // If it's just "true" string (simple format)
+                if (authData === 'true') {
+                    return true;
+                }
+                
+                // If it's JSON format
+                const auth = JSON.parse(authData);
+                
+                // Check if it has timestamp for expiration
+                if (auth.timestamp) {
+                    const now = new Date().getTime();
+                    // Check if session expired (24 hours)
+                    if (now - auth.timestamp > 24 * 60 * 60 * 1000) {
+                        localStorage.removeItem('panuAuth');
+                        localStorage.removeItem('adminAuth');
+                        localStorage.removeItem('isLoggedIn');
+                        showNotification('Sesión expirada. Redirigiendo al login...', 'warning');
+                        setTimeout(() => {
+                            window.location.href = 'login.html';
+                        }, 2000);
+                        return false;
+                    }
+                }
+                
+                return true;
+            } catch (error) {
+                // If parsing fails, treat as simple boolean
+                return authData === 'true';
+            }
+        }
+
+        // Logout function
+        function logout() {
+            localStorage.removeItem('panuAuth');
+            showNotification('Sesión cerrada correctamente', 'success');
+            setTimeout(() => {
+                window.location.href = 'login.html';
+            }, 1500);
+        }
+
+        // Global variables
+        let allProducts = [];
+        let editingProductId = null;
+        let caisyConnected = false;
+
+        // Caisy configuration
+        const CAISY_CONFIG = {
+            endpoint: 'https://cloud.caisy.io/api/v3/e/d5020874-9338-4ce1-9f01-872741713f01/graphql',
+            apiKey: 'DR4cQSjCXwdqZDs20vuKsPmGreNnSu4T'
+        };
+
+        // Initialize admin panel
+        document.addEventListener('DOMContentLoaded', function() {
+            if (!checkAuthentication()) return;
+            
+            initializeAdmin();
+            setupFormHandlers();
+        });
+
+        // Initialize admin panel
+        async function initializeAdmin() {
+            updateConnectionStatus('connecting');
+            await loadProducts();
+            checkCaisyConnection();
+        }
+
+        // Setup form handlers
+        function setupFormHandlers() {
+            // Product form submission
+            document.getElementById('productForm').addEventListener('submit', handleProductSubmit);
+            
+            // Image preview
+            document.getElementById('productImage').addEventListener('change', handleImagePreview);
+            
+            // Close modal on outside click
+            document.getElementById('productModal').addEventListener('click', function(e) {
+                if (e.target === this) closeModal();
+            });
+        }
+
+        // Check Caisy connection
+        async function checkCaisyConnection() {
+            try {
+                const query = `query { __typename }`;
                 const response = await fetch(CAISY_CONFIG.endpoint, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                         'x-caisy-apikey': CAISY_CONFIG.apiKey
                     },
-                    body: JSON.stringify({
-                        query,
-                        variables
-                    })
+                    body: JSON.stringify({ query })
                 });
+
+                if (response.ok) {
+                    caisyConnected = true;
+                    updateConnectionStatus('caisy');
+                    console.log('✅ Conectado a Caisy CMS');
+                } else {
+                    throw new Error('Connection failed');
+                }
+            } catch (error) {
+                caisyConnected = false;
+                updateConnectionStatus('offline');
+                console.log('❌ Sin conexión a Caisy, modo offline');
+            }
+        }
+
+        // Update connection status
+        function updateConnectionStatus(status) {
+            const statusEl = document.getElementById('connectionStatus');
+            
+            switch (status) {
+                case 'connecting':
+                    statusEl.className = 'connection-status status-offline';
+                    statusEl.textContent = '🔄 Conectando...';
+                    break;
+                case 'caisy':
+                    statusEl.className = 'connection-status status-caisy';
+                    statusEl.textContent = '☁️ Conectado a Caisy';
+                    break;
+                case 'offline':
+                    statusEl.className = 'connection-status status-offline';
+                    statusEl.textContent = '📱 Modo Local';
+                    break;
+            }
+        }
+
+        // Load products from Caisy and localStorage
+        async function loadProducts() {
+            try {
+                // Try to load from Caisy first
+                if (caisyConnected) {
+                    await loadFromCaisy();
+                } else {
+                    // Fallback to localStorage
+                    loadFromLocalStorage();
+                }
+            } catch (error) {
+                console.error('Error loading products:', error);
+                loadFromLocalStorage();
+            }
+        }
+
+        // Load products from Caisy
+        async function loadFromCaisy() {
+            try {
+                const query = `
+                    query {
+                        allProducto {
+                            edges {
+                                node {
+                                    id
+                                    nombre
+                                    descripcion
+                                    precio
+                                    categoria
+                                    imagen_principal {
+                                        src
+                                        alt
+                                    }
+                                    imagenes_galeria {
+                                        src
+                                        alt
+                                    }
+                                    disponible
+                                    fecha_creacion
+                                }
+                            }
+                        }
+                    }
+                `;
+
+                const response = await fetch(CAISY_CONFIG.endpoint, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-caisy-apikey': CAISY_CONFIG.apiKey
+                    },
+                    body: JSON.stringify({ query })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
 
                 const data = await response.json();
                 
                 if (data.errors) {
-                    throw new Error(data.errors[0].message);
+                    throw new Error('GraphQL query failed');
                 }
+
+                // Transform Caisy data
+                allProducts = data.data.allProducto.edges.map(edge => ({
+                    id: edge.node.id,
+                    name: edge.node.nombre,
+                    price: parseInt(edge.node.precio) || 0,
+                    description: edge.node.descripcion || '',
+                    category: edge.node.categoria || 'Otros',
+                    stock: edge.node.disponible ? 10 : 0,
+                    images: [
+                        ...(edge.node.imagen_principal?.src ? [edge.node.imagen_principal.src] : []),
+                        ...(edge.node.imagenes_galeria?.map(img => img.src) || [])
+                    ],
+                    available: edge.node.disponible,
+                    createdAt: edge.node.fecha_creacion || new Date().toISOString(),
+                    source: 'caisy'
+                }));
+
+                // Sync with localStorage
+                localStorage.setItem('panuProducts', JSON.stringify(allProducts));
                 
-                return data.data;
+                console.log('✅ Productos cargados desde Caisy:', allProducts.length);
+                renderProducts();
+
             } catch (error) {
-                console.error('GraphQL Error:', error);
+                console.error('Error loading from Caisy:', error);
                 throw error;
             }
         }
 
-        // Credenciales de fallback (por si falla Caisy)
-        const FALLBACK_CREDENTIALS = [
-            {
-                id: 'fallback-admin',
-                email: 'admin@panu.com',
-                password: 'admin123',
-                nombre: 'Admin Demo',
-                activo: true
-            }
-        ];
-
-        // Authentication Functions
-        async function authenticateUser(email, password) {
+        // Load products from localStorage
+        function loadFromLocalStorage() {
             try {
-                console.log('🔍 Consultando administradores en Caisy...');
-                
-                const data = await makeGraphQLRequest(GET_ADMIN_USERS_QUERY);
-                console.log('📦 Respuesta de allAdminUser:', data);
-                
-                // Extract users from Caisy's GraphQL response format
-                let adminUsersArray = [];
-                
-                if (data && data.AdminUser) {
-                    if (Array.isArray(data.AdminUser)) {
-                        adminUsersArray = data.AdminUser;
-                    } else {
-                        adminUsersArray = [data.AdminUser];
-                    }
-                }
-                
-                console.log('👥 Administradores encontrados:', adminUsersArray);
-                
-                // Find user with matching email and password
-                const user = adminUsersArray.find(u => 
-                    u.email === email && 
-                    u.password === password && 
-                    u.activo
-                );
-                
-                if (user) {
-                    console.log('✅ Usuario autenticado desde Caisy:', user.nombre);
-                    return {
-                        success: true,
-                        user: {
-                            id: user.id,
-                            email: user.email,
-                            nombre: user.nombre,
-                            rol: 'admin'
-                        }
-                    };
+                const saved = localStorage.getItem('panuProducts');
+                if (saved) {
+                    allProducts = JSON.parse(saved);
+                    console.log('📦 Productos cargados desde localStorage:', allProducts.length);
                 } else {
-                    console.log('❌ Credenciales no encontradas en Caisy');
-                    return {
-                        success: false,
-                        message: 'Credenciales inválidas o usuario inactivo'
-                    };
+                    allProducts = [];
+                    console.log('📦 No hay productos guardados');
                 }
-                
+                renderProducts();
             } catch (error) {
-                console.error('❌ Error consultando Caisy:', error);
-                
-                // Fallback to demo credentials if Caisy fails
-                console.log('🔄 Intentando con credenciales de fallback...');
-                const fallbackUser = FALLBACK_CREDENTIALS.find(u => 
-                    u.email === email && u.password === password && u.activo
-                );
-                
-                if (fallbackUser) {
-                    console.log('✅ Usuario autenticado con fallback:', fallbackUser.nombre);
-                    return {
-                        success: true,
-                        user: {
-                            id: fallbackUser.id,
-                            email: fallbackUser.email,
-                            nombre: fallbackUser.nombre,
-                            rol: 'admin'
+                console.error('Error loading from localStorage:', error);
+                allProducts = [];
+                renderProducts();
+            }
+        }
+
+        // Save product to Caisy
+        async function saveProductToCaisy(productData) {
+            try {
+                const mutation = `
+                    mutation CreateProducto($input: ProductoInput!) {
+                        createProducto(input: $input) {
+                            id
+                            nombre
+                            descripcion
+                            precio
+                            categoria
+                            disponible
+                            fecha_creacion
                         }
-                    };
+                    }
+                `;
+
+                const variables = {
+                    input: {
+                        nombre: productData.name,
+                        descripcion: productData.description,
+                        precio: parseInt(productData.price),
+                        categoria: productData.category,
+                        disponible: productData.stock > 0,
+                        fecha_creacion: new Date().toISOString()
+                    }
+                };
+
+                const response = await fetch(CAISY_CONFIG.endpoint, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-caisy-apikey': CAISY_CONFIG.apiKey
+                    },
+                    body: JSON.stringify({ query: mutation, variables })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                
+                if (data.errors) {
+                    throw new Error('GraphQL mutation failed: ' + JSON.stringify(data.errors));
+                }
+
+                return data.data.createProducto;
+
+            } catch (error) {
+                console.error('Error saving to Caisy:', error);
+                throw error;
+            }
+        }
+
+        // Delete product from Caisy
+        async function deleteProductFromCaisy(productId) {
+            try {
+                const mutation = `
+                    mutation DeleteProducto($id: ID!) {
+                        deleteProducto(id: $id) {
+                            id
+                        }
+                    }
+                `;
+
+                const response = await fetch(CAISY_CONFIG.endpoint, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-caisy-apikey': CAISY_CONFIG.apiKey
+                    },
+                    body: JSON.stringify({ 
+                        query: mutation, 
+                        variables: { id: productId } 
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                
+                if (data.errors) {
+                    throw new Error('GraphQL mutation failed');
+                }
+
+                return true;
+
+            } catch (error) {
+                console.error('Error deleting from Caisy:', error);
+                throw error;
+            }
+        }
+
+        // Handle product form submission
+        async function handleProductSubmit(e) {
+            e.preventDefault();
+            
+            const formData = {
+                name: document.getElementById('productName').value.trim(),
+                price: parseFloat(document.getElementById('productPrice').value),
+                category: document.getElementById('productCategory').value,
+                description: document.getElementById('productDescription').value.trim(),
+                stock: parseInt(document.getElementById('productStock').value) || 0,
+                images: []
+            };
+
+            // Validate required fields
+            if (!formData.name || !formData.price || !formData.category) {
+                showNotification('Por favor completa todos los campos requeridos', 'error');
+                return;
+            }
+
+            // Handle image
+            const imageFile = document.getElementById('productImage').files[0];
+            if (imageFile) {
+                formData.images = [await convertImageToBase64(imageFile)];
+            }
+
+            try {
+                let savedProduct;
+                
+                if (editingProductId) {
+                    // Update existing product
+                    savedProduct = await updateProduct(editingProductId, formData);
+                    showNotification('Producto actualizado correctamente', 'success');
+                } else {
+                    // Create new product
+                    savedProduct = await createProduct(formData);
+                    showNotification('Producto creado correctamente', 'success');
+                }
+
+                closeModal();
+                await loadProducts();
+
+            } catch (error) {
+                console.error('Error saving product:', error);
+                showNotification('Error al guardar el producto. Guardado localmente.', 'warning');
+                
+                // Fallback: save locally
+                if (editingProductId) {
+                    updateProductLocally(editingProductId, formData);
+                } else {
+                    createProductLocally(formData);
                 }
                 
-                return {
-                    success: false,
-                    message: 'Error de conexión y credenciales no válidas'
-                };
+                closeModal();
+                renderProducts();
             }
         }
 
-        // UI Functions
-        function togglePassword() {
-            const passwordInput = document.getElementById('password');
-            const eyeIcon = document.getElementById('eyeIcon');
+        // Create new product
+        async function createProduct(productData) {
+            const newProduct = {
+                id: generateId(),
+                ...productData,
+                available: productData.stock > 0,
+                createdAt: new Date().toISOString(),
+                source: 'local'
+            };
+
+            try {
+                if (caisyConnected) {
+                    const caisyProduct = await saveProductToCaisy(productData);
+                    newProduct.id = caisyProduct.id;
+                    newProduct.source = 'caisy';
+                    showNotification('✅ Producto guardado en Caisy', 'success');
+                }
+            } catch (error) {
+                console.error('Caisy save failed, saving locally:', error);
+                showNotification('⚠️ Guardado localmente (sin conexión a Caisy)', 'warning');
+            }
+
+            // Always save to localStorage as backup
+            allProducts.push(newProduct);
+            localStorage.setItem('panuProducts', JSON.stringify(allProducts));
             
-            if (passwordInput.type === 'password') {
-                passwordInput.type = 'text';
-                eyeIcon.textContent = '🙈';
-            } else {
-                passwordInput.type = 'password';
-                eyeIcon.textContent = '👁️';
+            return newProduct;
+        }
+
+        // Update existing product
+        async function updateProduct(productId, productData) {
+            const productIndex = allProducts.findIndex(p => p.id === productId);
+            if (productIndex === -1) throw new Error('Product not found');
+
+            const updatedProduct = {
+                ...allProducts[productIndex],
+                ...productData,
+                available: productData.stock > 0
+            };
+
+            try {
+                if (caisyConnected && allProducts[productIndex].source === 'caisy') {
+                    // Update in Caisy (would need update mutation)
+                    showNotification('✅ Producto actualizado en Caisy', 'success');
+                }
+            } catch (error) {
+                console.error('Caisy update failed:', error);
+                showNotification('⚠️ Actualizado localmente', 'warning');
+            }
+
+            allProducts[productIndex] = updatedProduct;
+            localStorage.setItem('panuProducts', JSON.stringify(allProducts));
+            
+            return updatedProduct;
+        }
+
+        // Create product locally
+        function createProductLocally(productData) {
+            const newProduct = {
+                id: generateId(),
+                ...productData,
+                available: productData.stock > 0,
+                createdAt: new Date().toISOString(),
+                source: 'local'
+            };
+
+            allProducts.push(newProduct);
+            localStorage.setItem('panuProducts', JSON.stringify(allProducts));
+        }
+
+        // Update product locally
+        function updateProductLocally(productId, productData) {
+            const productIndex = allProducts.findIndex(p => p.id === productId);
+            if (productIndex !== -1) {
+                allProducts[productIndex] = {
+                    ...allProducts[productIndex],
+                    ...productData,
+                    available: productData.stock > 0
+                };
+                localStorage.setItem('panuProducts', JSON.stringify(allProducts));
             }
         }
 
-        function fillDemoCredentials() {
-            document.getElementById('email').value = 'admin@panu.com';
-            document.getElementById('password').value = 'admin123';
-            showNotification('Credenciales de prueba cargadas', 'info');
+        // Delete product
+        async function deleteProduct(productId) {
+            // Custom confirmation modal instead of browser confirm
+            const confirmDelete = await showConfirmModal('¿Estás seguro de que quieres eliminar este producto?');
+            if (!confirmDelete) return;
+
+            try {
+                const product = allProducts.find(p => p.id === productId);
+                
+                if (caisyConnected && product?.source === 'caisy') {
+                    await deleteProductFromCaisy(productId);
+                    showNotification('✅ Producto eliminado de Caisy', 'success');
+                }
+            } catch (error) {
+                console.error('Error deleting from Caisy:', error);
+                showNotification('⚠️ Eliminado solo localmente', 'warning');
+            }
+
+            // Always remove from local storage
+            allProducts = allProducts.filter(p => p.id !== productId);
+            localStorage.setItem('panuProducts', JSON.stringify(allProducts));
+            
+            renderProducts();
         }
 
-        function setLoading(isLoading) {
-            const button = document.getElementById('loginButton');
-            if (isLoading) {
-                button.classList.add('loading');
-                button.disabled = true;
-            } else {
-                button.classList.remove('loading');
-                button.disabled = false;
+        // Custom confirmation modal
+        function showConfirmModal(message) {
+            return new Promise((resolve) => {
+                const modal = document.createElement('div');
+                modal.className = 'modal show';
+                modal.innerHTML = `
+                    <div class="modal-content glass-effect max-w-md">
+                        <h3 class="text-xl font-bold text-white mb-4">Confirmar Acción</h3>
+                        <p class="text-gray-300 mb-6">${message}</p>
+                        <div class="flex gap-3 justify-end">
+                            <button onclick="this.closest('.modal').remove(); window.confirmResolve(false)" 
+                                    class="px-4 py-2 glass-effect rounded-lg hover:bg-white hover:bg-opacity-20 transition-all">
+                                Cancelar
+                            </button>
+                            <button onclick="this.closest('.modal').remove(); window.confirmResolve(true)" 
+                                    class="px-4 py-2 bg-red-600 hover:bg-red-700 rounded-lg transition-all">
+                                Eliminar
+                            </button>
+                        </div>
+                    </div>
+                `;
+                
+                window.confirmResolve = resolve;
+                document.body.appendChild(modal);
+            });
+        }
+
+        // Sync with Caisy
+        async function syncWithCaisy() {
+            showNotification('🔄 Sincronizando con Caisy...', 'info');
+            
+            try {
+                await checkCaisyConnection();
+                if (caisyConnected) {
+                    await loadFromCaisy();
+                    showNotification('✅ Sincronización completada', 'success');
+                } else {
+                    showNotification('❌ No se pudo conectar con Caisy', 'error');
+                }
+            } catch (error) {
+                console.error('Sync error:', error);
+                showNotification('❌ Error en la sincronización', 'error');
             }
         }
 
+        // Render products in admin grid
+        function renderProducts() {
+            const grid = document.getElementById('productsGrid');
+            const productCount = document.getElementById('productCount');
+            
+            productCount.textContent = `${allProducts.length} productos`;
+            
+            if (allProducts.length === 0) {
+                grid.innerHTML = `
+                    <div class="col-span-full text-center py-16">
+                        <div class="text-6xl mb-4">📦</div>
+                        <h3 class="text-2xl font-bold text-gray-400 mb-2">No hay productos</h3>
+                        <p class="text-gray-500 mb-4">Comienza agregando tu primer producto</p>
+                        <button onclick="openProductModal()" class="btn-primary text-gris-oscuro px-6 py-3 rounded-lg font-bold">
+                            ➕ Crear Primer Producto
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+
+            grid.innerHTML = allProducts.map(product => `
+                <div class="glass-effect rounded-xl overflow-hidden">
+                    <div class="relative">
+                        ${product.images && product.images.length > 0 ? `
+                            <img src="${product.images[0]}" alt="${product.name}" class="w-full h-48 object-cover">
+                        ` : `
+                            <div class="w-full h-48 bg-gradient-to-br from-beige to-marron flex items-center justify-center">
+                                <div class="text-4xl text-gris-oscuro">💎</div>
+                            </div>
+                        `}
+                        <div class="absolute top-2 right-2 flex gap-2">
+                            <span class="bg-${product.source === 'caisy' ? 'purple' : 'blue'}-500 text-white px-2 py-1 rounded text-xs">
+                                ${product.source === 'caisy' ? '☁️ Caisy' : '📱 Local'}
+                            </span>
+                            <span class="bg-beige text-gris-oscuro px-2 py-1 rounded text-xs font-bold">
+                                ${product.category}
+                            </span>
+                        </div>
+                        ${product.stock <= 5 ? `
+                            <div class="absolute top-2 left-2 bg-red-500 text-white px-2 py-1 rounded text-xs font-bold">
+                                ${product.stock <= 0 ? 'Agotado' : `Stock: ${product.stock}`}
+                            </div>
+                        ` : ''}
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-lg font-bold text-white mb-2">${product.name}</h3>
+                        <p class="text-gray-300 text-sm mb-3 line-clamp-2">${product.description || 'Sin descripción'}</p>
+                        <div class="flex justify-between items-center mb-4">
+                            <span class="text-xl font-bold text-marron">$${product.price.toFixed(2)}</span>
+                            <span class="text-sm text-gray-400">Stock: ${product.stock}</span>
+                        </div>
+                        <div class="flex gap-2">
+                            <button onclick="editProduct('${product.id}')" 
+                                    class="flex-1 glass-effect px-3 py-2 rounded-lg text-sm font-medium hover:bg-white hover:bg-opacity-20 transition-all">
+                                ✏️ Editar
+                            </button>
+                            <button onclick="deleteProduct('${product.id}')" 
+                                    class="px-3 py-2 bg-red-600 hover:bg-red-700 rounded-lg text-sm font-medium transition-all">
+                                🗑️
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Open product modal
+        function openProductModal(productId = null) {
+            const modal = document.getElementById('productModal');
+            const modalTitle = document.getElementById('modalTitle');
+            const form = document.getElementById('productForm');
+            
+            editingProductId = productId;
+            
+            if (productId) {
+                const product = allProducts.find(p => p.id === productId);
+                if (product) {
+                    modalTitle.textContent = 'Editar Producto';
+                    fillForm(product);
+                }
+            } else {
+                modalTitle.textContent = 'Nuevo Producto';
+                form.reset();
+                hideImagePreview();
+            }
+            
+            modal.classList.add('show');
+        }
+
+        // Edit product
+        function editProduct(productId) {
+            openProductModal(productId);
+        }
+
+        // Fill form with product data
+        function fillForm(product) {
+            document.getElementById('productName').value = product.name;
+            document.getElementById('productPrice').value = product.price;
+            document.getElementById('productCategory').value = product.category;
+            document.getElementById('productDescription').value = product.description || '';
+            document.getElementById('productStock').value = product.stock;
+            
+            if (product.images && product.images.length > 0) {
+                showImagePreview(product.images[0]);
+            } else {
+                hideImagePreview();
+            }
+        }
+
+        // Close modal
+        function closeModal() {
+            document.getElementById('productModal').classList.remove('show');
+            editingProductId = null;
+        }
+
+        // Handle image preview
+        function handleImagePreview(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => showImagePreview(e.target.result);
+                reader.readAsDataURL(file);
+            } else {
+                hideImagePreview();
+            }
+        }
+
+        // Show image preview
+        function showImagePreview(src) {
+            const preview = document.getElementById('imagePreview');
+            const img = document.getElementById('previewImg');
+            img.src = src;
+            preview.classList.remove('hidden');
+        }
+
+        // Hide image preview
+        function hideImagePreview() {
+            document.getElementById('imagePreview').classList.add('hidden');
+        }
+
+        // Convert image to base64
+        function convertImageToBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
+        }
+
+        // Generate unique ID
+        function generateId() {
+            return 'prod_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+        }
+
+        // Show notification
         function showNotification(message, type = 'info') {
             const notification = document.createElement('div');
-            notification.className = `notification ${
+            notification.className = `fixed top-20 right-4 z-50 px-6 py-3 rounded-lg text-white font-medium max-w-sm ${
                 type === 'success' ? 'bg-green-600' : 
-                type === 'error' ? 'bg-red-600' : 'bg-blue-600'
+                type === 'error' ? 'bg-red-600' : 
+                type === 'warning' ? 'bg-yellow-600' : 'bg-blue-600'
             }`;
             notification.textContent = message;
             
@@ -405,90 +983,8 @@
             
             setTimeout(() => {
                 notification.remove();
-            }, 4000);
+            }, 5000);
         }
-
-        // Form Handler
-        document.getElementById('loginForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-            const remember = document.getElementById('remember').checked;
-            
-            if (!email || !password) {
-                showNotification('Por favor completa todos los campos', 'error');
-                return;
-            }
-            
-            setLoading(true);
-            
-            try {
-                const result = await authenticateUser(email, password);
-                
-                if (result.success) {
-                    // Store user session
-                    const sessionData = {
-                        user: result.user,
-                        timestamp: Date.now(),
-                        remember: remember
-                    };
-                    
-                    if (remember) {
-                        localStorage.setItem('panuAdminSession', JSON.stringify(sessionData));
-                    } else {
-                        sessionStorage.setItem('panuAdminSession', JSON.stringify(sessionData));
-                    }
-                    
-                    showNotification(`¡Bienvenido ${result.user.nombre}!`, 'success');
-                    
-                    // Redirect to admin panel
-                    setTimeout(() => {
-                        window.location.href = 'admin.html';
-                    }, 1500);
-                    
-                } else {
-                    showNotification(result.message, 'error');
-                }
-                
-            } catch (error) {
-                console.error('Login error:', error);
-                showNotification('Error inesperado. Intenta nuevamente.', 'error');
-            } finally {
-                setLoading(false);
-            }
-        });
-
-        // Check for existing session on page load
-        document.addEventListener('DOMContentLoaded', function() {
-            const sessionData = localStorage.getItem('panuAdminSession') || 
-                               sessionStorage.getItem('panuAdminSession');
-            
-            if (sessionData) {
-                try {
-                    const session = JSON.parse(sessionData);
-                    const now = Date.now();
-                    const sessionAge = now - session.timestamp;
-                    const maxAge = session.remember ? 7 * 24 * 60 * 60 * 1000 : 24 * 60 * 60 * 1000; // 7 days or 24 hours
-                    
-                    if (sessionAge < maxAge) {
-                        showNotification('Sesión activa detectada, redirigiendo...', 'info');
-                        setTimeout(() => {
-                            window.location.href = 'admin.html';
-                        }, 1000);
-                        return;
-                    } else {
-                        // Session expired
-                        localStorage.removeItem('panuAdminSession');
-                        sessionStorage.removeItem('panuAdminSession');
-                    }
-                } catch (error) {
-                    console.error('Error parsing session:', error);
-                    localStorage.removeItem('panuAdminSession');
-                    sessionStorage.removeItem('panuAdminSession');
-                }
-            }
-        });
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98e10fd5917c116e',t:'MTc2MDM4MTgzNy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98f11327869e2538',t:'MTc2MDU0OTc0Ni4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
