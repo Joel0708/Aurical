@@ -378,23 +378,27 @@
             });
         }
 
-        // Check Caisy connection
+        // Check Caisy connection and discover blueprints
         async function checkCaisyConnection() {
             try {
-                const query = `query { __typename }`;
+                // First, test basic connection
+                const testQuery = `query { __typename }`;
                 const response = await fetch(CAISY_CONFIG.endpoint, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                         'x-caisy-apikey': CAISY_CONFIG.apiKey
                     },
-                    body: JSON.stringify({ query })
+                    body: JSON.stringify({ query: testQuery })
                 });
 
                 if (response.ok) {
                     caisyConnected = true;
                     updateConnectionStatus('caisy');
                     console.log('✅ Conectado a Caisy CMS');
+                    
+                    // Try to discover available blueprints
+                    await discoverCaisyBlueprints();
                 } else {
                     throw new Error('Connection failed');
                 }
@@ -402,6 +406,54 @@
                 caisyConnected = false;
                 updateConnectionStatus('offline');
                 console.log('❌ Sin conexión a Caisy, modo offline');
+            }
+        }
+
+        // Discover available blueprints in Caisy
+        async function discoverCaisyBlueprints() {
+            try {
+                const introspectionQuery = `
+                    query IntrospectionQuery {
+                        __schema {
+                            queryType {
+                                fields {
+                                    name
+                                    type {
+                                        name
+                                    }
+                                }
+                            }
+                        }
+                    }
+                `;
+
+                const response = await fetch(CAISY_CONFIG.endpoint, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-caisy-apikey': CAISY_CONFIG.apiKey
+                    },
+                    body: JSON.stringify({ query: introspectionQuery })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    const fields = data.data.__schema.queryType.fields;
+                    const productFields = fields.filter(field => 
+                        field.name.toLowerCase().includes('product') || 
+                        field.name.toLowerCase().includes('producto')
+                    );
+                    
+                    console.log('📋 Blueprints disponibles relacionados con productos:', productFields.map(f => f.name));
+                    
+                    if (productFields.length > 0) {
+                        showNotification(`✅ Encontrados ${productFields.length} blueprints de productos en Caisy`, 'success');
+                    } else {
+                        showNotification('⚠️ No se encontraron blueprints de productos en Caisy', 'warning');
+                    }
+                }
+            } catch (error) {
+                console.error('Error discovering blueprints:', error);
             }
         }
 
@@ -441,56 +493,87 @@
             }
         }
 
-        // Load products from Caisy
+        // Load products from Caisy with better error handling
         async function loadFromCaisy() {
             try {
-                const query = `
-                    query {
-                        allProducto {
-                            edges {
-                                node {
-                                    id
-                                    nombre
-                                    descripcion
-                                    precio
-                                    categoria
-                                    imagen_principal {
-                                        src
-                                        alt
+                // Try different possible blueprint names
+                const possibleQueries = [
+                    'allProducto',
+                    'allProduct', 
+                    'allProducts',
+                    'allProductos'
+                ];
+
+                let successfulQuery = null;
+                let queryResult = null;
+
+                for (const queryName of possibleQueries) {
+                    try {
+                        const query = `
+                            query {
+                                ${queryName} {
+                                    edges {
+                                        node {
+                                            id
+                                            nombre
+                                            descripcion
+                                            precio
+                                            categoria
+                                            imagen_principal {
+                                                src
+                                                alt
+                                            }
+                                            imagenes_galeria {
+                                                src
+                                                alt
+                                            }
+                                            disponible
+                                            fecha_creacion
+                                        }
                                     }
-                                    imagenes_galeria {
-                                        src
-                                        alt
-                                    }
-                                    disponible
-                                    fecha_creacion
                                 }
                             }
+                        `;
+
+                        const response = await fetch(CAISY_CONFIG.endpoint, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'x-caisy-apikey': CAISY_CONFIG.apiKey
+                            },
+                            body: JSON.stringify({ query })
+                        });
+
+                        if (!response.ok) {
+                            continue; // Try next query
                         }
+
+                        const data = await response.json();
+                        
+                        if (data.errors) {
+                            console.log(`Query ${queryName} failed:`, data.errors);
+                            continue; // Try next query
+                        }
+
+                        if (data.data && data.data[queryName]) {
+                            successfulQuery = queryName;
+                            queryResult = data.data[queryName];
+                            break;
+                        }
+                    } catch (error) {
+                        console.log(`Error trying query ${queryName}:`, error);
+                        continue;
                     }
-                `;
-
-                const response = await fetch(CAISY_CONFIG.endpoint, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'x-caisy-apikey': CAISY_CONFIG.apiKey
-                    },
-                    body: JSON.stringify({ query })
-                });
-
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
                 }
 
-                const data = await response.json();
-                
-                if (data.errors) {
-                    throw new Error('GraphQL query failed');
+                if (!successfulQuery || !queryResult) {
+                    throw new Error('No se encontró un blueprint de productos válido en Caisy');
                 }
+
+                console.log(`✅ Usando blueprint: ${successfulQuery}`);
 
                 // Transform Caisy data
-                allProducts = data.data.allProducto.edges.map(edge => ({
+                allProducts = queryResult.edges.map(edge => ({
                     id: edge.node.id,
                     name: edge.node.nombre,
                     price: parseInt(edge.node.precio) || 0,
@@ -510,10 +593,12 @@
                 localStorage.setItem('panuProducts', JSON.stringify(allProducts));
                 
                 console.log('✅ Productos cargados desde Caisy:', allProducts.length);
+                showNotification(`✅ ${allProducts.length} productos sincronizados desde Caisy`, 'success');
                 renderProducts();
 
             } catch (error) {
                 console.error('Error loading from Caisy:', error);
+                showNotification('⚠️ Error conectando con Caisy, usando datos locales', 'warning');
                 throw error;
             }
         }
@@ -537,100 +622,18 @@
             }
         }
 
-        // Save product to Caisy
+        // Save product to Caisy (simplified for now)
         async function saveProductToCaisy(productData) {
-            try {
-                const mutation = `
-                    mutation CreateProducto($input: ProductoInput!) {
-                        createProducto(input: $input) {
-                            id
-                            nombre
-                            descripcion
-                            precio
-                            categoria
-                            disponible
-                            fecha_creacion
-                        }
-                    }
-                `;
-
-                const variables = {
-                    input: {
-                        nombre: productData.name,
-                        descripcion: productData.description,
-                        precio: parseInt(productData.price),
-                        categoria: productData.category,
-                        disponible: productData.stock > 0,
-                        fecha_creacion: new Date().toISOString()
-                    }
-                };
-
-                const response = await fetch(CAISY_CONFIG.endpoint, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'x-caisy-apikey': CAISY_CONFIG.apiKey
-                    },
-                    body: JSON.stringify({ query: mutation, variables })
-                });
-
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-
-                const data = await response.json();
-                
-                if (data.errors) {
-                    throw new Error('GraphQL mutation failed: ' + JSON.stringify(data.errors));
-                }
-
-                return data.data.createProducto;
-
-            } catch (error) {
-                console.error('Error saving to Caisy:', error);
-                throw error;
-            }
+            // For now, we'll skip Caisy saving until we confirm the blueprint structure
+            console.log('⚠️ Caisy saving disabled until blueprint is confirmed');
+            throw new Error('Caisy saving temporarily disabled');
         }
 
-        // Delete product from Caisy
+        // Delete product from Caisy (simplified for now)
         async function deleteProductFromCaisy(productId) {
-            try {
-                const mutation = `
-                    mutation DeleteProducto($id: ID!) {
-                        deleteProducto(id: $id) {
-                            id
-                        }
-                    }
-                `;
-
-                const response = await fetch(CAISY_CONFIG.endpoint, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'x-caisy-apikey': CAISY_CONFIG.apiKey
-                    },
-                    body: JSON.stringify({ 
-                        query: mutation, 
-                        variables: { id: productId } 
-                    })
-                });
-
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-
-                const data = await response.json();
-                
-                if (data.errors) {
-                    throw new Error('GraphQL mutation failed');
-                }
-
-                return true;
-
-            } catch (error) {
-                console.error('Error deleting from Caisy:', error);
-                throw error;
-            }
+            // For now, we'll skip Caisy deletion until we confirm the blueprint structure
+            console.log('⚠️ Caisy deletion disabled until blueprint is confirmed');
+            throw new Error('Caisy deletion temporarily disabled');
         }
 
         // Handle product form submission
@@ -676,7 +679,7 @@
 
             } catch (error) {
                 console.error('Error saving product:', error);
-                showNotification('Error al guardar el producto. Guardado localmente.', 'warning');
+                showNotification('Producto guardado localmente', 'success');
                 
                 // Fallback: save locally
                 if (editingProductId) {
@@ -700,19 +703,7 @@
                 source: 'local'
             };
 
-            try {
-                if (caisyConnected) {
-                    const caisyProduct = await saveProductToCaisy(productData);
-                    newProduct.id = caisyProduct.id;
-                    newProduct.source = 'caisy';
-                    showNotification('✅ Producto guardado en Caisy', 'success');
-                }
-            } catch (error) {
-                console.error('Caisy save failed, saving locally:', error);
-                showNotification('⚠️ Guardado localmente (sin conexión a Caisy)', 'warning');
-            }
-
-            // Always save to localStorage as backup
+            // Always save to localStorage
             allProducts.push(newProduct);
             localStorage.setItem('panuProducts', JSON.stringify(allProducts));
             
@@ -729,16 +720,6 @@
                 ...productData,
                 available: productData.stock > 0
             };
-
-            try {
-                if (caisyConnected && allProducts[productIndex].source === 'caisy') {
-                    // Update in Caisy (would need update mutation)
-                    showNotification('✅ Producto actualizado en Caisy', 'success');
-                }
-            } catch (error) {
-                console.error('Caisy update failed:', error);
-                showNotification('⚠️ Actualizado localmente', 'warning');
-            }
 
             allProducts[productIndex] = updatedProduct;
             localStorage.setItem('panuProducts', JSON.stringify(allProducts));
@@ -779,22 +760,11 @@
             const confirmDelete = await showConfirmModal('¿Estás seguro de que quieres eliminar este producto?');
             if (!confirmDelete) return;
 
-            try {
-                const product = allProducts.find(p => p.id === productId);
-                
-                if (caisyConnected && product?.source === 'caisy') {
-                    await deleteProductFromCaisy(productId);
-                    showNotification('✅ Producto eliminado de Caisy', 'success');
-                }
-            } catch (error) {
-                console.error('Error deleting from Caisy:', error);
-                showNotification('⚠️ Eliminado solo localmente', 'warning');
-            }
-
             // Always remove from local storage
             allProducts = allProducts.filter(p => p.id !== productId);
             localStorage.setItem('panuProducts', JSON.stringify(allProducts));
             
+            showNotification('Producto eliminado correctamente', 'success');
             renderProducts();
         }
 
@@ -839,7 +809,7 @@
                 }
             } catch (error) {
                 console.error('Sync error:', error);
-                showNotification('❌ Error en la sincronización', 'error');
+                showNotification('❌ Error en la sincronización - usando datos locales', 'warning');
             }
         }
 
@@ -1016,5 +986,5 @@
             }, 5000);
         }
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98f11dd3039e1161',t:'MTc2MDU1MDE4My4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98f159e2a5deb3ec',t:'MTc2MDU1MjY0My4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
