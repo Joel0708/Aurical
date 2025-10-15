@@ -657,213 +657,17 @@
         }
 
         // Save product to Caisy (simplified for now)
-        // Save product to Caisy
         async function saveProductToCaisy(productData) {
-            try {
-                console.log('💾 Guardando producto en Caisy:', productData);
-                
-                // First, detect available mutations
-                const schemaQuery = `
-                    query {
-                        __schema {
-                            mutationType {
-                                fields {
-                                    name
-                                    description
-                                    args {
-                                        name
-                                        type {
-                                            name
-                                            kind
-                                            inputFields {
-                                                name
-                                                type {
-                                                    name
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                `;
-
-                const schemaResponse = await fetch(CAISY_CONFIG.endpoint, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'x-caisy-apikey': CAISY_CONFIG.apiKey
-                    },
-                    body: JSON.stringify({ query: schemaQuery })
-                });
-
-                const schemaData = await schemaResponse.json();
-                const mutations = schemaData.data?.__schema?.mutationType?.fields || [];
-                
-                console.log('🔍 Mutaciones disponibles:', mutations.map(m => m.name));
-                
-                // Find product creation mutations
-                const createMutations = mutations.filter(m => 
-                    m.name.toLowerCase().includes('create') && 
-                    (m.name.toLowerCase().includes('product') || m.name.toLowerCase().includes('producto'))
-                );
-                
-                console.log('📝 Mutaciones de creación encontradas:', createMutations.map(m => m.name));
-                
-                if (createMutations.length === 0) {
-                    throw new Error('No se encontraron mutaciones de creación de productos en Caisy');
-                }
-                
-                // Try each mutation until one works
-                for (const mutation of createMutations) {
-                    try {
-                        console.log(`🔄 Probando mutación: ${mutation.name}`);
-                        
-                        const createMutation = `
-                            mutation {
-                                ${mutation.name}(data: {
-                                    nombre: "${productData.name}"
-                                    precio: ${productData.price}
-                                    categoria: "${productData.category}"
-                                    descripcion: {
-                                        json: "${JSON.stringify({
-                                            type: 'doc',
-                                            content: [{
-                                                type: 'paragraph',
-                                                content: [{
-                                                    type: 'text',
-                                                    text: productData.description
-                                                }]
-                                            }]
-                                        }).replace(/"/g, '\\"')}"
-                                    }
-                                    disponible: true
-                                }) {
-                                    id
-                                    nombre
-                                    precio
-                                    categoria
-                                }
-                            }
-                        `;
-
-                        const response = await fetch(CAISY_CONFIG.endpoint, {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'x-caisy-apikey': CAISY_CONFIG.apiKey
-                            },
-                            body: JSON.stringify({ query: createMutation })
-                        });
-
-                        const result = await response.json();
-                        console.log('📥 Respuesta de Caisy:', result);
-
-                        if (result.errors) {
-                            console.log(`❌ Error con ${mutation.name}:`, result.errors[0]?.message);
-                            continue;
-                        }
-
-                        if (result.data && result.data[mutation.name]) {
-                            console.log(`✅ Producto creado exitosamente con ${mutation.name}`);
-                            return result.data[mutation.name];
-                        }
-
-                    } catch (mutationError) {
-                        console.log(`❌ Error ejecutando ${mutation.name}:`, mutationError.message);
-                    }
-                }
-                
-                throw new Error('Todas las mutaciones de creación fallaron');
-
-            } catch (error) {
-                console.error('❌ Error guardando en Caisy:', error);
-                throw error;
-            }
+            // For now, we'll skip Caisy saving until we confirm the blueprint structure
+            console.log('⚠️ Caisy saving disabled until blueprint is confirmed');
+            throw new Error('Caisy saving temporarily disabled');
         }
 
-        // Delete product from Caisy
+        // Delete product from Caisy (simplified for now)
         async function deleteProductFromCaisy(productId) {
-            try {
-                console.log('🗑️ Eliminando producto de Caisy:', productId);
-                
-                // Detect available delete mutations
-                const schemaQuery = `
-                    query {
-                        __schema {
-                            mutationType {
-                                fields {
-                                    name
-                                    description
-                                }
-                            }
-                        }
-                    }
-                `;
-
-                const schemaResponse = await fetch(CAISY_CONFIG.endpoint, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'x-caisy-apikey': CAISY_CONFIG.apiKey
-                    },
-                    body: JSON.stringify({ query: schemaQuery })
-                });
-
-                const schemaData = await schemaResponse.json();
-                const mutations = schemaData.data?.__schema?.mutationType?.fields || [];
-                
-                // Find delete mutations
-                const deleteMutations = mutations.filter(m => 
-                    m.name.toLowerCase().includes('delete') && 
-                    (m.name.toLowerCase().includes('product') || m.name.toLowerCase().includes('producto'))
-                );
-                
-                console.log('🗑️ Mutaciones de eliminación encontradas:', deleteMutations.map(m => m.name));
-                
-                if (deleteMutations.length === 0) {
-                    throw new Error('No se encontraron mutaciones de eliminación en Caisy');
-                }
-                
-                // Try each delete mutation
-                for (const mutation of deleteMutations) {
-                    try {
-                        const deleteMutation = `
-                            mutation {
-                                ${mutation.name}(id: "${productId}") {
-                                    id
-                                }
-                            }
-                        `;
-
-                        const response = await fetch(CAISY_CONFIG.endpoint, {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'x-caisy-apikey': CAISY_CONFIG.apiKey
-                            },
-                            body: JSON.stringify({ query: deleteMutation })
-                        });
-
-                        const result = await response.json();
-                        
-                        if (!result.errors && result.data) {
-                            console.log(`✅ Producto eliminado exitosamente con ${mutation.name}`);
-                            return true;
-                        }
-
-                    } catch (mutationError) {
-                        console.log(`❌ Error con ${mutation.name}:`, mutationError.message);
-                    }
-                }
-                
-                throw new Error('Todas las mutaciones de eliminación fallaron');
-
-            } catch (error) {
-                console.error('❌ Error eliminando de Caisy:', error);
-                throw error;
-            }
+            // For now, we'll skip Caisy deletion until we confirm the blueprint structure
+            console.log('⚠️ Caisy deletion disabled until blueprint is confirmed');
+            throw new Error('Caisy deletion temporarily disabled');
         }
 
         // Handle product form submission
@@ -1216,5 +1020,5 @@
             }, 5000);
         }
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98f1c3e311fb1161',t:'MTc2MDU1Njk4NS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98f301e80698f1bb',t:'MTc2MDU3MDAxMS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
