@@ -498,8 +498,9 @@
             try {
                 console.log('🔍 Buscando blueprints de productos en Caisy...');
                 
-                // Try different possible blueprint names
+                // Try different possible blueprint names (Caisy suggests "Producto")
                 const possibleQueries = [
+                    'Producto',
                     'allProducto',
                     'allProduct', 
                     'allProducts',
@@ -514,31 +515,59 @@
                     try {
                         console.log(`🔍 Probando blueprint: ${queryName}`);
                         
-                        const query = `
-                            query {
-                                ${queryName} {
-                                    edges {
-                                        node {
-                                            id
-                                            nombre
-                                            descripcion
-                                            precio
-                                            categoria
-                                            imagen_principal {
-                                                src
-                                                alt
+                        // Handle different query structures
+                        let query;
+                        if (queryName === 'Producto') {
+                            // Single blueprint query (no edges/node structure)
+                            query = `
+                                query {
+                                    ${queryName} {
+                                        id
+                                        nombre
+                                        descripcion
+                                        precio
+                                        categoria
+                                        imagen_principal {
+                                            src
+                                            alt
+                                        }
+                                        imagenes_galeria {
+                                            src
+                                            alt
+                                        }
+                                        disponible
+                                        fecha_creacion
+                                    }
+                                }
+                            `;
+                        } else {
+                            // Collection query (with edges/node structure)
+                            query = `
+                                query {
+                                    ${queryName} {
+                                        edges {
+                                            node {
+                                                id
+                                                nombre
+                                                descripcion
+                                                precio
+                                                categoria
+                                                imagen_principal {
+                                                    src
+                                                    alt
+                                                }
+                                                imagenes_galeria {
+                                                    src
+                                                    alt
+                                                }
+                                                disponible
+                                                fecha_creacion
                                             }
-                                            imagenes_galeria {
-                                                src
-                                                alt
-                                            }
-                                            disponible
-                                            fecha_creacion
                                         }
                                     }
                                 }
-                            }
-                        `;
+                            `;
+                        }
 
                         const response = await fetch(CAISY_CONFIG.endpoint, {
                             method: 'POST',
@@ -566,6 +595,7 @@
                             successfulQuery = queryName;
                             queryResult = data.data[queryName];
                             console.log(`✅ Blueprint encontrado: ${queryName}`);
+                            console.log('📊 Estructura de datos:', queryResult);
                             break;
                         } else {
                             console.log(`❌ No data returned for ${queryName}`);
@@ -588,22 +618,64 @@
 
                 console.log(`✅ Usando blueprint: ${successfulQuery}`);
 
-                // Transform Caisy data
-                const caisyProducts = queryResult.edges.map(edge => ({
-                    id: edge.node.id,
-                    name: edge.node.nombre,
-                    price: parseInt(edge.node.precio) || 0,
-                    description: edge.node.descripcion || '',
-                    category: edge.node.categoria || 'Otros',
-                    stock: edge.node.disponible ? 10 : 0,
-                    images: [
-                        ...(edge.node.imagen_principal?.src ? [edge.node.imagen_principal.src] : []),
-                        ...(edge.node.imagenes_galeria?.map(img => img.src) || [])
-                    ],
-                    available: edge.node.disponible,
-                    createdAt: edge.node.fecha_creacion || new Date().toISOString(),
-                    source: 'caisy'
-                }));
+                // Transform Caisy data based on structure
+                let caisyProducts = [];
+                
+                if (successfulQuery === 'Producto') {
+                    // Single blueprint - data is directly in queryResult
+                    if (Array.isArray(queryResult)) {
+                        // Multiple products
+                        caisyProducts = queryResult.map(product => ({
+                            id: product.id,
+                            name: product.nombre,
+                            price: parseInt(product.precio) || 0,
+                            description: product.descripcion || '',
+                            category: product.categoria || 'Otros',
+                            stock: product.disponible ? 10 : 0,
+                            images: [
+                                ...(product.imagen_principal?.src ? [product.imagen_principal.src] : []),
+                                ...(product.imagenes_galeria?.map(img => img.src) || [])
+                            ],
+                            available: product.disponible,
+                            createdAt: product.fecha_creacion || new Date().toISOString(),
+                            source: 'caisy'
+                        }));
+                    } else if (queryResult.id) {
+                        // Single product
+                        caisyProducts = [{
+                            id: queryResult.id,
+                            name: queryResult.nombre,
+                            price: parseInt(queryResult.precio) || 0,
+                            description: queryResult.descripcion || '',
+                            category: queryResult.categoria || 'Otros',
+                            stock: queryResult.disponible ? 10 : 0,
+                            images: [
+                                ...(queryResult.imagen_principal?.src ? [queryResult.imagen_principal.src] : []),
+                                ...(queryResult.imagenes_galeria?.map(img => img.src) || [])
+                            ],
+                            available: queryResult.disponible,
+                            createdAt: queryResult.fecha_creacion || new Date().toISOString(),
+                            source: 'caisy'
+                        }];
+                    }
+                } else {
+                    // Collection blueprint - data has edges/node structure
+                    caisyProducts = queryResult.edges.map(edge => ({
+                        id: edge.node.id,
+                        name: edge.node.nombre,
+                        price: parseInt(edge.node.precio) || 0,
+                        description: edge.node.descripcion || '',
+                        category: edge.node.categoria || 'Otros',
+                        stock: edge.node.disponible ? 10 : 0,
+                        images: [
+                            ...(edge.node.imagen_principal?.src ? [edge.node.imagen_principal.src] : []),
+                            ...(edge.node.imagenes_galeria?.map(img => img.src) || [])
+                        ],
+                        available: edge.node.disponible,
+                        createdAt: edge.node.fecha_creacion || new Date().toISOString(),
+                        source: 'caisy'
+                    }));
+                }
 
                 // Merge with local products (keep local ones that aren't in Caisy)
                 const localProducts = JSON.parse(localStorage.getItem('panuProducts') || '[]');
@@ -1014,5 +1086,5 @@
             }, 5000);
         }
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98f17199c09f1161',t:'MTc2MDU1MzYxNC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98f181dd70fe1161',t:'MTc2MDU1NDI4MC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
