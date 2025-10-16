@@ -71,7 +71,7 @@
                 <div class="flex items-center space-x-4">
                     <h1 class="text-2xl font-bold text-gray-900">Admin Panel</h1>
                     <span class="text-sm text-gray-500">Gestión de Productos</span>
-                    <span class="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full">v1.083</span>
+                    <span class="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full">v1.084</span>
                 </div>
                 <div class="flex items-center space-x-4">
                     <button onclick="syncWithCaisy()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
@@ -382,52 +382,6 @@
             try {
                 console.log('💾 Guardando producto en Caisy:', productData);
                 
-                // First, let's check the schema to understand the correct mutation format
-                const introspectionQuery = `
-                    query {
-                        __schema {
-                            mutationType {
-                                fields {
-                                    name
-                                    args {
-                                        name
-                                        type {
-                                            name
-                                            kind
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                `;
-
-                console.log('🔍 Consultando esquema de Caisy...');
-                
-                const schemaResponse = await fetch(CAISY_CONFIG.endpoint, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'x-caisy-apikey': CAISY_CONFIG.apiKey
-                    },
-                    body: JSON.stringify({ query: introspectionQuery })
-                });
-
-                const schemaResult = await schemaResponse.json();
-                console.log('📋 Esquema de mutaciones:', schemaResult);
-
-                // Find the createProducto mutation
-                const mutations = schemaResult.data?.__schema?.mutationType?.fields || [];
-                const createProductoMutation = mutations.find(m => m.name === 'createProducto');
-                
-                if (createProductoMutation) {
-                    console.log('🎯 Mutación createProducto encontrada:', createProductoMutation);
-                } else {
-                    console.log('⚠️ No se encontró mutación createProducto. Mutaciones disponibles:', 
-                        mutations.map(m => m.name));
-                }
-
-                // Try a simpler approach - use the data wrapper format
                 const escapedName = productData.name.replace(/"/g, '\\"').replace(/\n/g, '\\n');
                 const escapedCategory = productData.category.replace(/"/g, '\\"');
                 const escapedDescription = (productData.description || '').replace(/"/g, '\\"').replace(/\n/g, '\\n');
@@ -443,6 +397,7 @@
                     }]
                 }).replace(/"/g, '\\"');
                 
+                // Try the corrected format without the data wrapper
                 const mutation = `
                     mutation {
                         createProducto(
@@ -866,5 +821,5 @@
             }
         });
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98f377ade722116c',t:'MTc2MDU3NDgzNS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98f383418273116c',t:'MTc2MDU3NTMwOS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
