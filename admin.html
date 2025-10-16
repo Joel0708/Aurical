@@ -170,10 +170,9 @@
     </main>
 
     <!-- Product Modal -->
-    <div id="productModal" class="fixed inset-0 z-50 hidden">
+    <div id="productModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4">
         <div class="modal-overlay absolute inset-0" onclick="closeModal()"></div>
-        <div class="flex items-center justify-center min-h-screen p-4">
-            <div class="bg-white rounded-lg shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto">
+        <div class="bg-white rounded-lg shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto relative z-10">
                 <div class="px-6 py-4 border-b border-gray-200">
                     <h3 class="text-lg font-semibold text-gray-900" id="modalTitle">Nuevo Producto</h3>
                 </div>
@@ -227,7 +226,6 @@
                     </div>
                 </form>
             </div>
-        </div>
     </div>
 
     <script>
@@ -634,11 +632,20 @@
                 form.reset();
             }
 
+            // Show modal and focus properly
             modal.classList.remove('hidden');
+            modal.style.display = 'flex';
+            
+            // Ensure proper focus after DOM update
+            requestAnimationFrame(() => {
+                document.getElementById('productName').focus();
+            });
         }
 
         function closeModal() {
-            document.getElementById('productModal').classList.add('hidden');
+            const modal = document.getElementById('productModal');
+            modal.classList.add('hidden');
+            modal.style.display = '';
             editingProductId = null;
         }
 
@@ -813,5 +820,5 @@
             }
         });
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98f35a625602116c',t:'MTc2MDU3MzYzNS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98f36684a25e116c',t:'MTc2MDU3NDEzMi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
