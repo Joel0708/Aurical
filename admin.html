@@ -728,12 +728,11 @@
         }
 
         // Create new product
-// Reemplaza el stub por este: saveProductToCaisy
-// ✅ NUEVA FUNCIÓN: creación correcta en Caisy
+// ✅ Versión final, compatible con Caisy actual
 async function saveProductToCaisy(productData) {
     const mutation = `
-      mutation CreateProducto($data: ProductoInput!) {
-        createProducto(data: $data) {
+      mutation CreateProducto($input: Producto_CreateInput!) {
+        createProducto(input: $input) {
           id
           nombre
         }
@@ -741,7 +740,7 @@ async function saveProductToCaisy(productData) {
     `;
 
     const variables = {
-        data: {
+        input: {
             nombre: productData.name || "",
             descripcion: productData.description || "",
             precio: Number(productData.price) || 0,
@@ -785,6 +784,7 @@ async function saveProductToCaisy(productData) {
         throw err;
     }
 }
+
 
 
 // Reemplaza createProduct por esta versión que intenta crear primero en Caisy
