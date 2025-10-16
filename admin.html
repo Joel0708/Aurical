@@ -649,7 +649,9 @@
 
         // Delete product
         async function deleteProduct(productId) {
-            if (!confirm('¿Estás seguro de que quieres eliminar este producto?')) {
+            // Create custom confirmation modal instead of browser confirm
+            const shouldDelete = await showConfirmDialog('¿Estás seguro de que quieres eliminar este producto?');
+            if (!shouldDelete) {
                 return;
             }
 
@@ -749,6 +751,54 @@
             }, 4000);
         }
 
+        // Custom confirmation dialog
+        function showConfirmDialog(message) {
+            return new Promise((resolve) => {
+                const overlay = document.createElement('div');
+                overlay.className = 'fixed inset-0 z-50 flex items-center justify-center';
+                overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+                
+                const dialog = document.createElement('div');
+                dialog.className = 'bg-white rounded-lg shadow-xl max-w-sm w-full mx-4 p-6';
+                
+                dialog.innerHTML = `
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Confirmar acción</h3>
+                    <p class="text-gray-600 mb-6">${message}</p>
+                    <div class="flex space-x-3 justify-end">
+                        <button id="cancelBtn" class="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg font-medium transition-colors">
+                            Cancelar
+                        </button>
+                        <button id="confirmBtn" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium transition-colors">
+                            Eliminar
+                        </button>
+                    </div>
+                `;
+                
+                overlay.appendChild(dialog);
+                document.body.appendChild(overlay);
+                
+                const cancelBtn = dialog.querySelector('#cancelBtn');
+                const confirmBtn = dialog.querySelector('#confirmBtn');
+                
+                cancelBtn.onclick = () => {
+                    document.body.removeChild(overlay);
+                    resolve(false);
+                };
+                
+                confirmBtn.onclick = () => {
+                    document.body.removeChild(overlay);
+                    resolve(true);
+                };
+                
+                overlay.onclick = (e) => {
+                    if (e.target === overlay) {
+                        document.body.removeChild(overlay);
+                        resolve(false);
+                    }
+                };
+            });
+        }
+
         // Close modal when clicking outside
         document.addEventListener('click', function(e) {
             if (e.target.classList.contains('modal-overlay')) {
@@ -763,5 +813,5 @@
             }
         });
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98f357be056b116c',t:'MTc2MDU3MzUyNi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98f35a625602116c',t:'MTc2MDU3MzYzNS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
