@@ -292,19 +292,15 @@
         async function loadProductsFromCaisy() {
             const query = `
                 query {
-                    allProducto {
-                        edges {
-                            node {
-                                id
-                                nombre
-                                precio
-                                categoria
-                                descripcion {
-                                    json
-                                }
-                                disponible
-                            }
+                    Producto {
+                        id
+                        nombre
+                        precio
+                        categoria
+                        descripcion {
+                            json
                         }
+                        disponible
                     }
                 }
             `;
@@ -328,19 +324,18 @@
             // Handle different possible response structures
             let productos = [];
             
-            if (result.data?.allProducto?.edges) {
-                // GraphQL relay-style pagination
-                productos = result.data.allProducto.edges.map(edge => edge.node);
-            } else if (result.data?.Producto && Array.isArray(result.data.Producto)) {
+            if (result.data?.Producto && Array.isArray(result.data.Producto)) {
                 // Direct array
                 productos = result.data.Producto;
             } else if (result.data?.Producto) {
-                // Single object
+                // Single object - convert to array
                 productos = [result.data.Producto];
             } else {
                 console.log('⚠️ No se encontraron productos en la respuesta');
                 return [];
             }
+
+            console.log('🔍 Productos encontrados:', productos.length);
 
             return productos.map(producto => {
                 // Extract text from JSON description
@@ -759,5 +754,5 @@
             }
         });
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98f35141f737116c',t:'MTc2MDU3MzI2MS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98f3540a76b4116c',t:'MTc2MDU3MzM3NS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
