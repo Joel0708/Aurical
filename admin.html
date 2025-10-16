@@ -729,29 +729,26 @@
 
         // Create new product
 // Reemplaza el stub por este: saveProductToCaisy
+// ✅ NUEVA FUNCIÓN: creación correcta en Caisy
 async function saveProductToCaisy(productData) {
-    // Construimos la carga que queremos mandar a Caisy
     const mutation = `
-    mutation CreateDocument($input: CreateDocumentInput!) {
-      CreateDocument(input: $input) {
-        id
-        title
+      mutation CreateProducto($data: ProductoInput!) {
+        createProducto(data: $data) {
+          id
+          nombre
+        }
       }
-    }`;
+    `;
 
-    // Mapear campos exactamente según tu blueprint "Producto"
-    const input = {
-        // intento usar blueprintName para no tener que preguntar por blueprintId explícito
-        blueprintName: "Producto",
-        // muchos endpoints de caisy vinculados a un proyecto particular aceptan solo data
+    const variables = {
         data: {
             nombre: productData.name || "",
             descripcion: productData.description || "",
             precio: Number(productData.price) || 0,
             categoria: productData.category || "Otros",
-            // Imagen principal: enviamos como objeto con src (base64 o url)
-            imagen_principal: productData.images && productData.images[0] ? { src: productData.images[0] } : null,
-            // Galería: enviamos el resto como array de assets con src
+            imagen_principal: productData.images && productData.images[0]
+                ? { src: productData.images[0] }
+                : null,
             imagenes_galeria: (productData.images && productData.images.length > 1)
                 ? productData.images.slice(1).map(src => ({ src }))
                 : [],
@@ -767,35 +764,28 @@ async function saveProductToCaisy(productData) {
                 'Content-Type': 'application/json',
                 'x-caisy-apikey': CAISY_CONFIG.apiKey
             },
-            body: JSON.stringify({ query: mutation, variables: { input } })
+            body: JSON.stringify({ query: mutation, variables })
         });
 
-        if (!res.ok) {
-            const text = await res.text();
-            throw new Error(`HTTP ${res.status} - ${text}`);
-        }
-
         const json = await res.json();
-        if (json.errors && json.errors.length) {
-            console.error('Caisy GraphQL errors:', json.errors);
-            throw new Error(json.errors.map(e => e.message).join('; '));
+        if (json.errors) {
+            console.error("Caisy GraphQL errors:", json.errors);
+            throw new Error(json.errors.map(e => e.message).join("; "));
         }
 
-        const created = json.data?.CreateDocument;
+        const created = json.data?.createProducto;
         if (!created || !created.id) {
-            throw new Error('Respuesta inválida de Caisy: no se devolvió id');
+            throw new Error("No se recibió ID del nuevo producto desde Caisy.");
         }
 
-        // Retornamos el id que nos dio Caisy y cualquier dato útil
-        return {
-            id: created.id,
-            title: created.title || productData.name
-        };
+        console.log("🟢 Producto creado en Caisy:", created);
+        return { id: created.id, title: created.nombre };
     } catch (err) {
-        console.error('Error guardando en Caisy:', err);
-        throw err; // dejamos que la llamada superior gestione fallback/notificaciones
+        console.error("Error guardando en Caisy:", err);
+        throw err;
     }
 }
+
 
 // Reemplaza createProduct por esta versión que intenta crear primero en Caisy
 async function createProduct(productData) {
