@@ -71,6 +71,7 @@
                 <div class="flex items-center space-x-4">
                     <h1 class="text-2xl font-bold text-gray-900">Admin Panel</h1>
                     <span class="text-sm text-gray-500">Gestión de Productos</span>
+                    <span class="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full">v1.083</span>
                 </div>
                 <div class="flex items-center space-x-4">
                     <button onclick="syncWithCaisy()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
@@ -444,7 +445,7 @@
                 
                 const mutation = `
                     mutation {
-                        createProducto(data: {
+                        createProducto(
                             nombre: "${escapedName}"
                             precio: ${productData.price}
                             categoria: "${escapedCategory}"
@@ -452,7 +453,7 @@
                                 json: "${descriptionJson}"
                             }
                             disponible: true
-                        }) {
+                        ) {
                             id
                             nombre
                             precio
@@ -865,5 +866,5 @@
             }
         });
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98f3705fc3d3116c',t:'MTc2MDU3NDUzNS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98f377ade722116c',t:'MTc2MDU3NDgzNS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
