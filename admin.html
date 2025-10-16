@@ -383,23 +383,30 @@
             try {
                 console.log('💾 Guardando producto en Caisy:', productData);
                 
+                // Escape strings properly for GraphQL
+                const escapedName = productData.name.replace(/"/g, '\\"').replace(/\n/g, '\\n');
+                const escapedCategory = productData.category.replace(/"/g, '\\"');
+                const escapedDescription = (productData.description || '').replace(/"/g, '\\"').replace(/\n/g, '\\n');
+                
+                const descriptionJson = JSON.stringify({
+                    type: 'doc',
+                    content: [{
+                        type: 'paragraph',
+                        content: [{
+                            type: 'text',
+                            text: escapedDescription
+                        }]
+                    }]
+                }).replace(/"/g, '\\"');
+                
                 const mutation = `
                     mutation {
                         createProducto(data: {
-                            nombre: "${productData.name}"
+                            nombre: "${escapedName}"
                             precio: ${productData.price}
-                            categoria: "${productData.category}"
+                            categoria: "${escapedCategory}"
                             descripcion: {
-                                json: "${JSON.stringify({
-                                    type: 'doc',
-                                    content: [{
-                                        type: 'paragraph',
-                                        content: [{
-                                            type: 'text',
-                                            text: productData.description || ''
-                                        }]
-                                    }]
-                                }).replace(/"/g, '\\"')}"
+                                json: "${descriptionJson}"
                             }
                             disponible: true
                         }) {
@@ -410,6 +417,8 @@
                         }
                     }
                 `;
+
+                console.log('🔍 Mutation a enviar:', mutation);
 
                 const response = await fetch(CAISY_CONFIG.endpoint, {
                     method: 'POST',
@@ -754,5 +763,5 @@
             }
         });
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98f3540a76b4116c',t:'MTc2MDU3MzM3NS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98f357be056b116c',t:'MTc2MDU3MzUyNi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
