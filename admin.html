@@ -298,7 +298,7 @@
                         precio
                         categoria
                         descripcion {
-                            plaintext
+                            json
                         }
                         disponible
                     }
@@ -320,15 +320,45 @@
                 throw new Error(result.errors[0]?.message || 'Error loading from Caisy');
             }
 
-            return result.data?.Producto?.map(producto => ({
-                id: producto.id,
-                name: producto.nombre,
-                price: producto.precio,
-                category: producto.categoria,
-                description: producto.descripcion?.plaintext || '',
-                available: producto.disponible,
-                source: 'caisy'
-            })) || [];
+            return result.data?.Producto?.map(producto => {
+                // Extract text from JSON description
+                let description = '';
+                try {
+                    if (producto.descripcion?.json) {
+                        const jsonDesc = JSON.parse(producto.descripcion.json);
+                        description = extractTextFromJson(jsonDesc);
+                    }
+                } catch (e) {
+                    description = '';
+                }
+
+                return {
+                    id: producto.id,
+                    name: producto.nombre,
+                    price: producto.precio,
+                    category: producto.categoria,
+                    description: description,
+                    available: producto.disponible,
+                    source: 'caisy'
+                };
+            }) || [];
+        }
+
+        // Helper function to extract text from JSON description
+        function extractTextFromJson(jsonObj) {
+            if (!jsonObj || !jsonObj.content) return '';
+            
+            let text = '';
+            function traverse(node) {
+                if (node.type === 'text' && node.text) {
+                    text += node.text;
+                } else if (node.content && Array.isArray(node.content)) {
+                    node.content.forEach(traverse);
+                }
+            }
+            
+            jsonObj.content.forEach(traverse);
+            return text;
         }
 
         // Save product to Caisy
@@ -707,5 +737,5 @@
             }
         });
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98f33a5d711e116c',t:'MTc2MDU3MjMyMy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98f345ee45dff1bb',t:'MTc2MDU3Mjc5Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
