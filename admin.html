@@ -1,825 +1,353 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin - Gestión de Productos</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        body {
-            box-sizing: border-box;
-        }
-        
-        .notification {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 12px 24px;
-            border-radius: 8px;
-            color: white;
-            font-weight: 500;
-            z-index: 1000;
-            transform: translateX(100%);
-            transition: transform 0.3s ease;
-        }
-        
-        .notification.show {
-            transform: translateX(0);
-        }
-        
-        .notification.success { background-color: #10b981; }
-        .notification.error { background-color: #ef4444; }
-        .notification.warning { background-color: #f59e0b; }
-        .notification.info { background-color: #3b82f6; }
-        
-        .modal-overlay {
-            background-color: rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(4px);
-        }
-        
-        .product-card {
-            transition: all 0.2s ease;
-        }
-        
-        .product-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-        }
-        
-        .source-badge {
-            font-size: 0.75rem;
-            padding: 2px 8px;
-            border-radius: 12px;
-            font-weight: 600;
-        }
-        
-        .source-caisy {
-            background-color: #10b981;
-            color: white;
-        }
-        
-        .source-local {
-            background-color: #f59e0b;
-            color: white;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Panel de Administración</title>
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
+
 <body class="bg-gray-50 min-h-screen">
-    <header class="bg-white shadow-sm border-b">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center h-16">
-                <div class="flex items-center space-x-4">
-                    <h1 class="text-2xl font-bold text-gray-900">Admin Panel</h1>
-                    <span class="text-sm text-gray-500">Gestión de Productos</span>
-                    <span class="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full">v1.084</span>
-                </div>
-                <div class="flex items-center space-x-4">
-                    <button onclick="syncWithCaisy()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
-                        🔄 Sincronizar con Caisy
-                    </button>
-                    <button onclick="openProductModal()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
-                        ➕ Nuevo Producto
-                    </button>
-                </div>
-            </div>
-        </div>
-    </header>
+  <header class="bg-blue-700 text-white p-4 flex justify-between items-center shadow-md">
+    <h1 class="text-xl font-bold">Panel de Administración</h1>
+    <button onclick="openProductModal()" class="bg-white text-blue-700 px-4 py-2 rounded-md font-semibold hover:bg-gray-100">
+      + Nuevo Producto
+    </button>
+  </header>
 
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <!-- Stats Cards -->
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-            <div class="bg-white rounded-lg shadow p-6">
-                <div class="flex items-center">
-                    <div class="p-2 bg-blue-100 rounded-lg">
-                        <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
-                        </svg>
-                    </div>
-                    <div class="ml-4">
-                        <p class="text-sm font-medium text-gray-600">Total Productos</p>
-                        <p class="text-2xl font-semibold text-gray-900" id="totalProducts">0</p>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="bg-white rounded-lg shadow p-6">
-                <div class="flex items-center">
-                    <div class="p-2 bg-green-100 rounded-lg">
-                        <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                        </svg>
-                    </div>
-                    <div class="ml-4">
-                        <p class="text-sm font-medium text-gray-600">En Caisy</p>
-                        <p class="text-2xl font-semibold text-gray-900" id="caisyProducts">0</p>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="bg-white rounded-lg shadow p-6">
-                <div class="flex items-center">
-                    <div class="p-2 bg-yellow-100 rounded-lg">
-                        <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
-                        </svg>
-                    </div>
-                    <div class="ml-4">
-                        <p class="text-sm font-medium text-gray-600">Solo Local</p>
-                        <p class="text-2xl font-semibold text-gray-900" id="localProducts">0</p>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="bg-white rounded-lg shadow p-6">
-                <div class="flex items-center">
-                    <div class="p-2 bg-purple-100 rounded-lg">
-                        <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-                        </svg>
-                    </div>
-                    <div class="ml-4">
-                        <p class="text-sm font-medium text-gray-600">Última Sync</p>
-                        <p class="text-sm font-semibold text-gray-900" id="lastSync">Nunca</p>
-                    </div>
-                </div>
-            </div>
-        </div>
+  <main class="p-6">
+    <!-- Estadísticas -->
+    <section id="stats" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+      <div class="bg-white p-4 rounded-2xl shadow text-center">
+        <p class="text-gray-500">Total de productos</p>
+        <h2 id="statTotal" class="text-2xl font-bold">0</h2>
+      </div>
+      <div class="bg-white p-4 rounded-2xl shadow text-center">
+        <p class="text-gray-500">Productos en Caisy</p>
+        <h2 id="statCaisy" class="text-2xl font-bold">0</h2>
+      </div>
+      <div class="bg-white p-4 rounded-2xl shadow text-center">
+        <p class="text-gray-500">Productos locales</p>
+        <h2 id="statLocal" class="text-2xl font-bold">0</h2>
+      </div>
+      <div class="bg-white p-4 rounded-2xl shadow text-center">
+        <p class="text-gray-500">Última sincronización</p>
+        <h2 id="statLastSync" class="text-lg font-semibold">Nunca</h2>
+      </div>
+    </section>
 
-        <!-- Products Grid -->
-        <div class="bg-white rounded-lg shadow">
-            <div class="px-6 py-4 border-b border-gray-200">
-                <h2 class="text-lg font-semibold text-gray-900">Productos</h2>
-            </div>
-            <div class="p-6">
-                <div id="productsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <!-- Products will be rendered here -->
-                </div>
-                <div id="emptyState" class="text-center py-12 hidden">
-                    <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
-                    </svg>
-                    <h3 class="mt-2 text-sm font-medium text-gray-900">No hay productos</h3>
-                    <p class="mt-1 text-sm text-gray-500">Comienza creando tu primer producto.</p>
-                    <div class="mt-6">
-                        <button onclick="openProductModal()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
-                            ➕ Crear Producto
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </main>
+    <!-- Productos -->
+    <section>
+      <h2 class="text-xl font-bold mb-4">Productos</h2>
+      <div id="productGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"></div>
+    </section>
+  </main>
 
-    <!-- Product Modal -->
-    <div id="productModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4">
-        <div class="modal-overlay absolute inset-0" onclick="closeModal()"></div>
-        <div class="bg-white rounded-lg shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto relative z-10">
-                <div class="px-6 py-4 border-b border-gray-200">
-                    <h3 class="text-lg font-semibold text-gray-900" id="modalTitle">Nuevo Producto</h3>
-                </div>
-                
-                <form id="productForm" class="p-6 space-y-4">
-                    <div>
-                        <label for="productName" class="block text-sm font-medium text-gray-700 mb-1">Nombre *</label>
-                        <input type="text" id="productName" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                    </div>
-                    
-                    <div>
-                        <label for="productPrice" class="block text-sm font-medium text-gray-700 mb-1">Precio *</label>
-                        <input type="number" id="productPrice" step="0.01" min="0" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                    </div>
-                    
-                    <div>
-                        <label for="productCategory" class="block text-sm font-medium text-gray-700 mb-1">Categoría *</label>
-                        <select id="productCategory" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                            <option value="">Seleccionar categoría</option>
-                            <option value="Electrónicos">Electrónicos</option>
-                            <option value="Ropa">Ropa</option>
-                            <option value="Hogar">Hogar</option>
-                            <option value="Deportes">Deportes</option>
-                            <option value="Libros">Libros</option>
-                            <option value="Otros">Otros</option>
-                        </select>
-                    </div>
-                    
-                    <div>
-                        <label for="productDescription" class="block text-sm font-medium text-gray-700 mb-1">Descripción</label>
-                        <textarea id="productDescription" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"></textarea>
-                    </div>
-                    
-                    <div>
-                        <label for="productStock" class="block text-sm font-medium text-gray-700 mb-1">Stock</label>
-                        <input type="number" id="productStock" min="0" value="0" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                    </div>
-                    
-                    <div>
-                        <label for="productImage" class="block text-sm font-medium text-gray-700 mb-1">Imagen</label>
-                        <input type="file" id="productImage" accept="image/*" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                    </div>
-                    
-                    <div class="flex justify-end space-x-3 pt-4">
-                        <button type="button" onclick="closeModal()" class="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg font-medium transition-colors">
-                            Cancelar
-                        </button>
-                        <button type="submit" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors">
-                            Guardar
-                        </button>
-                    </div>
-                </form>
-            </div>
+  <!-- Modal de producto -->
+  <div id="productModal" class="hidden fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+    <div class="bg-white p-6 rounded-2xl w-full max-w-lg shadow-lg">
+      <h3 id="modalTitle" class="text-xl font-bold mb-4">Nuevo Producto</h3>
+      <form id="productForm" class="space-y-4">
+        <input type="hidden" id="productId" />
+        <div>
+          <label class="block text-sm font-medium text-gray-700">Nombre</label>
+          <input type="text" id="nombre" class="w-full p-2 border rounded-md" required />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700">Descripción</label>
+          <textarea id="descripcion" class="w-full p-2 border rounded-md" rows="3"></textarea>
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700">Precio</label>
+            <input type="number" id="precio" class="w-full p-2 border rounded-md" required />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700">Categoría</label>
+            <input type="text" id="categoria" class="w-full p-2 border rounded-md" />
+          </div>
+        </div>
+        <div>
+          <label class="inline-flex items-center">
+            <input type="checkbox" id="disponible" class="mr-2" />
+            Disponible
+          </label>
+        </div>
+        <div class="flex justify-end space-x-3 mt-4">
+          <button type="button" onclick="closeProductModal()" class="px-4 py-2 rounded-md bg-gray-200 hover:bg-gray-300">
+            Cancelar
+          </button>
+          <button type="submit" class="px-4 py-2 rounded-md bg-blue-700 text-white hover:bg-blue-800">
+            Guardar
+          </button>
+        </div>
+      </form>
     </div>
+  </div>
 
-    <script>
-        // Caisy Configuration - CONFIGURADO CON TUS CREDENCIALES REALES
-        const CAISY_CONFIG = {
-            endpoint: 'https://cloud.caisy.io/api/v3/e/d5020874-9338-4ce1-9f01-872741713f01/graphql',
-            apiKey: 'DR4cQSjCXwdqZDs20vuKsPmGreNnSu4T'
-        };
+  <!-- Contenedor de notificaciones -->
+  <div id="notificationContainer" class="fixed top-4 right-4 space-y-2 z-50"></div>
 
-        // Global variables
-        let editingProductId = null;
-        let allProducts = [];
+  <script>
+    // 🔧 CONFIG
+    const apiKey = "DR4cQSjCXwdqZDs20vuKsPmGreNnSu4T";
+    const projectId = "d5020874-9338-4ce1-9f01-872741713f01";
+    const endpoint = `https://cloud.caisy.io/api/v3/e/d5020874-9338-4ce1-9f01-872741713f01/graphql`;
 
-        // Initialize app
-        document.addEventListener('DOMContentLoaded', function() {
-            loadProducts();
-            setupEventListeners();
+    // Estado
+    let localProducts = JSON.parse(localStorage.getItem("productos")) || [];
+    let caisyProducts = [];
+
+    // Cargar productos
+    async function loadProducts() {
+      try {
+        const query = `
+          query {
+            allProductos {
+              edges {
+                node {
+                  id
+                  nombre
+                  descripcion
+                  precio
+                  categoria
+                  disponible
+                }
+              }
+            }
+          }
+        `;
+        const response = await fetch(endpoint, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${apiKey}`,
+          },
+          body: JSON.stringify({ query }),
         });
+        const result = await response.json();
+        if (result.errors) throw new Error(result.errors[0].message);
 
-        function setupEventListeners() {
-            document.getElementById('productForm').addEventListener('submit', handleProductSubmit);
+        caisyProducts = result.data.allProductos.edges.map((e) => e.node);
+        renderProducts([...caisyProducts, ...localProducts]);
+        updateStats();
+      } catch (err) {
+        console.error("❌ Error cargando productos:", err);
+        renderProducts(localProducts);
+        showNotification("Error al cargar productos de Caisy", "error");
+      }
+    }
+
+    // Guardar producto en Caisy
+    async function saveProductToCaisy(product) {
+      const mutation = `
+        mutation CreateProducto($data: ProductoCreateInput!) {
+          createProducto(data: $data) {
+            id
+            nombre
+            descripcion
+            precio
+            categoria
+            disponible
+          }
         }
+      `;
 
-        // Load products from both localStorage and Caisy
-        async function loadProducts() {
-            try {
-                // Load local products
-                const localProducts = JSON.parse(localStorage.getItem('products') || '[]');
-                
-                // Load Caisy products
-                let caisyProducts = [];
-                try {
-                    caisyProducts = await loadProductsFromCaisy();
-                } catch (error) {
-                    console.warn('No se pudieron cargar productos de Caisy:', error.message);
-                }
+      const variables = {
+        data: {
+          nombre: product.nombre,
+          descripcion: product.descripcion,
+          precio: parseInt(product.precio) || 0,
+          categoria: product.categoria || "",
+          disponible: product.disponible ?? false
+        },
+      };
 
-                // Combine products (avoid duplicates)
-                allProducts = [...localProducts];
-                
-                // Add Caisy products that aren't already local
-                caisyProducts.forEach(caisyProduct => {
-                    const exists = allProducts.find(p => p.id === caisyProduct.id);
-                    if (!exists) {
-                        allProducts.push({
-                            ...caisyProduct,
-                            source: 'caisy'
-                        });
-                    }
-                });
+      const response = await fetch(endpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${apiKey}`,
+        },
+        body: JSON.stringify({ query: mutation, variables }),
+      });
 
-                renderProducts();
-                updateStats();
+      const result = await response.json();
+      if (result.errors) throw new Error(result.errors[0].message);
+      return result.data.createProducto;
+    }
 
-            } catch (error) {
-                console.error('Error loading products:', error);
-                showNotification('Error cargando productos', 'error');
-            }
+    // Actualizar producto en Caisy
+    async function updateProductInCaisy(id, product) {
+      const mutation = `
+        mutation UpdateProducto($id: ID!, $data: ProductoUpdateInput!) {
+          updateProducto(id: $id, data: $data) {
+            id
+            nombre
+            descripcion
+            precio
+            categoria
+            disponible
+          }
         }
+      `;
 
-        // Load products from Caisy
-        async function loadProductsFromCaisy() {
-            const query = `
-                query {
-                    Producto {
-                        id
-                        nombre
-                        precio
-                        categoria
-                        descripcion {
-                            json
-                        }
-                        disponible
-                    }
-                }
-            `;
+      const variables = {
+        id,
+        data: {
+          nombre: product.nombre,
+          descripcion: product.descripcion,
+          precio: parseInt(product.precio) || 0,
+          categoria: product.categoria || "",
+          disponible: product.disponible ?? false
+        },
+      };
 
-            const response = await fetch(CAISY_CONFIG.endpoint, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'x-caisy-apikey': CAISY_CONFIG.apiKey
-                },
-                body: JSON.stringify({ query })
-            });
+      const response = await fetch(endpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${apiKey}`,
+        },
+        body: JSON.stringify({ query: mutation, variables }),
+      });
 
-            const result = await response.json();
-            console.log('📥 Respuesta completa de Caisy:', result);
-            
-            if (result.errors) {
-                throw new Error(result.errors[0]?.message || 'Error loading from Caisy');
-            }
+      const result = await response.json();
+      if (result.errors) throw new Error(result.errors[0].message);
+      return result.data.updateProducto;
+    }
 
-            // Handle different possible response structures
-            let productos = [];
-            
-            if (result.data?.Producto && Array.isArray(result.data.Producto)) {
-                // Direct array
-                productos = result.data.Producto;
-            } else if (result.data?.Producto) {
-                // Single object - convert to array
-                productos = [result.data.Producto];
-            } else {
-                console.log('⚠️ No se encontraron productos en la respuesta');
-                return [];
-            }
-
-            console.log('🔍 Productos encontrados:', productos.length);
-
-            return productos.map(producto => {
-                // Extract text from JSON description
-                let description = '';
-                try {
-                    if (producto.descripcion?.json) {
-                        const jsonDesc = JSON.parse(producto.descripcion.json);
-                        description = extractTextFromJson(jsonDesc);
-                    }
-                } catch (e) {
-                    description = '';
-                }
-
-                return {
-                    id: producto.id,
-                    name: producto.nombre,
-                    price: producto.precio,
-                    category: producto.categoria,
-                    description: description,
-                    available: producto.disponible,
-                    source: 'caisy'
-                };
-            });
+    // Eliminar producto
+    async function deleteProductFromCaisy(id) {
+      const mutation = `
+        mutation DeleteProducto($id: ID!) {
+          deleteProducto(id: $id) {
+            id
+          }
         }
+      `;
+      const response = await fetch(endpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${apiKey}`,
+        },
+        body: JSON.stringify({ query: mutation, variables: { id } }),
+      });
+      const result = await response.json();
+      if (result.errors) throw new Error(result.errors[0].message);
+      return true;
+    }
 
-        // Helper function to extract text from JSON description
-        function extractTextFromJson(jsonObj) {
-            if (!jsonObj || !jsonObj.content) return '';
-            
-            let text = '';
-            function traverse(node) {
-                if (node.type === 'text' && node.text) {
-                    text += node.text;
-                } else if (node.content && Array.isArray(node.content)) {
-                    node.content.forEach(traverse);
-                }
-            }
-            
-            jsonObj.content.forEach(traverse);
-            return text;
+    // CRUD local
+    function saveLocalProducts() {
+      localStorage.setItem("productos", JSON.stringify(localProducts));
+    }
+
+    function renderProducts(products) {
+      const container = document.getElementById("productGrid");
+      container.innerHTML = "";
+      products.forEach((p) => {
+        const card = document.createElement("div");
+        card.className = "bg-white p-4 rounded-2xl shadow flex flex-col justify-between";
+        card.innerHTML = `
+          <div>
+            <h3 class="font-bold text-lg">${p.nombre}</h3>
+            <p class="text-gray-600 text-sm">${p.descripcion || ""}</p>
+            <p class="mt-2 font-semibold text-blue-700">${p.precio ? "₲" + p.precio : ""}</p>
+          </div>
+          <div class="flex justify-end space-x-2 mt-4">
+            <button onclick='openProductModal(${JSON.stringify(p)})' class="text-blue-600 hover:underline">Editar</button>
+            <button onclick='confirmDelete("${p.id}")' class="text-red-600 hover:underline">Eliminar</button>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    // Confirmar eliminación
+    async function confirmDelete(id) {
+      if (confirm("¿Seguro que deseas eliminar este producto?")) {
+        try {
+          await deleteProductFromCaisy(id);
+          caisyProducts = caisyProducts.filter(p => p.id !== id);
+          renderProducts([...caisyProducts, ...localProducts]);
+          updateStats();
+          showNotification("Producto eliminado correctamente", "success");
+        } catch (err) {
+          console.error("Error eliminando:", err);
+          showNotification("Error eliminando en Caisy", "error");
         }
+      }
+    }
 
-        // Save product to Caisy
-        async function saveProductToCaisy(productData) {
-            try {
-                console.log('💾 Guardando producto en Caisy:', productData);
-                
-                const escapedName = productData.name.replace(/"/g, '\\"').replace(/\n/g, '\\n');
-                const escapedCategory = productData.category.replace(/"/g, '\\"');
-                const escapedDescription = (productData.description || '').replace(/"/g, '\\"').replace(/\n/g, '\\n');
-                
-                const descriptionJson = JSON.stringify({
-                    type: 'doc',
-                    content: [{
-                        type: 'paragraph',
-                        content: [{
-                            type: 'text',
-                            text: escapedDescription
-                        }]
-                    }]
-                }).replace(/"/g, '\\"');
-                
-                // Try the corrected format without the data wrapper
-                const mutation = `
-                    mutation {
-                        createProducto(
-                            nombre: "${escapedName}"
-                            precio: ${productData.price}
-                            categoria: "${escapedCategory}"
-                            descripcion: {
-                                json: "${descriptionJson}"
-                            }
-                            disponible: true
-                        ) {
-                            id
-                            nombre
-                            precio
-                            categoria
-                        }
-                    }
-                `;
+    // Stats
+    function updateStats() {
+      document.getElementById("statTotal").textContent = caisyProducts.length + localProducts.length;
+      document.getElementById("statCaisy").textContent = caisyProducts.length;
+      document.getElementById("statLocal").textContent = localProducts.length;
+      document.getElementById("statLastSync").textContent = new Date().toLocaleString();
+    }
 
-                console.log('🔍 Mutation a enviar:', mutation);
+    // Modal
+    function openProductModal(product = null) {
+      document.getElementById("productModal").classList.remove("hidden");
+      document.getElementById("modalTitle").textContent = product ? "Editar Producto" : "Nuevo Producto";
+      document.getElementById("productId").value = product?.id || "";
+      document.getElementById("nombre").value = product?.nombre || "";
+      document.getElementById("descripcion").value = product?.descripcion || "";
+      document.getElementById("precio").value = product?.precio || "";
+      document.getElementById("categoria").value = product?.categoria || "";
+      document.getElementById("disponible").checked = product?.disponible || false;
+    }
 
-                const response = await fetch(CAISY_CONFIG.endpoint, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'x-caisy-apikey': CAISY_CONFIG.apiKey
-                    },
-                    body: JSON.stringify({ query: mutation })
-                });
+    function closeProductModal() {
+      document.getElementById("productModal").classList.add("hidden");
+    }
 
-                const result = await response.json();
-                console.log('📥 Respuesta de Caisy:', result);
+    // Guardar producto (crear o editar)
+    document.getElementById("productForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const product = {
+        id: document.getElementById("productId").value,
+        nombre: document.getElementById("nombre").value.trim(),
+        descripcion: document.getElementById("descripcion").value.trim(),
+        precio: document.getElementById("precio").value,
+        categoria: document.getElementById("categoria").value.trim(),
+        disponible: document.getElementById("disponible").checked,
+      };
 
-                if (result.errors) {
-                    throw new Error(result.errors[0]?.message || 'Error creating product in Caisy');
-                }
-
-                if (result.data?.createProducto) {
-                    console.log('✅ Producto creado exitosamente en Caisy');
-                    return result.data.createProducto;
-                }
-
-                throw new Error('No se recibió respuesta válida de Caisy');
-
-            } catch (error) {
-                console.error('❌ Error guardando en Caisy:', error);
-                throw error;
-            }
+      try {
+        if (product.id) {
+          await updateProductInCaisy(product.id, product);
+          showNotification("Producto actualizado correctamente", "success");
+        } else {
+          await saveProductToCaisy(product);
+          showNotification("Producto guardado correctamente", "success");
         }
+        closeProductModal();
+        loadProducts();
+      } catch (err) {
+        showNotification("❌ Error guardando: " + err.message, "error");
+        console.error(err);
+      }
+    });
 
-        // Create product locally
-        function createProductLocally(productData) {
-            const product = {
-                ...productData,
-                id: Date.now().toString(),
-                source: 'local',
-                createdAt: new Date().toISOString()
-            };
+    // Notificaciones
+    function showNotification(msg, type = "info") {
+      const container = document.getElementById("notificationContainer");
+      const note = document.createElement("div");
+      note.className = `p-3 rounded-md shadow-md text-white animate-fadeIn 
+        ${type === "success" ? "bg-green-600" :
+          type === "error" ? "bg-red-600" :
+          type === "warning" ? "bg-yellow-500" : "bg-blue-600"}`;
+      note.textContent = msg;
+      container.appendChild(note);
+      setTimeout(() => note.remove(), 4000);
+    }
 
-            const products = JSON.parse(localStorage.getItem('products') || '[]');
-            products.push(product);
-            localStorage.setItem('products', JSON.stringify(products));
-
-            return product;
-        }
-
-        // Update product locally
-        function updateProductLocally(productId, productData) {
-            const products = JSON.parse(localStorage.getItem('products') || '[]');
-            const index = products.findIndex(p => p.id === productId);
-            
-            if (index !== -1) {
-                products[index] = {
-                    ...products[index],
-                    ...productData,
-                    updatedAt: new Date().toISOString()
-                };
-                localStorage.setItem('products', JSON.stringify(products));
-                return products[index];
-            }
-            
-            return null;
-        }
-
-        // Handle product form submission
-        async function handleProductSubmit(e) {
-            e.preventDefault();
-            
-            const formData = {
-                name: document.getElementById('productName').value.trim(),
-                price: parseFloat(document.getElementById('productPrice').value),
-                category: document.getElementById('productCategory').value,
-                description: document.getElementById('productDescription').value.trim(),
-                stock: parseInt(document.getElementById('productStock').value) || 0,
-                images: []
-            };
-
-            // Validate required fields
-            if (!formData.name || !formData.price || !formData.category) {
-                showNotification('Por favor completa todos los campos requeridos', 'error');
-                return;
-            }
-
-            // Handle image
-            const imageFile = document.getElementById('productImage').files[0];
-            if (imageFile) {
-                formData.images = [await convertImageToBase64(imageFile)];
-            }
-
-            // Show loading state
-            showNotification('Guardando producto...', 'info');
-
-            try {
-                let savedProduct;
-                
-                if (editingProductId) {
-                    // Update existing product
-                    savedProduct = updateProductLocally(editingProductId, formData);
-                    showNotification('Producto actualizado correctamente', 'success');
-                } else {
-                    // Create new product - try Caisy first
-                    try {
-                        console.log('🔄 Intentando crear en Caisy...');
-                        const caisyProduct = await saveProductToCaisy(formData);
-                        
-                        // If successful, also save locally with Caisy flag
-                        const localProduct = {
-                            ...formData,
-                            id: caisyProduct.id,
-                            source: 'caisy',
-                            createdAt: new Date().toISOString()
-                        };
-                        
-                        // Save to localStorage as well for immediate display
-                        const localProducts = JSON.parse(localStorage.getItem('products') || '[]');
-                        localProducts.push(localProduct);
-                        localStorage.setItem('products', JSON.stringify(localProducts));
-                        
-                        savedProduct = localProduct;
-                        showNotification('✅ Producto creado exitosamente en Caisy', 'success');
-                        
-                    } catch (caisyError) {
-                        console.error('❌ Error creando en Caisy:', caisyError.message);
-                        
-                        // Fallback: save locally
-                        savedProduct = createProductLocally(formData);
-                        showNotification(`Error en Caisy: ${caisyError.message}. Guardado localmente.`, 'warning');
-                    }
-                }
-
-                closeModal();
-                await loadProducts();
-
-            } catch (error) {
-                console.error('❌ Error general:', error);
-                showNotification('Error inesperado. Intenta nuevamente.', 'error');
-            }
-        }
-
-        // Render products
-        function renderProducts() {
-            const grid = document.getElementById('productsGrid');
-            const emptyState = document.getElementById('emptyState');
-
-            if (allProducts.length === 0) {
-                grid.classList.add('hidden');
-                emptyState.classList.remove('hidden');
-                return;
-            }
-
-            grid.classList.remove('hidden');
-            emptyState.classList.add('hidden');
-
-            grid.innerHTML = allProducts.map(product => `
-                <div class="product-card bg-white border border-gray-200 rounded-lg p-4">
-                    <div class="flex justify-between items-start mb-3">
-                        <h3 class="font-semibold text-gray-900 truncate">${product.name}</h3>
-                        <span class="source-badge ${product.source === 'caisy' ? 'source-caisy' : 'source-local'}">
-                            ${product.source === 'caisy' ? 'Caisy' : 'Local'}
-                        </span>
-                    </div>
-                    
-                    <div class="space-y-2 mb-4">
-                        <p class="text-2xl font-bold text-green-600">$${product.price}</p>
-                        <p class="text-sm text-gray-600">${product.category}</p>
-                        ${product.description ? `<p class="text-sm text-gray-500 line-clamp-2">${product.description}</p>` : ''}
-                        ${product.stock !== undefined ? `<p class="text-xs text-gray-400">Stock: ${product.stock}</p>` : ''}
-                    </div>
-                    
-                    <div class="flex space-x-2">
-                        <button onclick="editProduct('${product.id}')" class="flex-1 bg-blue-50 hover:bg-blue-100 text-blue-600 px-3 py-2 rounded text-sm font-medium transition-colors">
-                            Editar
-                        </button>
-                        <button onclick="deleteProduct('${product.id}')" class="flex-1 bg-red-50 hover:bg-red-100 text-red-600 px-3 py-2 rounded text-sm font-medium transition-colors">
-                            Eliminar
-                        </button>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        // Update statistics
-        function updateStats() {
-            const total = allProducts.length;
-            const caisyCount = allProducts.filter(p => p.source === 'caisy').length;
-            const localCount = allProducts.filter(p => p.source === 'local').length;
-
-            document.getElementById('totalProducts').textContent = total;
-            document.getElementById('caisyProducts').textContent = caisyCount;
-            document.getElementById('localProducts').textContent = localCount;
-            document.getElementById('lastSync').textContent = new Date().toLocaleTimeString();
-        }
-
-        // Modal functions
-        function openProductModal(productId = null) {
-            editingProductId = productId;
-            const modal = document.getElementById('productModal');
-            const title = document.getElementById('modalTitle');
-            const form = document.getElementById('productForm');
-
-            if (productId) {
-                const product = allProducts.find(p => p.id === productId);
-                if (product) {
-                    title.textContent = 'Editar Producto';
-                    document.getElementById('productName').value = product.name;
-                    document.getElementById('productPrice').value = product.price;
-                    document.getElementById('productCategory').value = product.category;
-                    document.getElementById('productDescription').value = product.description || '';
-                    document.getElementById('productStock').value = product.stock || 0;
-                }
-            } else {
-                title.textContent = 'Nuevo Producto';
-                form.reset();
-            }
-
-            // Show modal and focus properly
-            modal.classList.remove('hidden');
-            modal.style.display = 'flex';
-            
-            // Ensure proper focus after DOM update
-            requestAnimationFrame(() => {
-                document.getElementById('productName').focus();
-            });
-        }
-
-        function closeModal() {
-            const modal = document.getElementById('productModal');
-            modal.classList.add('hidden');
-            modal.style.display = '';
-            editingProductId = null;
-        }
-
-        // Edit product
-        function editProduct(productId) {
-            openProductModal(productId);
-        }
-
-        // Delete product
-        async function deleteProduct(productId) {
-            // Create custom confirmation modal instead of browser confirm
-            const shouldDelete = await showConfirmDialog('¿Estás seguro de que quieres eliminar este producto?');
-            if (!shouldDelete) {
-                return;
-            }
-
-            try {
-                const product = allProducts.find(p => p.id === productId);
-                
-                if (product?.source === 'caisy') {
-                    // Try to delete from Caisy first
-                    try {
-                        await deleteProductFromCaisy(productId);
-                        showNotification('Producto eliminado de Caisy', 'success');
-                    } catch (error) {
-                        console.error('Error deleting from Caisy:', error);
-                        showNotification('Error eliminando de Caisy, eliminado localmente', 'warning');
-                    }
-                }
-
-                // Delete from localStorage
-                const products = JSON.parse(localStorage.getItem('products') || '[]');
-                const filteredProducts = products.filter(p => p.id !== productId);
-                localStorage.setItem('products', JSON.stringify(filteredProducts));
-
-                await loadProducts();
-                showNotification('Producto eliminado correctamente', 'success');
-
-            } catch (error) {
-                console.error('Error deleting product:', error);
-                showNotification('Error eliminando producto', 'error');
-            }
-        }
-
-        // Delete product from Caisy
-        async function deleteProductFromCaisy(productId) {
-            const mutation = `
-                mutation {
-                    deleteProducto(id: "${productId}") {
-                        id
-                    }
-                }
-            `;
-
-            const response = await fetch(CAISY_CONFIG.endpoint, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'x-caisy-apikey': CAISY_CONFIG.apiKey
-                },
-                body: JSON.stringify({ query: mutation })
-            });
-
-            const result = await response.json();
-            
-            if (result.errors) {
-                throw new Error(result.errors[0]?.message || 'Error deleting from Caisy');
-            }
-
-            return true;
-        }
-
-        // Sync with Caisy
-        async function syncWithCaisy() {
-            showNotification('Sincronizando con Caisy...', 'info');
-            await loadProducts();
-            showNotification('Sincronización completada', 'success');
-        }
-
-        // Utility functions
-        async function convertImageToBase64(file) {
-            return new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.onload = () => resolve(reader.result);
-                reader.onerror = reject;
-                reader.readAsDataURL(file);
-            });
-        }
-
-        function showNotification(message, type = 'info') {
-            // Remove existing notifications
-            const existing = document.querySelector('.notification');
-            if (existing) {
-                existing.remove();
-            }
-
-            const notification = document.createElement('div');
-            notification.className = `notification ${type}`;
-            notification.textContent = message;
-            
-            document.body.appendChild(notification);
-            
-            // Show notification
-            setTimeout(() => notification.classList.add('show'), 100);
-            
-            // Hide notification after 4 seconds
-            setTimeout(() => {
-                notification.classList.remove('show');
-                setTimeout(() => notification.remove(), 300);
-            }, 4000);
-        }
-
-        // Custom confirmation dialog
-        function showConfirmDialog(message) {
-            return new Promise((resolve) => {
-                const overlay = document.createElement('div');
-                overlay.className = 'fixed inset-0 z-50 flex items-center justify-center';
-                overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
-                
-                const dialog = document.createElement('div');
-                dialog.className = 'bg-white rounded-lg shadow-xl max-w-sm w-full mx-4 p-6';
-                
-                dialog.innerHTML = `
-                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Confirmar acción</h3>
-                    <p class="text-gray-600 mb-6">${message}</p>
-                    <div class="flex space-x-3 justify-end">
-                        <button id="cancelBtn" class="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg font-medium transition-colors">
-                            Cancelar
-                        </button>
-                        <button id="confirmBtn" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium transition-colors">
-                            Eliminar
-                        </button>
-                    </div>
-                `;
-                
-                overlay.appendChild(dialog);
-                document.body.appendChild(overlay);
-                
-                const cancelBtn = dialog.querySelector('#cancelBtn');
-                const confirmBtn = dialog.querySelector('#confirmBtn');
-                
-                cancelBtn.onclick = () => {
-                    document.body.removeChild(overlay);
-                    resolve(false);
-                };
-                
-                confirmBtn.onclick = () => {
-                    document.body.removeChild(overlay);
-                    resolve(true);
-                };
-                
-                overlay.onclick = (e) => {
-                    if (e.target === overlay) {
-                        document.body.removeChild(overlay);
-                        resolve(false);
-                    }
-                };
-            });
-        }
-
-        // Close modal when clicking outside
-        document.addEventListener('click', function(e) {
-            if (e.target.classList.contains('modal-overlay')) {
-                closeModal();
-            }
-        });
-
-        // Close modal with Escape key
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') {
-                closeModal();
-            }
-        });
-    </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98f383418273116c',t:'MTc2MDU3NTMwOS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+    // Inicializar
+    loadProducts();
+  </script>
+</body>
 </html>
