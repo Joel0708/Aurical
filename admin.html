@@ -1,0 +1,687 @@
+<!doctype html>
+<html lang="es">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Panel - Panu</title>
+  <script src="/_sdk/element_sdk.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+        body {
+            box-sizing: border-box;
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .admin-card {
+            background: linear-gradient(145deg, #ffffff, #f8fafc);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .admin-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, #10b981, #059669);
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+        }
+        
+        .btn-warning {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+        }
+        
+        .loading-spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .modal {
+            backdrop-filter: blur(10px);
+            background: rgba(0, 0, 0, 0.5);
+        }
+        
+        .modal-content {
+            background: linear-gradient(145deg, #ffffff, #f8fafc);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .stats-card {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            padding: 16px 24px;
+            border-radius: 8px;
+            color: white;
+            font-weight: 500;
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+        }
+        
+        .notification.show {
+            transform: translateX(0);
+        }
+        
+        .notification.success {
+            background: linear-gradient(135deg, #10b981, #059669);
+        }
+        
+        .notification.error {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+        }
+        
+        .notification.warning {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+        }
+        
+        .image-preview {
+            max-width: 100px;
+            max-height: 100px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+        
+        .product-image {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+        
+        .table-container {
+            max-height: 600px;
+            overflow-y: auto;
+        }
+        
+        .login-container {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .login-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+        }
+    </style>
+  <style>@view-transition { navigation: auto; }</style>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+ </head>
+ <body class="bg-gray-50"><!-- Login Screen -->
+  <div id="login-screen" class="login-container flex items-center justify-center p-4">
+   <div class="login-card rounded-2xl shadow-2xl p-8 w-full max-w-md">
+    <div class="text-center mb-8">
+     <h1 class="text-3xl font-bold text-gray-800 mb-2">Panel de Administración</h1>
+     <p class="text-gray-600">Panu - Sublimaciones Premium</p>
+    </div>
+    <form id="login-form" class="space-y-6">
+     <div><label for="username" class="block text-sm font-medium text-gray-700 mb-2">Usuario</label> <input type="text" id="username" name="username" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+     </div>
+     <div><label for="password" class="block text-sm font-medium text-gray-700 mb-2">Contraseña</label> <input type="password" id="password" name="password" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+     </div><button type="submit" id="login-btn" class="btn-primary w-full text-white py-3 rounded-lg font-medium flex items-center justify-center space-x-2"> <span>Iniciar Sesión</span>
+      <div id="login-spinner" class="loading-spinner hidden"></div></button>
+    </form>
+    <div id="login-error" class="hidden mt-4 p-3 bg-red-100 border border-red-300 text-red-700 rounded-lg text-sm">
+     Usuario o contraseña incorrectos
+    </div>
+   </div>
+  </div><!-- Admin Dashboard -->
+  <div id="admin-dashboard" class="hidden min-h-screen"><!-- Header -->
+   <header class="gradient-bg text-white py-6 shadow-lg">
+    <div class="max-w-7xl mx-auto px-4 flex justify-between items-center">
+     <div>
+      <h1 class="text-3xl font-bold">Panel de Administración</h1>
+      <p class="opacity-90">Gestión de productos - Panu</p>
+     </div>
+     <div class="flex items-center space-x-4"><span id="admin-user" class="text-sm opacity-90"></span> <button onclick="logout()" class="bg-white bg-opacity-20 hover:bg-opacity-30 px-4 py-2 rounded-lg transition-all"> Cerrar Sesión </button>
+     </div>
+    </div>
+   </header><!-- Stats Cards -->
+   <div class="max-w-7xl mx-auto px-4 py-8">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+     <div class="stats-card text-white rounded-xl p-6">
+      <div class="flex items-center justify-between">
+       <div>
+        <p class="text-sm opacity-90">Total Productos</p>
+        <p id="total-products" class="text-3xl font-bold">0</p>
+       </div>
+       <div class="text-4xl opacity-80">
+        📦
+       </div>
+      </div>
+     </div>
+     <div class="bg-green-500 text-white rounded-xl p-6">
+      <div class="flex items-center justify-between">
+       <div>
+        <p class="text-sm opacity-90">Disponibles</p>
+        <p id="available-products" class="text-3xl font-bold">0</p>
+       </div>
+       <div class="text-4xl opacity-80">
+        ✅
+       </div>
+      </div>
+     </div>
+     <div class="bg-yellow-500 text-white rounded-xl p-6">
+      <div class="flex items-center justify-between">
+       <div>
+        <p class="text-sm opacity-90">No Disponibles</p>
+        <p id="unavailable-products" class="text-3xl font-bold">0</p>
+       </div>
+       <div class="text-4xl opacity-80">
+        ⏸️
+       </div>
+      </div>
+     </div>
+     <div class="bg-purple-500 text-white rounded-xl p-6">
+      <div class="flex items-center justify-between">
+       <div>
+        <p class="text-sm opacity-90">Categorías</p>
+        <p id="total-categories" class="text-3xl font-bold">0</p>
+       </div>
+       <div class="text-4xl opacity-80">
+        🏷️
+       </div>
+      </div>
+     </div>
+    </div><!-- Actions Bar -->
+    <div class="flex justify-between items-center mb-6">
+     <h2 class="text-2xl font-bold text-gray-800">Gestión de Productos</h2>
+     <div class="flex space-x-4"><button onclick="refreshProducts()" class="btn-primary text-white px-4 py-2 rounded-lg flex items-center space-x-2">
+       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+       </svg><span>Actualizar</span> </button> <button onclick="showAddProductModal()" class="btn-success text-white px-6 py-2 rounded-lg flex items-center space-x-2">
+       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+       </svg><span>Nuevo Producto</span> </button>
+     </div>
+    </div><!-- Products Table -->
+    <div class="admin-card rounded-xl shadow-lg overflow-hidden">
+     <div class="table-container">
+      <table class="w-full">
+       <thead class="bg-gray-50 border-b">
+        <tr>
+         <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Producto</th>
+         <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Categoría</th>
+         <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Precio</th>
+         <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
+         <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha</th>
+         <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
+        </tr>
+       </thead>
+       <tbody id="products-table-body" class="bg-white divide-y divide-gray-200"><!-- Products will be loaded here -->
+       </tbody>
+      </table>
+     </div>
+     <div id="loading-products" class="flex justify-center items-center py-12">
+      <div class="text-center">
+       <div class="loading-spinner mx-auto mb-4"></div>
+       <p class="text-gray-600">Cargando productos...</p>
+      </div>
+     </div>
+     <div id="no-products" class="text-center py-12 hidden">
+      <div class="text-6xl mb-4">
+       📦
+      </div>
+      <h3 class="text-xl font-bold text-gray-700 mb-2">No hay productos</h3>
+      <p class="text-gray-500">Comienza agregando tu primer producto</p>
+     </div>
+    </div>
+   </div>
+  </div><!-- Add/Edit Product Modal -->
+  <div id="product-modal" class="modal fixed inset-0 z-50 hidden">
+   <div class="flex items-center justify-center min-h-screen p-4">
+    <div class="modal-content rounded-2xl shadow-2xl max-w-2xl w-full max-h-screen overflow-y-auto">
+     <div class="p-8">
+      <div class="flex justify-between items-center mb-6">
+       <h2 id="modal-title" class="text-2xl font-bold text-gray-800">Nuevo Producto</h2><button onclick="closeProductModal()" class="text-gray-500 hover:text-gray-700 text-2xl">×</button>
+      </div>
+      <form id="product-form" class="space-y-6"><input type="hidden" id="product-id" name="id">
+       <div class="grid md:grid-cols-2 gap-6">
+        <div><label for="product-name" class="block text-sm font-medium text-gray-700 mb-2">Nombre del Producto</label> <input type="text" id="product-name" name="nombre" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+        </div>
+        <div><label for="product-category" class="block text-sm font-medium text-gray-700 mb-2">Categoría</label> <select id="product-category" name="categoria" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"> <option value="">Seleccionar categoría</option> <option value="tazas">Tazas</option> <option value="remeras">Remeras</option> <option value="accesorios">Accesorios</option> </select>
+        </div>
+       </div>
+       <div><label for="product-description" class="block text-sm font-medium text-gray-700 mb-2">Descripción</label> <textarea id="product-description" name="descripcion" rows="3" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"></textarea>
+       </div>
+       <div class="grid md:grid-cols-2 gap-6">
+        <div><label for="product-price" class="block text-sm font-medium text-gray-700 mb-2">Precio (Gs.)</label> <input type="number" id="product-price" name="precio" required min="0" step="1000" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+        </div>
+        <div><label for="product-available" class="block text-sm font-medium text-gray-700 mb-2">Estado</label> <select id="product-available" name="disponible" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"> <option value="true">Disponible</option> <option value="false">No Disponible</option> </select>
+        </div>
+       </div>
+       <div><label for="product-image" class="block text-sm font-medium text-gray-700 mb-2">URL de Imagen Principal</label> <input type="url" id="product-image" name="imagen_principal" placeholder="https://ejemplo.com/imagen.jpg" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+        <div id="image-preview" class="mt-2 hidden"><img id="preview-img" src="" alt="Vista previa" class="image-preview">
+        </div>
+       </div>
+       <div class="flex justify-end space-x-4 pt-6 border-t"><button type="button" onclick="closeProductModal()" class="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"> Cancelar </button> <button type="submit" id="save-product-btn" class="btn-primary text-white px-6 py-3 rounded-lg flex items-center space-x-2"> <span>Guardar Producto</span>
+         <div id="save-spinner" class="loading-spinner hidden"></div></button>
+       </div>
+      </form>
+     </div>
+    </div>
+   </div>
+  </div><!-- Delete Confirmation Modal -->
+  <div id="delete-modal" class="modal fixed inset-0 z-50 hidden">
+   <div class="flex items-center justify-center min-h-screen p-4">
+    <div class="modal-content rounded-2xl shadow-2xl max-w-md w-full p-8">
+     <div class="text-center">
+      <div class="text-6xl mb-4">
+       🗑️
+      </div>
+      <h3 class="text-xl font-bold text-gray-800 mb-2">¿Eliminar Producto?</h3>
+      <p class="text-gray-600 mb-6">Esta acción no se puede deshacer</p>
+      <p id="delete-product-name" class="font-medium text-gray-800 mb-6"></p>
+      <div class="flex space-x-4"><button onclick="closeDeleteModal()" class="flex-1 px-4 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"> Cancelar </button> <button onclick="confirmDelete()" id="confirm-delete-btn" class="btn-danger flex-1 text-white px-4 py-3 rounded-lg flex items-center justify-center space-x-2"> <span>Eliminar</span>
+        <div id="delete-spinner" class="loading-spinner hidden"></div></button>
+      </div>
+     </div>
+    </div>
+   </div>
+  </div><!-- Notification Container -->
+  <div id="notification-container"></div>
+  <script>
+        // Supabase configuration
+        const SUPABASE_URL = 'https://sxihojciyiypolxahoej.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN4aWhvamNpeWl5cG9seGFob2VqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA3Nzc3OTEsImV4cCI6MjA3NjM1Mzc5MX0.PGIGHwPmhTjpGCl-m61P2HXrSNwiR1ku8rgIshc-RUA';
+        
+        // Initialize Supabase client
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        let currentUser = null;
+        let allProducts = [];
+        let editingProduct = null;
+        let productToDelete = null;
+
+        // Show notification
+        function showNotification(message, type = 'success') {
+            const container = document.getElementById('notification-container');
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.innerHTML = `
+                <div class="flex items-center space-x-2">
+                    <span>${type === 'success' ? '✅' : type === 'error' ? '❌' : '⚠️'}</span>
+                    <span>${message}</span>
+                </div>
+            `;
+            
+            container.appendChild(notification);
+            
+            // Show notification
+            setTimeout(() => notification.classList.add('show'), 100);
+            
+            // Hide and remove notification
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => container.removeChild(notification), 300);
+            }, 4000);
+        }
+
+        // Login function
+        async function login(username, password) {
+            try {
+                const { data, error } = await supabase
+                    .from('login')
+                    .select('*')
+                    .eq('usuario', username)
+                    .eq('pass', password)
+                    .single();
+
+                if (error || !data) {
+                    throw new Error('Credenciales incorrectas');
+                }
+
+                currentUser = data;
+                document.getElementById('admin-user').textContent = `Bienvenido, ${data.usuario}`;
+                
+                // Hide login screen and show dashboard
+                document.getElementById('login-screen').classList.add('hidden');
+                document.getElementById('admin-dashboard').classList.remove('hidden');
+                
+                // Load products
+                await loadProducts();
+                
+                showNotification('Sesión iniciada correctamente');
+                
+                return true;
+            } catch (error) {
+                console.error('Login error:', error);
+                return false;
+            }
+        }
+
+        // Logout function
+        function logout() {
+            currentUser = null;
+            document.getElementById('login-screen').classList.remove('hidden');
+            document.getElementById('admin-dashboard').classList.add('hidden');
+            document.getElementById('login-form').reset();
+            document.getElementById('login-error').classList.add('hidden');
+            showNotification('Sesión cerrada', 'warning');
+        }
+
+        // Load products from database
+        async function loadProducts() {
+            const loadingDiv = document.getElementById('loading-products');
+            const tableBody = document.getElementById('products-table-body');
+            const noProductsDiv = document.getElementById('no-products');
+            
+            try {
+                loadingDiv.classList.remove('hidden');
+                tableBody.innerHTML = '';
+                noProductsDiv.classList.add('hidden');
+
+                const { data, error } = await supabase
+                    .from('producto')
+                    .select('*')
+                    .order('fecha_creacion', { ascending: false });
+
+                if (error) throw error;
+
+                allProducts = data || [];
+                loadingDiv.classList.add('hidden');
+
+                if (allProducts.length === 0) {
+                    noProductsDiv.classList.remove('hidden');
+                } else {
+                    displayProducts(allProducts);
+                }
+
+                updateStats();
+            } catch (error) {
+                console.error('Error loading products:', error);
+                loadingDiv.classList.add('hidden');
+                showNotification('Error al cargar productos: ' + error.message, 'error');
+            }
+        }
+
+        // Display products in table
+        function displayProducts(products) {
+            const tableBody = document.getElementById('products-table-body');
+            
+            tableBody.innerHTML = products.map(product => `
+                <tr class="hover:bg-gray-50">
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="flex items-center">
+                            <img src="${product.imagen_principal || 'data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'80\' height=\'80\' viewBox=\'0 0 80 80\'%3E%3Crect width=\'80\' height=\'80\' fill=\'%23f3f4f6\'/%3E%3Ctext x=\'40\' y=\'45\' text-anchor=\'middle\' font-size=\'12\' fill=\'%236b7280\'%3EImg%3C/text%3E%3C/svg%3E'}" 
+                                 alt="${product.nombre}" class="product-image mr-4">
+                            <div>
+                                <div class="text-sm font-medium text-gray-900">${product.nombre}</div>
+                                <div class="text-sm text-gray-500">${product.descripcion.substring(0, 50)}${product.descripcion.length > 50 ? '...' : ''}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                            ${product.categoria}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        Gs. ${product.precio.toLocaleString()}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${product.disponible ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">
+                            ${product.disponible ? 'Disponible' : 'No Disponible'}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        ${new Date(product.fecha_creacion).toLocaleDateString('es-ES')}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <div class="flex space-x-2">
+                            <button onclick="editProduct(${product.id})" class="btn-warning text-white px-3 py-1 rounded text-xs">
+                                Editar
+                            </button>
+                            <button onclick="showDeleteModal(${product.id})" class="btn-danger text-white px-3 py-1 rounded text-xs">
+                                Eliminar
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // Update statistics
+        function updateStats() {
+            const total = allProducts.length;
+            const available = allProducts.filter(p => p.disponible).length;
+            const unavailable = total - available;
+            const categories = new Set(allProducts.map(p => p.categoria)).size;
+
+            document.getElementById('total-products').textContent = total;
+            document.getElementById('available-products').textContent = available;
+            document.getElementById('unavailable-products').textContent = unavailable;
+            document.getElementById('total-categories').textContent = categories;
+        }
+
+        // Show add product modal
+        function showAddProductModal() {
+            editingProduct = null;
+            document.getElementById('modal-title').textContent = 'Nuevo Producto';
+            document.getElementById('product-form').reset();
+            document.getElementById('product-id').value = '';
+            document.getElementById('image-preview').classList.add('hidden');
+            document.getElementById('product-modal').classList.remove('hidden');
+        }
+
+        // Edit product
+        function editProduct(productId) {
+            editingProduct = allProducts.find(p => p.id === productId);
+            if (!editingProduct) return;
+
+            document.getElementById('modal-title').textContent = 'Editar Producto';
+            document.getElementById('product-id').value = editingProduct.id;
+            document.getElementById('product-name').value = editingProduct.nombre;
+            document.getElementById('product-category').value = editingProduct.categoria;
+            document.getElementById('product-description').value = editingProduct.descripcion;
+            document.getElementById('product-price').value = editingProduct.precio;
+            document.getElementById('product-available').value = editingProduct.disponible.toString();
+            document.getElementById('product-image').value = editingProduct.imagen_principal || '';
+            
+            // Show image preview if exists
+            if (editingProduct.imagen_principal) {
+                document.getElementById('preview-img').src = editingProduct.imagen_principal;
+                document.getElementById('image-preview').classList.remove('hidden');
+            }
+
+            document.getElementById('product-modal').classList.remove('hidden');
+        }
+
+        // Close product modal
+        function closeProductModal() {
+            document.getElementById('product-modal').classList.add('hidden');
+            editingProduct = null;
+        }
+
+        // Show delete modal
+        function showDeleteModal(productId) {
+            productToDelete = allProducts.find(p => p.id === productId);
+            if (!productToDelete) return;
+
+            document.getElementById('delete-product-name').textContent = productToDelete.nombre;
+            document.getElementById('delete-modal').classList.remove('hidden');
+        }
+
+        // Close delete modal
+        function closeDeleteModal() {
+            document.getElementById('delete-modal').classList.add('hidden');
+            productToDelete = null;
+        }
+
+        // Confirm delete
+        async function confirmDelete() {
+            if (!productToDelete) return;
+
+            const deleteBtn = document.getElementById('confirm-delete-btn');
+            const deleteSpinner = document.getElementById('delete-spinner');
+            
+            try {
+                deleteBtn.disabled = true;
+                deleteSpinner.classList.remove('hidden');
+
+                const { error } = await supabase
+                    .from('producto')
+                    .delete()
+                    .eq('id', productToDelete.id);
+
+                if (error) throw error;
+
+                showNotification('Producto eliminado correctamente');
+                closeDeleteModal();
+                await loadProducts();
+            } catch (error) {
+                console.error('Error deleting product:', error);
+                showNotification('Error al eliminar producto: ' + error.message, 'error');
+            } finally {
+                deleteBtn.disabled = false;
+                deleteSpinner.classList.add('hidden');
+            }
+        }
+
+        // Refresh products
+        async function refreshProducts() {
+            await loadProducts();
+            showNotification('Productos actualizados');
+        }
+
+        // Preview image
+        function previewImage() {
+            const imageUrl = document.getElementById('product-image').value;
+            const preview = document.getElementById('image-preview');
+            const previewImg = document.getElementById('preview-img');
+
+            if (imageUrl) {
+                previewImg.src = imageUrl;
+                preview.classList.remove('hidden');
+            } else {
+                preview.classList.add('hidden');
+            }
+        }
+
+        // Event Listeners
+        document.getElementById('login-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const loginBtn = document.getElementById('login-btn');
+            const loginSpinner = document.getElementById('login-spinner');
+            const loginError = document.getElementById('login-error');
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            loginBtn.disabled = true;
+            loginSpinner.classList.remove('hidden');
+            loginError.classList.add('hidden');
+            
+            const success = await login(username, password);
+            
+            if (!success) {
+                loginError.classList.remove('hidden');
+            }
+            
+            loginBtn.disabled = false;
+            loginSpinner.classList.add('hidden');
+        });
+
+        document.getElementById('product-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const saveBtn = document.getElementById('save-product-btn');
+            const saveSpinner = document.getElementById('save-spinner');
+            
+            try {
+                saveBtn.disabled = true;
+                saveSpinner.classList.remove('hidden');
+
+                const formData = new FormData(this);
+                const productData = {
+                    nombre: formData.get('nombre'),
+                    categoria: formData.get('categoria'),
+                    descripcion: formData.get('descripcion'),
+                    precio: parseInt(formData.get('precio')),
+                    disponible: formData.get('disponible') === 'true',
+                    imagen_principal: formData.get('imagen_principal') || null
+                };
+
+                let result;
+                if (editingProduct) {
+                    // Update existing product
+                    result = await supabase
+                        .from('producto')
+                        .update(productData)
+                        .eq('id', editingProduct.id);
+                } else {
+                    // Create new product
+                    productData.fecha_creacion = new Date().toISOString();
+                    result = await supabase
+                        .from('producto')
+                        .insert([productData]);
+                }
+
+                if (result.error) throw result.error;
+
+                showNotification(editingProduct ? 'Producto actualizado correctamente' : 'Producto creado correctamente');
+                closeProductModal();
+                await loadProducts();
+            } catch (error) {
+                console.error('Error saving product:', error);
+                showNotification('Error al guardar producto: ' + error.message, 'error');
+            } finally {
+                saveBtn.disabled = false;
+                saveSpinner.classList.add('hidden');
+            }
+        });
+
+        // Image preview on URL change
+        document.getElementById('product-image').addEventListener('input', previewImage);
+
+        // Close modals when clicking outside
+        document.getElementById('product-modal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeProductModal();
+            }
+        });
+
+        document.getElementById('delete-modal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeDeleteModal();
+            }
+        });
+
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if already logged in (you could implement session storage here)
+            console.log('Admin panel loaded');
+        });
+    </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9909d51d57aa116c',t:'MTc2MDgwOTM0OS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
