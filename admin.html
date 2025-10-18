@@ -144,6 +144,7 @@
     <div class="text-center mb-8">
      <h1 class="text-3xl font-bold text-gray-800 mb-2">Panel de Administración</h1>
      <p class="text-gray-600">Panu - Sublimaciones Premium</p>
+     <p class="text-xs text-gray-500 mt-2">v2.1.0</p>
     </div>
     <form id="login-form" class="space-y-6">
      <div><label for="username" class="block text-sm font-medium text-gray-700 mb-2">Usuario</label> <input type="text" id="username" name="username" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
@@ -163,6 +164,7 @@
      <div>
       <h1 class="text-3xl font-bold">Panel de Administración</h1>
       <p class="opacity-90">Gestión de productos - Panu</p>
+      <p class="text-xs opacity-75 mt-1">Versión 2.1.0</p>
      </div>
      <div class="flex items-center space-x-4"><span id="admin-user" class="text-sm opacity-90"></span> <button onclick="logout()" class="bg-white bg-opacity-20 hover:bg-opacity-30 px-4 py-2 rounded-lg transition-all"> Cerrar Sesión </button>
      </div>
@@ -349,6 +351,17 @@
         // Login function
         async function login(username, password) {
             try {
+                console.log('Intentando login con:', { usuario: username, pass: password });
+                
+                // Primero verificamos si la tabla existe y tiene datos
+                const { data: allUsers, error: listError } = await supabase
+                    .from('login')
+                    .select('*');
+                
+                console.log('Todos los usuarios en la tabla login:', allUsers);
+                console.log('Error al listar usuarios:', listError);
+                
+                // Ahora intentamos el login específico
                 const { data, error } = await supabase
                     .from('login')
                     .select('*')
@@ -356,7 +369,28 @@
                     .eq('pass', password)
                     .single();
 
-                if (error || !data) {
+                console.log('Resultado del login:', { data, error });
+
+                if (error) {
+                    console.error('Error de Supabase:', error);
+                    
+                    // Si no encuentra coincidencia exacta, intentamos buscar solo por usuario
+                    const { data: userCheck, error: userError } = await supabase
+                        .from('login')
+                        .select('*')
+                        .eq('usuario', username)
+                        .single();
+                    
+                    console.log('Verificación de usuario:', { userCheck, userError });
+                    
+                    if (userCheck) {
+                        throw new Error('Contraseña incorrecta');
+                    } else {
+                        throw new Error('Usuario no encontrado');
+                    }
+                }
+
+                if (!data) {
                     throw new Error('Credenciales incorrectas');
                 }
 
@@ -375,6 +409,12 @@
                 return true;
             } catch (error) {
                 console.error('Login error:', error);
+                
+                // Mostrar el error específico en la interfaz
+                const errorDiv = document.getElementById('login-error');
+                errorDiv.textContent = error.message;
+                errorDiv.classList.remove('hidden');
+                
                 return false;
             }
         }
@@ -683,5 +723,5 @@
             console.log('Admin panel loaded');
         });
     </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9909d51d57aa116c',t:'MTc2MDgwOTM0OS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9909e520e468116c',t:'MTc2MDgxMDAwNC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
