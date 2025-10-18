@@ -1,0 +1,538 @@
+<!doctype html>
+<html lang="es">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panu - Sublimaciones Premium</title>
+  <script src="/_sdk/element_sdk.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+        body {
+            box-sizing: border-box;
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .product-card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            background: linear-gradient(145deg, #ffffff, #f8fafc);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .product-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+        
+        .category-btn {
+            transition: all 0.3s ease;
+        }
+        
+        .category-btn.active {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            transform: scale(1.05);
+        }
+        
+        .loading-spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .modal {
+            backdrop-filter: blur(10px);
+            background: rgba(0, 0, 0, 0.5);
+        }
+        
+        .modal-content {
+            background: linear-gradient(145deg, #ffffff, #f8fafc);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+        
+        .btn-whatsapp {
+            background: linear-gradient(135deg, #25d366, #128c7e);
+        }
+        
+        .btn-email {
+            background: linear-gradient(135deg, #ea4335, #d33b2c);
+        }
+        
+        .price-tag {
+            background: linear-gradient(135deg, #ffd700, #ffed4e);
+            color: #1a202c;
+        }
+        
+        .enterprise-section {
+            background: linear-gradient(135deg, #2d3748, #4a5568);
+        }
+    </style>
+  <style>@view-transition { navigation: auto; }</style>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+ </head>
+ <body class="min-h-full bg-gray-50"><!-- Header -->
+  <header class="gradient-bg text-white py-16">
+   <div class="max-w-7xl mx-auto px-4 text-center">
+    <h1 id="store-title" class="text-5xl md:text-6xl font-bold mb-4">Panu - Sublimaciones Premium</h1>
+    <p id="store-subtitle" class="text-xl md:text-2xl opacity-90 max-w-3xl mx-auto">Personaliza tus productos favoritos con la mejor calidad</p>
+    <div class="mt-8 flex justify-center space-x-4">
+     <div class="bg-white bg-opacity-20 rounded-full px-6 py-2"><span class="text-sm font-medium">✨ Calidad Premium</span>
+     </div>
+     <div class="bg-white bg-opacity-20 rounded-full px-6 py-2"><span class="text-sm font-medium">🚀 Entrega Rápida</span>
+     </div>
+     <div class="bg-white bg-opacity-20 rounded-full px-6 py-2"><span class="text-sm font-medium">💯 Garantía Total</span>
+     </div>
+    </div>
+   </div>
+  </header><!-- Navigation -->
+  <nav class="bg-white shadow-lg sticky top-0 z-40">
+   <div class="max-w-7xl mx-auto px-4">
+    <div class="flex justify-between items-center py-4">
+     <div class="flex space-x-8"><button class="category-btn active px-6 py-2 rounded-full font-medium" onclick="filterProducts('all')"> Todos los Productos </button> <button class="category-btn px-6 py-2 rounded-full font-medium" onclick="filterProducts('tazas')"> Tazas </button> <button class="category-btn px-6 py-2 rounded-full font-medium" onclick="filterProducts('remeras')"> Remeras </button> <button class="category-btn px-6 py-2 rounded-full font-medium" onclick="filterProducts('accesorios')"> Accesorios </button>
+     </div><button class="btn-primary text-white px-6 py-2 rounded-full font-medium" onclick="showEnterpriseModal()"> Compras Empresariales </button>
+    </div>
+   </div>
+  </nav><!-- Loading State -->
+  <div id="loading-state" class="flex justify-center items-center py-20">
+   <div class="text-center">
+    <div class="loading-spinner mx-auto mb-4"></div>
+    <p class="text-gray-600">Cargando productos...</p>
+   </div>
+  </div><!-- Products Grid -->
+  <main class="max-w-7xl mx-auto px-4 py-12">
+   <div id="products-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8"><!-- Products will be loaded here -->
+   </div><!-- No products message -->
+   <div id="no-products" class="text-center py-20 hidden">
+    <div class="text-6xl mb-4">
+     📦
+    </div>
+    <h3 class="text-2xl font-bold text-gray-700 mb-2">No hay productos disponibles</h3>
+    <p class="text-gray-500">Intenta con otra categoría o vuelve más tarde</p>
+   </div>
+  </main><!-- Product Modal -->
+  <div id="product-modal" class="modal fixed inset-0 z-50 hidden">
+   <div class="flex items-center justify-center min-h-screen p-4">
+    <div class="modal-content rounded-2xl shadow-2xl max-w-2xl w-full max-h-screen overflow-y-auto">
+     <div class="p-8">
+      <div class="flex justify-between items-start mb-6">
+       <h2 id="modal-title" class="text-3xl font-bold text-gray-800"></h2><button onclick="closeModal()" class="text-gray-500 hover:text-gray-700 text-2xl">×</button>
+      </div>
+      <div class="mb-6"><img id="modal-image" src="" alt="" class="w-full h-64 object-cover rounded-xl mb-4">
+       <p id="modal-description" class="text-gray-600 text-lg leading-relaxed"></p>
+      </div>
+      <div class="mb-6">
+       <div class="price-tag inline-block px-4 py-2 rounded-full font-bold text-xl mb-4"><span id="modal-price"></span>
+       </div>
+       <div class="text-sm text-gray-500"><span id="modal-category" class="bg-gray-100 px-3 py-1 rounded-full"></span>
+       </div>
+      </div>
+      <div class="space-y-4"><button onclick="requestQuote()" class="btn-whatsapp w-full text-white py-4 rounded-xl font-bold text-lg flex items-center justify-center space-x-2">
+        <svg class="w-6 h-6" fill="currentColor" viewbox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.885 3.488" />
+        </svg><span>Pedir Cotización por WhatsApp</span> </button> <button onclick="requestEmail()" class="btn-email w-full text-white py-4 rounded-xl font-bold text-lg flex items-center justify-center space-x-2">
+        <svg class="w-6 h-6" fill="currentColor" viewbox="0 0 24 24"><path d="M24 5.457v13.909c0 .904-.732 1.636-1.636 1.636h-3.819V11.73L12 16.64l-6.545-4.91v9.273H1.636A1.636 1.636 0 0 1 0 19.366V5.457c0-.904.732-1.636 1.636-1.636h3.819l6.545 4.91 6.545-4.91h3.819A1.636 1.636 0 0 1 24 5.457z" />
+        </svg><span>Consultar por Email</span> </button>
+      </div>
+     </div>
+    </div>
+   </div>
+  </div><!-- Enterprise Modal -->
+  <div id="enterprise-modal" class="modal fixed inset-0 z-50 hidden">
+   <div class="flex items-center justify-center min-h-screen p-4">
+    <div class="modal-content rounded-2xl shadow-2xl max-w-3xl w-full">
+     <div class="enterprise-section text-white p-8 rounded-t-2xl">
+      <div class="flex justify-between items-start mb-6">
+       <h2 class="text-3xl font-bold">Compras Empresariales</h2><button onclick="closeEnterpriseModal()" class="text-white hover:text-gray-300 text-2xl">×</button>
+      </div>
+      <p class="text-lg opacity-90">Soluciones personalizadas para tu empresa</p>
+     </div>
+     <div class="p-8">
+      <div class="grid md:grid-cols-2 gap-8 mb-8">
+       <div class="text-center p-6 bg-gray-50 rounded-xl">
+        <div class="text-4xl mb-4">
+         🏢
+        </div>
+        <h3 class="text-xl font-bold mb-2">Pedidos Grandes</h3>
+        <p class="text-gray-600">Descuentos especiales para pedidos de 50+ unidades</p>
+       </div>
+       <div class="text-center p-6 bg-gray-50 rounded-xl">
+        <div class="text-4xl mb-4">
+         🎨
+        </div>
+        <h3 class="text-xl font-bold mb-2">Diseños Personalizados</h3>
+        <p class="text-gray-600">Creamos diseños únicos para tu marca</p>
+       </div>
+      </div>
+      <div class="space-y-4"><button onclick="contactEnterpriseWhatsApp()" class="btn-whatsapp w-full text-white py-4 rounded-xl font-bold text-lg flex items-center justify-center space-x-2">
+        <svg class="w-6 h-6" fill="currentColor" viewbox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.885 3.488" />
+        </svg><span>Contactar por WhatsApp</span> </button> <button onclick="contactEnterpriseEmail()" class="btn-email w-full text-white py-4 rounded-xl font-bold text-lg flex items-center justify-center space-x-2">
+        <svg class="w-6 h-6" fill="currentColor" viewbox="0 0 24 24"><path d="M24 5.457v13.909c0 .904-.732 1.636-1.636 1.636h-3.819V11.73L12 16.64l-6.545-4.91v9.273H1.636A1.636 1.636 0 0 1 0 19.366V5.457c0-.904.732-1.636 1.636-1.636h3.819l6.545 4.91 6.545-4.91h3.819A1.636 1.636 0 0 1 24 5.457z" />
+        </svg><span>Enviar Email Empresarial</span> </button>
+      </div>
+     </div>
+    </div>
+   </div>
+  </div><!-- Footer -->
+  <footer class="bg-gray-800 text-white py-12 mt-16">
+   <div class="max-w-7xl mx-auto px-4 text-center">
+    <h3 class="text-2xl font-bold mb-4">Panu - Sublimaciones Premium</h3>
+    <div class="flex justify-center space-x-8 mb-6">
+     <div class="flex items-center space-x-2">
+      <svg class="w-5 h-5" fill="currentColor" viewbox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.885 3.488" />
+      </svg><span id="footer-whatsapp">+595985501874</span>
+     </div>
+     <div class="flex items-center space-x-2">
+      <svg class="w-5 h-5" fill="currentColor" viewbox="0 0 24 24"><path d="M24 5.457v13.909c0 .904-.732 1.636-1.636 1.636h-3.819V11.73L12 16.64l-6.545-4.91v9.273H1.636A1.636 1.636 0 0 1 0 19.366V5.457c0-.904.732-1.636 1.636-1.636h3.819l6.545 4.91 6.545-4.91h3.819A1.636 1.636 0 0 1 24 5.457z" />
+      </svg><span id="footer-email">panu@aurical.org</span>
+     </div>
+    </div>
+    <p class="text-gray-400">© 2024 Panu - Aurical Family. Todos los derechos reservados.</p>
+    <p class="text-gray-500 text-sm mt-2">v1.001</p>
+   </div>
+  </footer>
+  <script>
+        // Default configuration
+        const defaultConfig = {
+            store_title: "Panu - Sublimaciones Premium",
+            store_subtitle: "Personaliza tus productos favoritos con la mejor calidad",
+            whatsapp_number: "+595985501874",
+            email_address: "panu@aurical.org"
+        };
+
+        // Supabase configuration
+        const SUPABASE_URL = 'https://your-project.supabase.co';
+        const SUPABASE_ANON_KEY = 'your-anon-key';
+        
+        // Initialize Supabase client
+        let supabase;
+        try {
+            supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        } catch (error) {
+            console.log('Supabase not configured, using demo data');
+        }
+
+        // Demo data for when Supabase is not configured
+        const demoProducts = [
+            {
+                id: 1,
+                name: "Taza Mágica Personalizada",
+                description: "Taza que cambia de color con el calor. Perfecta para regalos personalizados con tu foto o diseño favorito.",
+                price: "Gs. 45.000",
+                category: "tazas",
+                image_url: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300' viewBox='0 0 300 300'%3E%3Crect width='300' height='300' fill='%23f8fafc'/%3E%3Ccircle cx='150' cy='120' r='60' fill='%23667eea' opacity='0.8'/%3E%3Crect x='190' y='110' width='30' height='20' rx='10' fill='%23667eea' opacity='0.6'/%3E%3Ctext x='150' y='250' text-anchor='middle' font-family='Arial' font-size='16' fill='%23374151'%3ETaza Mágica%3C/text%3E%3C/svg%3E"
+            },
+            {
+                id: 2,
+                name: "Remera Premium Algodón",
+                description: "Remera 100% algodón con sublimación de alta calidad. Diseños duraderos y colores vibrantes.",
+                price: "Gs. 65.000",
+                category: "remeras",
+                image_url: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300' viewBox='0 0 300 300'%3E%3Crect width='300' height='300' fill='%23f8fafc'/%3E%3Cpath d='M80 80 L220 80 L220 100 L200 120 L200 220 L100 220 L100 120 L80 100 Z' fill='%23667eea' opacity='0.8'/%3E%3Ccircle cx='150' cy='90' r='15' fill='%23667eea' opacity='0.6'/%3E%3Ctext x='150' y='250' text-anchor='middle' font-family='Arial' font-size='16' fill='%23374151'%3ERemera Premium%3C/text%3E%3C/svg%3E"
+            },
+            {
+                id: 3,
+                name: "Mousepad Gaming",
+                description: "Mousepad de alta precisión con base antideslizante. Ideal para gamers y profesionales.",
+                price: "Gs. 35.000",
+                category: "accesorios",
+                image_url: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300' viewBox='0 0 300 300'%3E%3Crect width='300' height='300' fill='%23f8fafc'/%3E%3Crect x='50' y='100' width='200' height='120' rx='10' fill='%23667eea' opacity='0.8'/%3E%3Ccircle cx='150' cy='160' r='20' fill='%23ffffff' opacity='0.9'/%3E%3Ctext x='150' y='250' text-anchor='middle' font-family='Arial' font-size='16' fill='%23374151'%3EMousepad Gaming%3C/text%3E%3C/svg%3E"
+            },
+            {
+                id: 4,
+                name: "Taza Cerámica Clásica",
+                description: "Taza de cerámica tradicional con acabado brillante. Perfecta para el uso diario.",
+                price: "Gs. 35.000",
+                category: "tazas",
+                image_url: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300' viewBox='0 0 300 300'%3E%3Crect width='300' height='300' fill='%23f8fafc'/%3E%3Ccircle cx='150' cy='120' r='50' fill='%23764ba2' opacity='0.8'/%3E%3Crect x='190' y='110' width='25' height='20' rx='8' fill='%23764ba2' opacity='0.6'/%3E%3Ctext x='150' y='250' text-anchor='middle' font-family='Arial' font-size='16' fill='%23374151'%3ETaza Clásica%3C/text%3E%3C/svg%3E"
+            },
+            {
+                id: 5,
+                name: "Remera Deportiva",
+                description: "Remera deportiva con tecnología dry-fit. Ideal para entrenamientos y actividades físicas.",
+                price: "Gs. 75.000",
+                category: "remeras",
+                image_url: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300' viewBox='0 0 300 300'%3E%3Crect width='300' height='300' fill='%23f8fafc'/%3E%3Cpath d='M80 80 L220 80 L220 100 L200 120 L200 220 L100 220 L100 120 L80 100 Z' fill='%23764ba2' opacity='0.8'/%3E%3Ccircle cx='150' cy='90' r='15' fill='%23764ba2' opacity='0.6'/%3E%3Cpath d='M120 140 L180 140 M120 160 L180 160 M120 180 L180 180' stroke='%23ffffff' stroke-width='3' opacity='0.7'/%3E%3Ctext x='150' y='250' text-anchor='middle' font-family='Arial' font-size='16' fill='%23374151'%3ERemera Deportiva%3C/text%3E%3C/svg%3E"
+            },
+            {
+                id: 6,
+                name: "Llavero Personalizado",
+                description: "Llavero acrílico con sublimación. Resistente y duradero, perfecto para regalos corporativos.",
+                price: "Gs. 15.000",
+                category: "accesorios",
+                image_url: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300' viewBox='0 0 300 300'%3E%3Crect width='300' height='300' fill='%23f8fafc'/%3E%3Crect x='120' y='100' width='60' height='80' rx='8' fill='%23667eea' opacity='0.8'/%3E%3Ccircle cx='150' cy='200' r='8' fill='%23667eea' opacity='0.6'/%3E%3Ccircle cx='150' cy='130' r='15' fill='%23ffffff' opacity='0.9'/%3E%3Ctext x='150' y='250' text-anchor='middle' font-family='Arial' font-size='16' fill='%23374151'%3ELlavero%3C/text%3E%3C/svg%3E"
+            }
+        ];
+
+        let allProducts = [];
+        let currentCategory = 'all';
+        let selectedProduct = null;
+
+        // Load products from Supabase or use demo data
+        async function loadProducts() {
+            const loadingState = document.getElementById('loading-state');
+            const productsGrid = document.getElementById('products-grid');
+            const noProducts = document.getElementById('no-products');
+
+            try {
+                if (supabase) {
+                    const { data, error } = await supabase
+                        .from('products')
+                        .select('*')
+                        .eq('active', true);
+
+                    if (error) throw error;
+                    allProducts = data || [];
+                } else {
+                    // Use demo data
+                    allProducts = demoProducts;
+                }
+
+                loadingState.classList.add('hidden');
+                
+                if (allProducts.length === 0) {
+                    noProducts.classList.remove('hidden');
+                } else {
+                    displayProducts(allProducts);
+                }
+            } catch (error) {
+                console.error('Error loading products:', error);
+                loadingState.classList.add('hidden');
+                // Fallback to demo data
+                allProducts = demoProducts;
+                displayProducts(allProducts);
+            }
+        }
+
+        // Display products in grid
+        function displayProducts(products) {
+            const productsGrid = document.getElementById('products-grid');
+            const noProducts = document.getElementById('no-products');
+
+            if (products.length === 0) {
+                productsGrid.innerHTML = '';
+                noProducts.classList.remove('hidden');
+                return;
+            }
+
+            noProducts.classList.add('hidden');
+            
+            productsGrid.innerHTML = products.map(product => `
+                <div class="product-card rounded-2xl shadow-lg overflow-hidden cursor-pointer" onclick="showProductModal(${product.id})">
+                    <div class="aspect-square overflow-hidden">
+                        <img src="${product.image_url}" alt="${product.name}" class="w-full h-full object-cover">
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">${product.name}</h3>
+                        <p class="text-gray-600 text-sm mb-4 line-clamp-2">${product.description}</p>
+                        <div class="flex justify-between items-center">
+                            <span class="price-tag px-3 py-1 rounded-full font-bold">${product.price}</span>
+                            <span class="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full">${product.category}</span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Filter products by category
+        function filterProducts(category) {
+            currentCategory = category;
+            
+            // Update active button
+            document.querySelectorAll('.category-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            // Filter products
+            const filteredProducts = category === 'all' 
+                ? allProducts 
+                : allProducts.filter(product => product.category === category);
+            
+            displayProducts(filteredProducts);
+        }
+
+        // Show product modal
+        function showProductModal(productId) {
+            selectedProduct = allProducts.find(p => p.id === productId);
+            if (!selectedProduct) return;
+
+            document.getElementById('modal-title').textContent = selectedProduct.name;
+            document.getElementById('modal-image').src = selectedProduct.image_url;
+            document.getElementById('modal-image').alt = selectedProduct.name;
+            document.getElementById('modal-description').textContent = selectedProduct.description;
+            document.getElementById('modal-price').textContent = selectedProduct.price;
+            document.getElementById('modal-category').textContent = selectedProduct.category;
+            
+            document.getElementById('product-modal').classList.remove('hidden');
+        }
+
+        // Close product modal
+        function closeModal() {
+            document.getElementById('product-modal').classList.add('hidden');
+            selectedProduct = null;
+        }
+
+        // Show enterprise modal
+        function showEnterpriseModal() {
+            document.getElementById('enterprise-modal').classList.remove('hidden');
+        }
+
+        // Close enterprise modal
+        function closeEnterpriseModal() {
+            document.getElementById('enterprise-modal').classList.add('hidden');
+        }
+
+        // Request quote via WhatsApp
+        function requestQuote() {
+            if (!selectedProduct) return;
+            
+            const config = window.elementSdk?.config || defaultConfig;
+            const whatsappNumber = config.whatsapp_number || defaultConfig.whatsapp_number;
+            const message = `¡Hola! Me interesa el producto: *${selectedProduct.name}*\n\nPrecio: ${selectedProduct.price}\n\n¿Podrían darme más información y cotización?`;
+            const whatsappUrl = `https://wa.me/${whatsappNumber.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(message)}`;
+            
+            window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
+        }
+
+        // Request via email
+        function requestEmail() {
+            if (!selectedProduct) return;
+            
+            const config = window.elementSdk?.config || defaultConfig;
+            const email = config.email_address || defaultConfig.email_address;
+            const subject = `Consulta sobre: ${selectedProduct.name}`;
+            const body = `Hola,\n\nMe interesa el siguiente producto:\n\nProducto: ${selectedProduct.name}\nPrecio: ${selectedProduct.price}\nDescripción: ${selectedProduct.description}\n\n¿Podrían darme más información y cotización?\n\nGracias.`;
+            
+            const mailtoUrl = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+            window.open(mailtoUrl, '_blank', 'noopener,noreferrer');
+        }
+
+        // Contact enterprise via WhatsApp
+        function contactEnterpriseWhatsApp() {
+            const config = window.elementSdk?.config || defaultConfig;
+            const whatsappNumber = config.whatsapp_number || defaultConfig.whatsapp_number;
+            const message = `¡Hola! Me interesa hacer una *compra empresarial* con Panu.\n\nNecesito información sobre:\n- Descuentos por volumen\n- Diseños personalizados\n- Tiempos de entrega\n- Opciones de pago\n\n¿Podrían contactarme?`;
+            const whatsappUrl = `https://wa.me/${whatsappNumber.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(message)}`;
+            
+            window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
+        }
+
+        // Contact enterprise via email
+        function contactEnterpriseEmail() {
+            const config = window.elementSdk?.config || defaultConfig;
+            const email = config.email_address || defaultConfig.email_address;
+            const subject = 'Consulta Compra Empresarial - Panu';
+            const body = `Estimados,\n\nMe pongo en contacto para consultar sobre compras empresariales.\n\nNecesito información sobre:\n- Descuentos por volumen (cantidad estimada: ___)\n- Diseños personalizados para nuestra marca\n- Tiempos de entrega\n- Opciones de pago\n- Muestras disponibles\n\nDatos de la empresa:\nNombre: ___\nRubro: ___\nContacto: ___\n\nQuedo a la espera de su respuesta.\n\nSaludos cordiales.`;
+            
+            const mailtoUrl = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+            window.open(mailtoUrl, '_blank', 'noopener,noreferrer');
+        }
+
+        // Render function for Element SDK
+        async function render(config) {
+            const customFont = config.font_family || defaultConfig.font_family || 'Inter';
+            const baseSize = config.font_size || defaultConfig.font_size || 16;
+
+            // Apply font family
+            if (customFont) {
+                document.body.style.fontFamily = `${customFont}, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif`;
+            }
+
+            // Apply font sizes proportionally
+            document.getElementById('store-title').style.fontSize = `${baseSize * 3}px`;
+            document.getElementById('store-subtitle').style.fontSize = `${baseSize * 1.25}px`;
+
+            // Update text content
+            document.getElementById('store-title').textContent = config.store_title || defaultConfig.store_title;
+            document.getElementById('store-subtitle').textContent = config.store_subtitle || defaultConfig.store_subtitle;
+            document.getElementById('footer-whatsapp').textContent = config.whatsapp_number || defaultConfig.whatsapp_number;
+            document.getElementById('footer-email').textContent = config.email_address || defaultConfig.email_address;
+        }
+
+        // Capabilities mapping
+        function mapToCapabilities(config) {
+            return {
+                recolorables: [],
+                borderables: [],
+                fontEditable: {
+                    get: () => config.font_family || defaultConfig.font_family || 'Inter',
+                    set: (value) => {
+                        config.font_family = value;
+                        if (window.elementSdk) {
+                            window.elementSdk.setConfig({ font_family: value });
+                        }
+                    }
+                },
+                fontSizeable: {
+                    get: () => config.font_size || defaultConfig.font_size || 16,
+                    set: (value) => {
+                        config.font_size = value;
+                        if (window.elementSdk) {
+                            window.elementSdk.setConfig({ font_size: value });
+                        }
+                    }
+                }
+            };
+        }
+
+        // Edit panel values mapping
+        function mapToEditPanelValues(config) {
+            return new Map([
+                ["store_title", config.store_title || defaultConfig.store_title],
+                ["store_subtitle", config.store_subtitle || defaultConfig.store_subtitle],
+                ["whatsapp_number", config.whatsapp_number || defaultConfig.whatsapp_number],
+                ["email_address", config.email_address || defaultConfig.email_address]
+            ]);
+        }
+
+        // Initialize Element SDK
+        if (window.elementSdk) {
+            window.elementSdk.init({
+                defaultConfig,
+                render,
+                mapToCapabilities,
+                mapToEditPanelValues
+            });
+        }
+
+        // Close modals when clicking outside
+        document.getElementById('product-modal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+
+        document.getElementById('enterprise-modal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeEnterpriseModal();
+            }
+        });
+
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', function() {
+            loadProducts();
+            render(defaultConfig);
+        });
+    </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9909a0242195debe',t:'MTc2MDgwNzE3OS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
