@@ -894,7 +894,17 @@
             displayExistingGalleryImages();
         }
 
-        // Upload image to Supabase Storage with progress
+        // Convert image to base64 data URL (alternative to storage)
+        async function convertImageToBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
+        }
+
+        // Upload image to Supabase Storage with fallback to base64
         async function uploadImageToStorage(file, folder = 'products') {
             try {
                 // Generate unique filename
@@ -906,7 +916,7 @@
                 const originalSize = (file.size / 1024).toFixed(1);
                 console.log(`Subiendo ${file.name} (${originalSize}KB) a ${filePath}`);
 
-                // Upload file to bucket
+                // Try uploading to Supabase Storage first
                 const { data, error } = await supabase.storage
                     .from('product')
                     .upload(filePath, file, {
@@ -914,9 +924,16 @@
                         upsert: false
                     });
 
-                if (error) throw error;
+                if (error) {
+                    console.log('Storage upload failed, using base64 fallback:', error.message);
+                    
+                    // Fallback to base64 encoding
+                    const base64Url = await convertImageToBase64(file);
+                    console.log(`✅ Imagen convertida a base64 (${originalSize}KB)`);
+                    return base64Url;
+                }
 
-                // Get public URL
+                // Get public URL if storage upload succeeded
                 const { data: urlData } = supabase.storage
                     .from('product')
                     .getPublicUrl(filePath);
@@ -924,15 +941,34 @@
                 console.log(`✅ Imagen subida exitosamente: ${urlData.publicUrl}`);
                 return urlData.publicUrl;
             } catch (error) {
-                console.error('Error uploading image:', error);
-                throw error;
+                console.error('Error uploading image, trying base64 fallback:', error);
+                
+                // Final fallback to base64
+                try {
+                    const base64Url = await convertImageToBase64(file);
+                    console.log(`✅ Imagen convertida a base64 como respaldo`);
+                    return base64Url;
+                } catch (base64Error) {
+                    console.error('Base64 conversion also failed:', base64Error);
+                    throw new Error('No se pudo procesar la imagen');
+                }
             }
         }
 
-        // Delete image from storage
+        // Delete image from storage (only for Supabase URLs, skip base64)
         async function deleteImageFromStorage(imageUrl) {
             try {
-                if (!imageUrl || !imageUrl.includes('supabase')) return;
+                // Skip deletion for base64 data URLs
+                if (!imageUrl || imageUrl.startsWith('data:')) {
+                    console.log('Skipping deletion of base64 image');
+                    return;
+                }
+                
+                // Only delete if it's a Supabase storage URL
+                if (!imageUrl.includes('supabase')) {
+                    console.log('Skipping deletion of non-Supabase URL');
+                    return;
+                }
                 
                 // Extract file path from URL
                 const urlParts = imageUrl.split('/');
@@ -945,7 +981,11 @@
                     .from('product')
                     .remove([filePath]);
 
-                if (error) console.error('Error deleting image:', error);
+                if (error) {
+                    console.log('Could not delete image from storage:', error.message);
+                } else {
+                    console.log('✅ Image deleted from storage:', filePath);
+                }
             } catch (error) {
                 console.error('Error deleting image from storage:', error);
             }
@@ -1092,5 +1132,5 @@
             console.log('Admin panel loaded');
         });
     </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'990a7f7e41e0116c',t:'MTc2MDgxNjMyOC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'990a8f59c453116c',t:'MTc2MDgxNjk3Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
