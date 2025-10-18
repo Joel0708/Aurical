@@ -144,7 +144,7 @@
     <div class="text-center mb-8">
      <h1 class="text-3xl font-bold text-gray-800 mb-2">Panel de Administración</h1>
      <p class="text-gray-600">Panu - Sublimaciones Premium</p>
-     <p class="text-xs text-gray-500 mt-2">v2.1.0</p>
+     <p class="text-xs text-gray-500 mt-2">v1.025</p>
     </div>
     <form id="login-form" class="space-y-6">
      <div><label for="username" class="block text-sm font-medium text-gray-700 mb-2">Usuario</label> <input type="text" id="username" name="username" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
@@ -164,7 +164,7 @@
      <div>
       <h1 class="text-3xl font-bold">Panel de Administración</h1>
       <p class="opacity-90">Gestión de productos - Panu</p>
-      <p class="text-xs opacity-75 mt-1">Versión 2.1.0</p>
+      <p class="text-xs opacity-75 mt-1">Versión 1.025</p>
      </div>
      <div class="flex items-center space-x-4"><span id="admin-user" class="text-sm opacity-90"></span> <button onclick="logout()" class="bg-white bg-opacity-20 hover:bg-opacity-30 px-4 py-2 rounded-lg transition-all"> Cerrar Sesión </button>
      </div>
@@ -281,8 +281,30 @@
         <div><label for="product-available" class="block text-sm font-medium text-gray-700 mb-2">Estado</label> <select id="product-available" name="disponible" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"> <option value="true">Disponible</option> <option value="false">No Disponible</option> </select>
         </div>
        </div>
-       <div><label for="product-image" class="block text-sm font-medium text-gray-700 mb-2">URL de Imagen Principal</label> <input type="url" id="product-image" name="imagen_principal" placeholder="https://ejemplo.com/imagen.jpg" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-        <div id="image-preview" class="mt-2 hidden"><img id="preview-img" src="" alt="Vista previa" class="image-preview">
+       <div><label for="product-image" class="block text-sm font-medium text-gray-700 mb-2">Imagen Principal</label>
+        <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-blue-400 transition-colors"><input type="file" id="product-image" name="imagen_principal" accept="image/*" class="hidden" onchange="handleMainImageUpload(this)">
+         <div id="image-upload-area" class="cursor-pointer" onclick="document.getElementById('product-image').click()">
+          <div class="text-4xl mb-2">
+           📷
+          </div>
+          <p class="text-gray-600">Haz clic para seleccionar imagen</p>
+          <p class="text-xs text-gray-500 mt-1">JPG, PNG, GIF hasta 10MB (se optimizará automáticamente)</p>
+         </div>
+         <div id="image-preview" class="mt-4 hidden"><img id="preview-img" src="" alt="Vista previa" class="image-preview mx-auto"> <button type="button" onclick="removeMainImage()" class="mt-2 text-red-600 hover:text-red-800 text-sm"> ❌ Eliminar imagen </button>
+         </div>
+        </div>
+       </div>
+       <div><label class="block text-sm font-medium text-gray-700 mb-2">Galería de Imágenes (Opcional)</label>
+        <div class="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-blue-400 transition-colors"><input type="file" id="gallery-images" multiple accept="image/*" class="hidden" onchange="handleGalleryImagesUpload(this)">
+         <div class="cursor-pointer" onclick="document.getElementById('gallery-images').click()">
+          <div class="text-3xl mb-2">
+           🖼️
+          </div>
+          <p class="text-gray-600">Agregar imágenes a la galería</p>
+          <p class="text-xs text-gray-500 mt-1">Múltiples imágenes para mostrar el producto</p>
+         </div>
+        </div>
+        <div id="gallery-images-preview" class="mt-4 grid grid-cols-3 gap-4 hidden"><!-- Gallery images will be shown here -->
         </div>
        </div>
        <div class="flex justify-end space-x-4 pt-6 border-t"><button type="button" onclick="closeProductModal()" class="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"> Cancelar </button> <button type="submit" id="save-product-btn" class="btn-primary text-white px-6 py-3 rounded-lg flex items-center space-x-2"> <span>Guardar Producto</span>
@@ -323,6 +345,9 @@
         let allProducts = [];
         let editingProduct = null;
         let productToDelete = null;
+        let mainImageFile = null;
+        let galleryImageFiles = [];
+        let existingGalleryUrls = [];
 
         // Show notification
         function showNotification(message, type = 'success') {
@@ -353,7 +378,7 @@
             try {
                 console.log('Intentando login con:', { usuario: username, pass: password });
                 
-                // Primero verificamos si la tabla existe y tiene datos
+                // Primero verificar si existe la tabla login
                 const { data: allUsers, error: listError } = await supabase
                     .from('login')
                     .select('*');
@@ -361,7 +386,7 @@
                 console.log('Todos los usuarios en la tabla login:', allUsers);
                 console.log('Error al listar usuarios:', listError);
                 
-                // Ahora intentamos el login específico
+                // Intentar login específico
                 const { data, error } = await supabase
                     .from('login')
                     .select('*')
@@ -372,9 +397,9 @@
                 console.log('Resultado del login:', { data, error });
 
                 if (error) {
-                    console.error('Error de Supabase:', error);
+                    console.log('Error de Supabase:', error);
                     
-                    // Si no encuentra coincidencia exacta, intentamos buscar solo por usuario
+                    // Verificar si el usuario existe (sin contraseña)
                     const { data: userCheck, error: userError } = await supabase
                         .from('login')
                         .select('*')
@@ -383,30 +408,32 @@
                     
                     console.log('Verificación de usuario:', { userCheck, userError });
                     
-                    if (userCheck) {
+                    if (userError && userError.code === 'PGRST116') {
+                        throw new Error('Usuario no encontrado');
+                    } else if (userCheck && !data) {
                         throw new Error('Contraseña incorrecta');
                     } else {
-                        throw new Error('Usuario no encontrado');
+                        throw new Error('Error de conexión: ' + error.message);
                     }
                 }
 
-                if (!data) {
-                    throw new Error('Credenciales incorrectas');
+                if (data) {
+                    currentUser = data;
+                    document.getElementById('admin-user').textContent = `Bienvenido, ${data.usuario}`;
+                    
+                    // Hide login screen and show dashboard
+                    document.getElementById('login-screen').classList.add('hidden');
+                    document.getElementById('admin-dashboard').classList.remove('hidden');
+                    
+                    // Load products
+                    await loadProducts();
+                    
+                    showNotification('Sesión iniciada correctamente');
+                    return true;
                 }
-
-                currentUser = data;
-                document.getElementById('admin-user').textContent = `Bienvenido, ${data.usuario}`;
                 
-                // Hide login screen and show dashboard
-                document.getElementById('login-screen').classList.add('hidden');
-                document.getElementById('admin-dashboard').classList.remove('hidden');
+                throw new Error('Usuario o contraseña incorrectos');
                 
-                // Load products
-                await loadProducts();
-                
-                showNotification('Sesión iniciada correctamente');
-                
-                return true;
             } catch (error) {
                 console.error('Login error:', error);
                 
@@ -526,10 +553,16 @@
         // Show add product modal
         function showAddProductModal() {
             editingProduct = null;
+            mainImageFile = null;
+            galleryImageFiles = [];
+            existingGalleryUrls = [];
+            
             document.getElementById('modal-title').textContent = 'Nuevo Producto';
             document.getElementById('product-form').reset();
             document.getElementById('product-id').value = '';
             document.getElementById('image-preview').classList.add('hidden');
+            document.getElementById('image-upload-area').classList.remove('hidden');
+            document.getElementById('gallery-images-preview').classList.add('hidden');
             document.getElementById('product-modal').classList.remove('hidden');
         }
 
@@ -538,6 +571,11 @@
             editingProduct = allProducts.find(p => p.id === productId);
             if (!editingProduct) return;
 
+            // Reset image states
+            mainImageFile = null;
+            galleryImageFiles = [];
+            existingGalleryUrls = [];
+
             document.getElementById('modal-title').textContent = 'Editar Producto';
             document.getElementById('product-id').value = editingProduct.id;
             document.getElementById('product-name').value = editingProduct.nombre;
@@ -545,21 +583,113 @@
             document.getElementById('product-description').value = editingProduct.descripcion;
             document.getElementById('product-price').value = editingProduct.precio;
             document.getElementById('product-available').value = editingProduct.disponible.toString();
-            document.getElementById('product-image').value = editingProduct.imagen_principal || '';
             
-            // Show image preview if exists
+            // Show existing main image if exists
             if (editingProduct.imagen_principal) {
                 document.getElementById('preview-img').src = editingProduct.imagen_principal;
                 document.getElementById('image-preview').classList.remove('hidden');
+                document.getElementById('image-upload-area').classList.add('hidden');
+            } else {
+                document.getElementById('image-preview').classList.add('hidden');
+                document.getElementById('image-upload-area').classList.remove('hidden');
+            }
+
+            // Show existing gallery images if any
+            if (editingProduct.imagen_galeria) {
+                try {
+                    // Parse gallery URLs (stored as JSON string)
+                    const galleryUrls = JSON.parse(editingProduct.imagen_galeria);
+                    existingGalleryUrls = [...galleryUrls];
+                    
+                    if (galleryUrls.length > 0) {
+                        const container = document.getElementById('gallery-images-preview');
+                        container.classList.remove('hidden');
+                        container.innerHTML = galleryUrls.map((imageUrl, index) => `
+                            <div class="relative">
+                                <img src="${imageUrl}" alt="Imagen galería ${index + 1}" 
+                                     class="w-full h-24 object-cover rounded-lg">
+                                <button type="button" onclick="removeExistingGalleryImage(${index})" 
+                                        class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-600">
+                                    ×
+                                </button>
+                            </div>
+                        `).join('');
+                    }
+                } catch (error) {
+                    console.error('Error parsing gallery images:', error);
+                    document.getElementById('gallery-images-preview').classList.add('hidden');
+                }
+            } else {
+                document.getElementById('gallery-images-preview').classList.add('hidden');
             }
 
             document.getElementById('product-modal').classList.remove('hidden');
+        }
+
+        // Remove existing gallery image (for editing)
+        function removeExistingGalleryImage(index) {
+            existingGalleryUrls.splice(index, 1);
+            displayExistingGalleryImages();
+        }
+
+        // Display existing gallery images
+        function displayExistingGalleryImages() {
+            const container = document.getElementById('gallery-images-preview');
+            
+            if (existingGalleryUrls.length === 0 && galleryImageFiles.length === 0) {
+                container.classList.add('hidden');
+                return;
+            }
+
+            container.classList.remove('hidden');
+            
+            // Show existing images
+            const existingImagesHtml = existingGalleryUrls.map((imageUrl, index) => `
+                <div class="relative">
+                    <img src="${imageUrl}" alt="Imagen galería ${index + 1}" 
+                         class="w-full h-24 object-cover rounded-lg">
+                    <button type="button" onclick="removeExistingGalleryImage(${index})" 
+                            class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-600">
+                        ×
+                    </button>
+                </div>
+            `).join('');
+
+            // Show new images
+            const newImagesHtml = galleryImageFiles.map((file, index) => {
+                const reader = new FileReader();
+                const imageId = `gallery-img-${index}`;
+                
+                reader.onload = function(e) {
+                    const imgElement = document.getElementById(imageId);
+                    if (imgElement) {
+                        imgElement.src = e.target.result;
+                    }
+                };
+                reader.readAsDataURL(file);
+
+                return `
+                    <div class="relative">
+                        <img id="${imageId}" src="" alt="Nueva imagen ${index + 1}" 
+                             class="w-full h-24 object-cover rounded-lg">
+                        <button type="button" onclick="removeNewGalleryImage(${index})" 
+                                class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-600">
+                            ×
+                        </button>
+                    </div>
+                `;
+            }).join('');
+
+            container.innerHTML = existingImagesHtml + newImagesHtml;
         }
 
         // Close product modal
         function closeProductModal() {
             document.getElementById('product-modal').classList.add('hidden');
             editingProduct = null;
+            mainImageFile = null;
+            galleryImageFiles = [];
+            existingGalleryUrls = [];
         }
 
         // Show delete modal
@@ -588,6 +718,23 @@
                 deleteBtn.disabled = true;
                 deleteSpinner.classList.remove('hidden');
 
+                // Delete images from storage before deleting product
+                if (productToDelete.imagen_principal) {
+                    await deleteImageFromStorage(productToDelete.imagen_principal);
+                }
+
+                if (productToDelete.imagen_galeria) {
+                    try {
+                        const galleryUrls = JSON.parse(productToDelete.imagen_galeria);
+                        for (const url of galleryUrls) {
+                            await deleteImageFromStorage(url);
+                        }
+                    } catch (error) {
+                        console.error('Error deleting gallery images:', error);
+                    }
+                }
+
+                // Delete product from database
                 const { error } = await supabase
                     .from('producto')
                     .delete()
@@ -613,17 +760,194 @@
             showNotification('Productos actualizados');
         }
 
-        // Preview image
-        function previewImage() {
-            const imageUrl = document.getElementById('product-image').value;
-            const preview = document.getElementById('image-preview');
-            const previewImg = document.getElementById('preview-img');
+        // Compress image function
+        function compressImage(file, maxWidth = 800, quality = 0.8) {
+            return new Promise((resolve) => {
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                const img = new Image();
+                
+                img.onload = function() {
+                    // Calculate new dimensions
+                    let { width, height } = img;
+                    
+                    if (width > maxWidth) {
+                        height = (height * maxWidth) / width;
+                        width = maxWidth;
+                    }
+                    
+                    canvas.width = width;
+                    canvas.height = height;
+                    
+                    // Draw and compress
+                    ctx.drawImage(img, 0, 0, width, height);
+                    
+                    canvas.toBlob(resolve, 'image/jpeg', quality);
+                };
+                
+                img.src = URL.createObjectURL(file);
+            });
+        }
 
-            if (imageUrl) {
-                previewImg.src = imageUrl;
-                preview.classList.remove('hidden');
-            } else {
-                preview.classList.add('hidden');
+        // Handle main image upload
+        async function handleMainImageUpload(input) {
+            const file = input.files[0];
+            if (!file) return;
+
+            // Validate file size (10MB max before compression)
+            if (file.size > 10 * 1024 * 1024) {
+                showNotification('La imagen es muy grande. Máximo 10MB permitido.', 'error');
+                input.value = '';
+                return;
+            }
+
+            // Validate file type
+            if (!file.type.startsWith('image/')) {
+                showNotification('Por favor selecciona un archivo de imagen válido.', 'error');
+                input.value = '';
+                return;
+            }
+
+            try {
+                // Show compression message for large files
+                if (file.size > 1024 * 1024) { // 1MB
+                    showNotification('Optimizando imagen...', 'warning');
+                }
+
+                // Compress image
+                const compressedFile = await compressImage(file);
+                mainImageFile = new File([compressedFile], file.name, { type: 'image/jpeg' });
+                
+                // Show preview
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('preview-img').src = e.target.result;
+                    document.getElementById('image-preview').classList.remove('hidden');
+                    document.getElementById('image-upload-area').classList.add('hidden');
+                };
+                reader.readAsDataURL(mainImageFile);
+
+                // Show compression info
+                const originalSize = (file.size / 1024 / 1024).toFixed(2);
+                const compressedSize = (mainImageFile.size / 1024 / 1024).toFixed(2);
+                if (file.size > mainImageFile.size) {
+                    showNotification(`Imagen optimizada: ${originalSize}MB → ${compressedSize}MB`);
+                }
+            } catch (error) {
+                console.error('Error compressing image:', error);
+                showNotification('Error al procesar la imagen', 'error');
+                input.value = '';
+            }
+        }
+
+        // Remove main image
+        function removeMainImage() {
+            mainImageFile = null;
+            document.getElementById('product-image').value = '';
+            document.getElementById('image-preview').classList.add('hidden');
+            document.getElementById('image-upload-area').classList.remove('hidden');
+        }
+
+        // Handle gallery images upload
+        async function handleGalleryImagesUpload(input) {
+            const files = Array.from(input.files);
+            
+            if (files.length > 0) {
+                showNotification('Procesando imágenes de galería...', 'warning');
+            }
+            
+            for (const file of files) {
+                // Validate file size
+                if (file.size > 10 * 1024 * 1024) {
+                    showNotification(`${file.name} es muy grande. Máximo 10MB permitido.`, 'error');
+                    continue;
+                }
+
+                // Validate file type
+                if (!file.type.startsWith('image/')) {
+                    showNotification(`${file.name} no es un archivo de imagen válido.`, 'error');
+                    continue;
+                }
+
+                try {
+                    // Compress gallery images (smaller size for gallery)
+                    const compressedFile = await compressImage(file, 600, 0.7);
+                    const compressedFileObj = new File([compressedFile], file.name, { type: 'image/jpeg' });
+                    galleryImageFiles.push(compressedFileObj);
+                } catch (error) {
+                    console.error('Error compressing gallery image:', error);
+                    showNotification(`Error procesando ${file.name}`, 'error');
+                }
+            }
+
+            displayExistingGalleryImages();
+            input.value = ''; // Reset input
+            
+            if (files.length > 0) {
+                showNotification(`${files.length} imagen(es) agregada(s) a la galería`);
+            }
+        }
+
+        // Remove new gallery image
+        function removeNewGalleryImage(index) {
+            galleryImageFiles.splice(index, 1);
+            displayExistingGalleryImages();
+        }
+
+        // Upload image to Supabase Storage with progress
+        async function uploadImageToStorage(file, folder = 'products') {
+            try {
+                // Generate unique filename
+                const fileExt = file.name.split('.').pop();
+                const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
+                const filePath = `${folder}/${fileName}`;
+
+                // Show upload progress
+                const originalSize = (file.size / 1024).toFixed(1);
+                console.log(`Subiendo ${file.name} (${originalSize}KB) a ${filePath}`);
+
+                // Upload file to bucket
+                const { data, error } = await supabase.storage
+                    .from('product')
+                    .upload(filePath, file, {
+                        cacheControl: '3600',
+                        upsert: false
+                    });
+
+                if (error) throw error;
+
+                // Get public URL
+                const { data: urlData } = supabase.storage
+                    .from('product')
+                    .getPublicUrl(filePath);
+
+                console.log(`✅ Imagen subida exitosamente: ${urlData.publicUrl}`);
+                return urlData.publicUrl;
+            } catch (error) {
+                console.error('Error uploading image:', error);
+                throw error;
+            }
+        }
+
+        // Delete image from storage
+        async function deleteImageFromStorage(imageUrl) {
+            try {
+                if (!imageUrl || !imageUrl.includes('supabase')) return;
+                
+                // Extract file path from URL
+                const urlParts = imageUrl.split('/');
+                const bucketIndex = urlParts.findIndex(part => part === 'product');
+                if (bucketIndex === -1) return;
+                
+                const filePath = urlParts.slice(bucketIndex + 1).join('/');
+                
+                const { error } = await supabase.storage
+                    .from('product')
+                    .remove([filePath]);
+
+                if (error) console.error('Error deleting image:', error);
+            } catch (error) {
+                console.error('Error deleting image from storage:', error);
             }
         }
 
@@ -668,12 +992,58 @@
                     categoria: formData.get('categoria'),
                     descripcion: formData.get('descripcion'),
                     precio: parseInt(formData.get('precio')),
-                    disponible: formData.get('disponible') === 'true',
-                    imagen_principal: formData.get('imagen_principal') || null
+                    disponible: formData.get('disponible') === 'true'
                 };
+
+                // Handle main image
+                if (mainImageFile) {
+                    // Upload new main image to storage
+                    productData.imagen_principal = await uploadImageToStorage(mainImageFile, 'products/main');
+                    
+                    // Delete old main image if editing
+                    if (editingProduct && editingProduct.imagen_principal) {
+                        await deleteImageFromStorage(editingProduct.imagen_principal);
+                    }
+                } else if (editingProduct && editingProduct.imagen_principal) {
+                    // Keep existing image if no new image uploaded
+                    productData.imagen_principal = editingProduct.imagen_principal;
+                } else {
+                    productData.imagen_principal = null;
+                }
+
+                // Handle gallery images
+                const allGalleryUrls = [...existingGalleryUrls]; // Keep existing URLs
+                
+                // Upload new gallery images
+                for (const file of galleryImageFiles) {
+                    try {
+                        const imageUrl = await uploadImageToStorage(file, 'products/gallery');
+                        allGalleryUrls.push(imageUrl);
+                    } catch (error) {
+                        console.error('Error uploading gallery image:', error);
+                        showNotification(`Error subiendo imagen: ${file.name}`, 'warning');
+                    }
+                }
+                
+                // Store gallery URLs as JSON string
+                productData.imagen_galeria = allGalleryUrls.length > 0 ? JSON.stringify(allGalleryUrls) : null;
 
                 let result;
                 if (editingProduct) {
+                    // Delete removed gallery images from storage
+                    if (editingProduct.imagen_galeria) {
+                        try {
+                            const oldGalleryUrls = JSON.parse(editingProduct.imagen_galeria);
+                            const removedUrls = oldGalleryUrls.filter(url => !existingGalleryUrls.includes(url));
+                            
+                            for (const url of removedUrls) {
+                                await deleteImageFromStorage(url);
+                            }
+                        } catch (error) {
+                            console.error('Error deleting old gallery images:', error);
+                        }
+                    }
+                    
                     // Update existing product
                     result = await supabase
                         .from('producto')
@@ -701,8 +1071,7 @@
             }
         });
 
-        // Image preview on URL change
-        document.getElementById('product-image').addEventListener('input', previewImage);
+
 
         // Close modals when clicking outside
         document.getElementById('product-modal').addEventListener('click', function(e) {
@@ -723,5 +1092,5 @@
             console.log('Admin panel loaded');
         });
     </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9909e520e468116c',t:'MTc2MDgxMDAwNC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'990a7f7e41e0116c',t:'MTc2MDgxNjMyOC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
