@@ -1,0 +1,315 @@
+<!doctype html>
+<html lang="es">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aurical Family - Entretenimiento y Tecnología</title>
+  <script src="/_sdk/element_sdk.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+        body {
+            box-sizing: border-box;
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #000000 0%, #4a5568 25%, #6b7280 50%, #374151 75%, #1f2937 100%);
+            background-size: 400% 400%;
+            animation: gradientShift 8s ease infinite;
+        }
+        
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        .card-hover {
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            background: linear-gradient(145deg, #ffffff, #f8fafc);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-12px) scale(1.02);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15), 0 0 30px rgba(113, 128, 150, 0.3);
+        }
+        
+        .panu-card {
+            background: linear-gradient(145deg, #F5F5DC, #FAEBD7, #F5F5DC);
+        }
+        
+        .aurical-card {
+            background: linear-gradient(145deg, #F5F5DC, #E6E6FA);
+        }
+        
+        .coming-soon-card {
+            background: linear-gradient(145deg, #DEB887, #F5F5DC);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .coming-soon-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            animation: shimmer 3s infinite;
+        }
+        
+        @keyframes shimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+        
+        .tech-pattern {
+            background-image: 
+                radial-gradient(circle at 20% 80%, rgba(113, 128, 150, 0.2) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(160, 174, 192, 0.2) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(203, 213, 224, 0.2) 0%, transparent 50%);
+        }
+        
+        .icon-glow {
+            box-shadow: 0 0 20px rgba(113, 128, 150, 0.4);
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        .text-glow {
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+        }
+        
+        .floating {
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+    </style>
+  <style>@view-transition { navigation: auto; }</style>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+ </head>
+ <body class="min-h-full gradient-bg tech-pattern">
+  <div class="min-h-full flex flex-col"><!-- Header -->
+   <header class="text-center py-20 px-4">
+    <div class="max-w-4xl mx-auto">
+     <div class="floating">
+      <h1 id="company-name" class="text-6xl md:text-8xl font-bold mb-8 text-glow" style="color: #F5F5DC; text-shadow: 2px 2px 4px rgba(0,0,0,0.8), 0 0 30px rgba(245,245,220,0.6);">Aurical Family</h1>
+     </div>
+     <p id="company-slogan" class="text-xl md:text-2xl font-light italic max-w-3xl mx-auto leading-relaxed mb-8" style="color: #F5F5DC; text-shadow: 1px 1px 3px rgba(0,0,0,0.7); opacity: 0.95;">"El arte y la tecnología pueden ir de la mano.... de nuestra mano"</p>
+     <div class="flex justify-center space-x-2 mb-8">
+      <div class="w-3 h-3 bg-white rounded-full opacity-80 animate-bounce" style="animation-delay: 0s;"></div>
+      <div class="w-3 h-3 bg-white rounded-full opacity-80 animate-bounce" style="animation-delay: 0.1s;"></div>
+      <div class="w-3 h-3 bg-white rounded-full opacity-80 animate-bounce" style="animation-delay: 0.2s;"></div>
+     </div>
+    </div>
+   </header><!-- Main Content -->
+   <main class="flex-1 px-4 pb-16">
+    <div class="max-w-6xl mx-auto">
+     <div class="text-center mb-12">
+      <h2 class="text-4xl font-bold mb-4" style="color: #F5F5DC; text-shadow: 2px 2px 4px rgba(0,0,0,0.7);">Nuestros Servicios</h2>
+      <p class="text-lg opacity-90" style="color: #F5F5DC; text-shadow: 1px 1px 2px rgba(0,0,0,0.6);">Descubre lo que podemos crear juntos</p>
+     </div>
+     <div class="grid md:grid-cols-3 gap-10"><!-- Panu Card -->
+      <div class="card-hover panu-card rounded-3xl p-10 shadow-2xl cursor-pointer transform" onclick="navigateTo('panu.html')">
+       <div class="text-center">
+        <div class="w-24 h-24 bg-gradient-to-br from-amber-800 to-amber-900 rounded-full flex items-center justify-center mx-auto mb-8 icon-glow">
+         <svg class="w-12 h-12 text-white" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+         </svg>
+        </div>
+        <h3 id="panu-title" class="text-3xl font-bold text-gray-800 mb-4">Panu</h3>
+        <p id="panu-description" class="text-gray-700 mb-8 leading-relaxed text-lg">Sublimaciones de alta calidad para personalizar tus productos favoritos</p>
+        <div class="inline-flex items-center bg-gradient-to-r from-amber-800 to-amber-900 text-white px-6 py-3 rounded-full font-semibold shadow-lg">
+         Explorar 
+         <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+         </svg>
+        </div>
+       </div>
+      </div><!-- Aurical Art Card -->
+      <div class="card-hover aurical-card rounded-3xl p-10 shadow-2xl cursor-pointer transform" onclick="navigateTo('aurical_art.html')">
+       <div class="text-center">
+        <div class="w-24 h-24 bg-gradient-to-br from-blue-900 to-blue-800 rounded-full flex items-center justify-center mx-auto mb-8 icon-glow">
+         <svg class="w-12 h-12 text-white" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+         </svg>
+        </div>
+        <h3 id="aurical-title" class="text-3xl font-bold text-gray-800 mb-4">Aurical Art</h3>
+        <p id="aurical-description" class="text-gray-700 mb-8 leading-relaxed text-lg">Diseño gráfico profesional y producción musical de vanguardia</p>
+        <div class="inline-flex items-center bg-gradient-to-r from-blue-900 to-blue-800 text-white px-6 py-3 rounded-full font-semibold shadow-lg">
+         Explorar 
+         <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+         </svg>
+        </div>
+       </div>
+      </div><!-- Coming Soon Card -->
+      <div class="coming-soon-card rounded-3xl p-10 shadow-2xl transform">
+       <div class="text-center relative z-10">
+        <div class="w-24 h-24 bg-gradient-to-br from-amber-700 to-amber-800 rounded-full flex items-center justify-center mx-auto mb-8 icon-glow">
+         <svg class="w-12 h-12 text-white" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+         </svg>
+        </div>
+        <h3 id="coming-soon-title" class="text-3xl font-bold text-gray-800 mb-4">Próximamente</h3>
+        <p class="text-gray-700 mb-8 leading-relaxed text-lg">Estamos trabajando en algo increíble. ¡Mantente atento!</p>
+        <div class="inline-flex items-center bg-gradient-to-r from-amber-700 to-amber-800 text-white px-6 py-3 rounded-full font-semibold shadow-lg opacity-75">
+         En desarrollo 
+         <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3" />
+         </svg>
+        </div>
+       </div>
+      </div>
+     </div>
+    </div>
+   </main><!-- Footer -->
+   <footer class="text-center py-12 px-4 mt-16">
+    <div class="max-w-4xl mx-auto">
+     <div class="bg-white bg-opacity-10 backdrop-blur-lg rounded-2xl p-8 border border-white border-opacity-20">
+      <p class="text-white text-lg font-medium mb-2">© 2024 Aurical Family</p>
+      <p class="text-white opacity-80 text-sm">Donde el arte y la tecnología se encuentran ✨</p>
+      <p class="text-white opacity-60 text-xs mt-3">v1.007</p>
+     </div>
+    </div>
+   </footer>
+  </div>
+  <script>
+        // Default configuration
+        const defaultConfig = {
+            company_name: "Aurical Family",
+            company_slogan: "\"El arte y la tecnología pueden ir de la mano.... de nuestra mano\"",
+            panu_title: "Panu",
+            panu_description: "Sublimaciones de alta calidad para personalizar tus productos favoritos",
+            aurical_title: "Aurical Art",
+            aurical_description: "Diseño gráfico profesional y producción musical de vanguardia",
+            coming_soon_text: "Próximamente"
+        };
+
+        // Navigation function
+        function navigateTo(url) {
+            window.open(url, '_blank', 'noopener,noreferrer');
+        }
+
+        // Render function
+        async function render(config) {
+            const customFont = config.font_family || defaultConfig.font_family || 'Inter';
+            const baseSize = config.font_size || defaultConfig.font_size || 16;
+            const primaryColor = config.primary_color || defaultConfig.primary_color || '#1e3a8a';
+            const backgroundColor = config.background_color || defaultConfig.background_color || '#f5f5dc';
+
+            // Apply font family
+            if (customFont) {
+                document.body.style.fontFamily = `${customFont}, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif`;
+            }
+
+            // Apply font sizes proportionally
+            document.getElementById('company-name').style.fontSize = `${baseSize * 3.5}px`;
+            document.getElementById('company-slogan').style.fontSize = `${baseSize * 1.25}px`;
+            document.querySelectorAll('h2').forEach(h2 => {
+                h2.style.fontSize = `${baseSize * 2}px`;
+            });
+            document.querySelectorAll('h3').forEach(h3 => {
+                h3.style.fontSize = `${baseSize * 1.5}px`;
+            });
+            document.querySelectorAll('p').forEach(p => {
+                p.style.fontSize = `${baseSize}px`;
+            });
+
+            // Apply colors
+            if (primaryColor) {
+                document.querySelectorAll('.bg-blue-900').forEach(el => {
+                    el.style.backgroundColor = primaryColor;
+                });
+                document.querySelectorAll('.text-blue-900').forEach(el => {
+                    el.style.color = primaryColor;
+                });
+            }
+
+            // Update text content
+            document.getElementById('company-name').textContent = config.company_name || defaultConfig.company_name;
+            document.getElementById('company-slogan').textContent = config.company_slogan || defaultConfig.company_slogan;
+            document.getElementById('panu-title').textContent = config.panu_title || defaultConfig.panu_title;
+            document.getElementById('panu-description').textContent = config.panu_description || defaultConfig.panu_description;
+            document.getElementById('aurical-title').textContent = config.aurical_title || defaultConfig.aurical_title;
+            document.getElementById('aurical-description').textContent = config.aurical_description || defaultConfig.aurical_description;
+            document.getElementById('coming-soon-title').textContent = config.coming_soon_text || defaultConfig.coming_soon_text;
+        }
+
+        // Capabilities mapping
+        function mapToCapabilities(config) {
+            return {
+                recolorables: [
+                    {
+                        get: () => config.primary_color || defaultConfig.primary_color || '#1e3a8a',
+                        set: (value) => {
+                            config.primary_color = value;
+                            if (window.elementSdk) {
+                                window.elementSdk.setConfig({ primary_color: value });
+                            }
+                        }
+                    },
+                    {
+                        get: () => config.background_color || defaultConfig.background_color || '#f5f5dc',
+                        set: (value) => {
+                            config.background_color = value;
+                            if (window.elementSdk) {
+                                window.elementSdk.setConfig({ background_color: value });
+                            }
+                        }
+                    }
+                ],
+                borderables: [],
+                fontEditable: {
+                    get: () => config.font_family || defaultConfig.font_family || 'Inter',
+                    set: (value) => {
+                        config.font_family = value;
+                        if (window.elementSdk) {
+                            window.elementSdk.setConfig({ font_family: value });
+                        }
+                    }
+                },
+                fontSizeable: {
+                    get: () => config.font_size || defaultConfig.font_size || 16,
+                    set: (value) => {
+                        config.font_size = value;
+                        if (window.elementSdk) {
+                            window.elementSdk.setConfig({ font_size: value });
+                        }
+                    }
+                }
+            };
+        }
+
+        // Edit panel values mapping
+        function mapToEditPanelValues(config) {
+            return new Map([
+                ["company_name", config.company_name || defaultConfig.company_name],
+                ["company_slogan", config.company_slogan || defaultConfig.company_slogan],
+                ["panu_title", config.panu_title || defaultConfig.panu_title],
+                ["panu_description", config.panu_description || defaultConfig.panu_description],
+                ["aurical_title", config.aurical_title || defaultConfig.aurical_title],
+                ["aurical_description", config.aurical_description || defaultConfig.aurical_description],
+                ["coming_soon_text", config.coming_soon_text || defaultConfig.coming_soon_text]
+            ]);
+        }
+
+        // Initialize SDK
+        if (window.elementSdk) {
+            window.elementSdk.init({
+                defaultConfig,
+                render,
+                mapToCapabilities,
+                mapToEditPanelValues
+            });
+        }
+
+        // Initial render
+        render(defaultConfig);
+    </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'99098d8a8243116c',t:'MTc2MDgwNjQxNy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
