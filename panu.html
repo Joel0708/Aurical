@@ -17,24 +17,78 @@
         }
         
         .product-card {
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             background: linear-gradient(145deg, #ffffff, #f8fafc);
             border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
         }
         
         .product-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
         }
         
         .category-btn {
             transition: all 0.3s ease;
+            border: 2px solid transparent;
         }
         
         .category-btn.active {
             background: linear-gradient(135deg, #667eea, #764ba2);
             color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+        
+        .category-btn:hover {
+            transform: translateY(-1px);
+            border-color: #667eea;
+        }
+        
+        .product-image {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            border-radius: 12px 12px 0 0;
+        }
+        
+        .gallery-image {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+        
+        .gallery-image:hover {
+            transform: scale(1.1);
+            border-color: #667eea;
+        }
+        
+        .gallery-image.active {
+            border-color: #667eea;
             transform: scale(1.05);
+        }
+        
+        .modal {
+            backdrop-filter: blur(10px);
+            background: rgba(0, 0, 0, 0.7);
+        }
+        
+        .modal-content {
+            background: linear-gradient(145deg, #ffffff, #f8fafc);
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
         
         .loading-spinner {
@@ -51,331 +105,426 @@
             100% { transform: rotate(360deg); }
         }
         
-        .modal {
-            backdrop-filter: blur(10px);
-            background: rgba(0, 0, 0, 0.5);
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
         }
         
-        .modal-content {
-            background: linear-gradient(145deg, #ffffff, #f8fafc);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-        
-        .btn-primary {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            transition: all 0.3s ease;
-        }
-        
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
-        }
-        
-        .btn-whatsapp {
-            background: linear-gradient(135deg, #25d366, #128c7e);
-        }
-        
-        .btn-email {
-            background: linear-gradient(135deg, #ea4335, #d33b2c);
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
         
         .price-tag {
-            background: linear-gradient(135deg, #ffd700, #ffed4e);
-            color: #1a202c;
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 1.1em;
         }
         
-        .enterprise-section {
-            background: linear-gradient(135deg, #2d3748, #4a5568);
+        .unavailable-overlay {
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            border-radius: 12px 12px 0 0;
+        }
+        
+        .search-container {
+            position: relative;
+        }
+        
+        .search-input {
+            padding-left: 3rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+        }
+        
+        .search-input:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .search-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #9ca3af;
+        }
+        
+        .hero-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 4rem 0;
+            text-align: center;
+        }
+        
+        .stats-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 16px;
+            padding: 2rem;
+            text-align: center;
+            color: white;
+        }
+        
+        .whatsapp-btn {
+            background: linear-gradient(135deg, #25d366, #128c7e);
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            box-shadow: 0 8px 25px rgba(37, 211, 102, 0.3);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+        
+        .whatsapp-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 12px 35px rgba(37, 211, 102, 0.4);
+        }
+
+        .logo-container {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            margin: 0 auto 20px auto;
+        }
+
+        .logo-container img {
+            width: 60px;
+            height: 60px;
+            object-fit: contain;
+        }
+
+        .header-logo {
+            width: 50px;
+            height: 50px;
+            object-fit: contain;
+            background: white;
+            border-radius: 50%;
+            padding: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
         }
     </style>
   <style>@view-transition { navigation: auto; }</style>
   <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
  </head>
- <body class="min-h-full bg-gray-50"><!-- Header -->
-  <header class="gradient-bg text-white py-16">
-   <div class="max-w-7xl mx-auto px-4 text-center">
-    <h1 id="store-title" class="text-5xl md:text-6xl font-bold mb-4">Panu - Sublimaciones Premium</h1>
-    <p id="store-subtitle" class="text-xl md:text-2xl opacity-90 max-w-3xl mx-auto">Personaliza tus productos favoritos con la mejor calidad</p>
-    <div class="mt-8 flex justify-center space-x-4">
-     <div class="bg-white bg-opacity-20 rounded-full px-6 py-2"><span class="text-sm font-medium">✨ Calidad Premium</span>
+ <body class="bg-gray-50"><!-- Header -->
+  <header class="gradient-bg text-white shadow-lg sticky top-0 z-50">
+   <div class="max-w-7xl mx-auto px-4 py-4">
+    <div class="flex items-center justify-between">
+     <div class="flex items-center space-x-4"><img src="https://aurical.org/images/PanuLogo.jpg" alt="Panu Logo" class="header-logo" onerror="this.style.display='none';">
+      <div>
+       <h1 class="text-2xl md:text-3xl font-bold">Panu</h1>
+       <p class="text-sm opacity-90">Sublimaciones Premium</p>
+      </div>
+     </div><!-- Search Bar -->
+     <div class="search-container hidden md:block">
+      <div class="search-icon">
+       <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+       </svg>
+      </div><input type="text" id="search-input" placeholder="Buscar productos..." class="search-input w-80 py-3 pr-4 text-gray-800 focus:outline-none">
      </div>
-     <div class="bg-white bg-opacity-20 rounded-full px-6 py-2"><span class="text-sm font-medium">🚀 Entrega Rápida</span>
+     <div class="flex items-center space-x-4"><button onclick="toggleSearch()" class="md:hidden p-2 rounded-lg bg-white bg-opacity-20 hover:bg-opacity-30">
+       <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+       </svg></button> <span id="product-count" class="text-sm opacity-90">0 productos</span>
      </div>
-     <div class="bg-white bg-opacity-20 rounded-full px-6 py-2"><span class="text-sm font-medium">💯 Garantía Total</span>
+    </div><!-- Mobile Search -->
+    <div id="mobile-search" class="mt-4 hidden md:hidden">
+     <div class="search-container">
+      <div class="search-icon">
+       <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+       </svg>
+      </div><input type="text" id="mobile-search-input" placeholder="Buscar productos..." class="search-input w-full py-3 pr-4 text-gray-800 focus:outline-none">
      </div>
     </div>
    </div>
-  </header><!-- Navigation -->
-  <nav class="bg-white shadow-lg sticky top-0 z-40">
+  </header><!-- Hero Section -->
+  <section class="hero-section">
    <div class="max-w-7xl mx-auto px-4">
-    <div class="flex justify-between items-center py-4">
-     <div class="flex space-x-8"><button class="category-btn active px-6 py-2 rounded-full font-medium" onclick="filterProducts('all')"> Todos los Productos </button> <button class="category-btn px-6 py-2 rounded-full font-medium" onclick="filterProducts('tazas')"> Tazas </button> <button class="category-btn px-6 py-2 rounded-full font-medium" onclick="filterProducts('remeras')"> Remeras </button> <button class="category-btn px-6 py-2 rounded-full font-medium" onclick="filterProducts('accesorios')"> Accesorios </button>
-     </div><button class="btn-primary text-white px-6 py-2 rounded-full font-medium" onclick="showEnterpriseModal()"> Compras Empresariales </button>
+    <div class="logo-container"><img src="https://aurical.org/images/PanuLogo.jpg" alt="Panu Logo" onerror="this.style.display='none';">
+    </div>
+    <h2 class="text-4xl md:text-6xl font-bold mb-4">Sublimaciones Premium</h2>
+    <p class="text-xl md:text-2xl opacity-90 mb-8">Calidad excepcional en cada producto</p><!-- Stats -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+     <div class="stats-card">
+      <div class="text-3xl font-bold mb-2" id="total-products-stat">
+       0
+      </div>
+      <div class="text-sm opacity-90">
+       Productos Disponibles
+      </div>
+     </div>
+     <div class="stats-card">
+      <div class="text-3xl font-bold mb-2" id="categories-stat">
+       0
+      </div>
+      <div class="text-sm opacity-90">
+       Categorías
+      </div>
+     </div>
+     <div class="stats-card">
+      <div class="text-3xl font-bold mb-2">
+       ⭐
+      </div>
+      <div class="text-sm opacity-90">
+       Calidad Premium
+      </div>
+     </div>
     </div>
    </div>
-  </nav><!-- Connection Status -->
-  <div id="connection-status" class="hidden fixed top-4 right-4 z-50 px-4 py-2 rounded-lg shadow-lg">
-   <div class="flex items-center space-x-2">
-    <div id="status-icon"></div><span id="status-text" class="font-medium"></span>
-   </div>
-  </div><!-- Loading State -->
-  <div id="loading-state" class="flex justify-center items-center py-20">
-   <div class="text-center">
-    <div class="loading-spinner mx-auto mb-4"></div>
-    <p class="text-gray-600">Cargando productos...</p>
-    <p id="loading-detail" class="text-sm text-gray-500 mt-2">Conectando con la base de datos...</p>
-   </div>
-  </div><!-- Products Grid -->
-  <main class="max-w-7xl mx-auto px-4 py-12">
-   <div id="products-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8"><!-- Products will be loaded here -->
-   </div><!-- No products message -->
-   <div id="no-products" class="text-center py-20 hidden">
-    <div class="text-6xl mb-4">
-     📦
+  </section><!-- Category Filters -->
+  <section class="py-8 bg-white shadow-sm">
+   <div class="max-w-7xl mx-auto px-4">
+    <h3 class="text-2xl font-bold text-gray-800 mb-6 text-center">Categorías</h3>
+    <div class="flex flex-wrap justify-center gap-4" id="category-filters"><button onclick="filterByCategory('all')" class="category-btn active px-6 py-3 rounded-full font-medium bg-gray-100 text-gray-800"> Todos los Productos </button> <button onclick="filterByCategory('tazas')" class="category-btn px-6 py-3 rounded-full font-medium bg-gray-100 text-gray-800"> ☕ Tazas </button> <button onclick="filterByCategory('remeras')" class="category-btn px-6 py-3 rounded-full font-medium bg-gray-100 text-gray-800"> 👕 Remeras </button> <button onclick="filterByCategory('accesorios')" class="category-btn px-6 py-3 rounded-full font-medium bg-gray-100 text-gray-800"> 🎁 Accesorios </button> <button onclick="filterByCategory('otros')" class="category-btn px-6 py-3 rounded-full font-medium bg-gray-100 text-gray-800"> 📦 Otros </button>
     </div>
-    <h3 class="text-2xl font-bold text-gray-700 mb-2">No hay productos disponibles</h3>
-    <p class="text-gray-500">Intenta con otra categoría o vuelve más tarde</p>
    </div>
-  </main><!-- Product Modal -->
+  </section><!-- Products Section -->
+  <section class="py-12">
+   <div class="max-w-7xl mx-auto px-4"><!-- Loading State -->
+    <div id="loading-products" class="flex justify-center items-center py-20">
+     <div class="text-center">
+      <div class="loading-spinner mx-auto mb-4"></div>
+      <p class="text-gray-600 text-lg">Cargando productos...</p>
+     </div>
+    </div><!-- No Products State -->
+    <div id="no-products" class="text-center py-20 hidden">
+     <div class="text-8xl mb-6">
+      📦
+     </div>
+     <h3 class="text-2xl font-bold text-gray-700 mb-4">No hay productos disponibles</h3>
+     <p class="text-gray-500 text-lg">Vuelve pronto para ver nuestros nuevos productos</p>
+    </div><!-- No Search Results -->
+    <div id="no-search-results" class="text-center py-20 hidden">
+     <div class="text-8xl mb-6">
+      🔍
+     </div>
+     <h3 class="text-2xl font-bold text-gray-700 mb-4">No se encontraron productos</h3>
+     <p class="text-gray-500 text-lg">Intenta con otros términos de búsqueda</p><button onclick="clearSearch()" class="btn-primary text-white px-6 py-3 rounded-lg mt-4"> Ver todos los productos </button>
+    </div><!-- Products Grid -->
+    <div id="products-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8"><!-- Products will be loaded here -->
+    </div>
+   </div>
+  </section><!-- Product Detail Modal -->
   <div id="product-modal" class="modal fixed inset-0 z-50 hidden">
    <div class="flex items-center justify-center min-h-screen p-4">
-    <div class="modal-content rounded-2xl shadow-2xl max-w-2xl w-full max-h-screen overflow-y-auto">
+    <div class="modal-content rounded-2xl shadow-2xl max-w-4xl w-full max-h-screen overflow-y-auto">
      <div class="p-8">
       <div class="flex justify-between items-start mb-6">
-       <h2 id="modal-title" class="text-3xl font-bold text-gray-800"></h2><button onclick="closeModal()" class="text-gray-500 hover:text-gray-700 text-2xl">×</button>
+       <h2 id="modal-product-name" class="text-3xl font-bold text-gray-800"></h2><button onclick="closeProductModal()" class="text-gray-500 hover:text-gray-700 text-3xl font-bold">×</button>
       </div>
-      <div class="mb-6">
-       <div class="relative"><img id="modal-image" src="" alt="" class="w-full h-64 object-cover rounded-xl mb-4">
-        <div id="gallery-nav" class="hidden absolute top-1/2 transform -translate-y-1/2 w-full flex justify-between px-4"><button onclick="previousImage()" class="bg-black bg-opacity-50 text-white rounded-full p-2 hover:bg-opacity-70">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-          </svg></button> <button onclick="nextImage()" class="bg-black bg-opacity-50 text-white rounded-full p-2 hover:bg-opacity-70">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-          </svg></button>
+      <div class="grid md:grid-cols-2 gap-8"><!-- Image Gallery -->
+       <div>
+        <div class="mb-4"><img id="modal-main-image" src="" alt="" class="w-full h-96 object-cover rounded-xl">
+        </div>
+        <div id="modal-gallery" class="flex space-x-2 overflow-x-auto pb-2"><!-- Gallery images will be loaded here -->
+        </div>
+       </div><!-- Product Info -->
+       <div>
+        <div class="mb-6"><span id="modal-category" class="inline-block px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium mb-4"></span>
+         <div id="modal-price" class="price-tag inline-block mb-4"></div>
+         <div id="modal-availability" class="mb-4"></div>
+        </div>
+        <div class="mb-8">
+         <h3 class="text-xl font-bold text-gray-800 mb-3">Descripción</h3>
+         <p id="modal-description" class="text-gray-600 leading-relaxed"></p>
+        </div>
+        <div class="space-y-4"><button id="modal-whatsapp-btn" onclick="contactWhatsApp()" class="w-full bg-green-500 hover:bg-green-600 text-white py-4 px-6 rounded-xl font-bold text-lg flex items-center justify-center space-x-3 transition-all"> <span>📱</span> <span>Consultar por WhatsApp</span> </button>
+         <div class="text-center text-sm text-gray-500">
+          <p>💬 Respuesta inmediata</p>
+          <p>🚚 Consulta sobre envíos</p>
+          <p>💳 Métodos de pago disponibles</p>
+         </div>
         </div>
        </div>
-       <div id="image-indicators" class="hidden flex justify-center space-x-2 mb-4"></div>
-       <p id="modal-description" class="text-gray-600 text-lg leading-relaxed"></p>
-      </div>
-      <div class="mb-6">
-       <div class="price-tag inline-block px-4 py-2 rounded-full font-bold text-xl mb-4"><span id="modal-price"></span>
-       </div>
-       <div class="text-sm text-gray-500"><span id="modal-category" class="bg-gray-100 px-3 py-1 rounded-full"></span>
-       </div>
-      </div>
-      <div class="space-y-4"><button onclick="requestQuote()" class="btn-whatsapp w-full text-white py-4 rounded-xl font-bold text-lg flex items-center justify-center space-x-2">
-        <svg class="w-6 h-6" fill="currentColor" viewbox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.885 3.488" />
-        </svg><span>Pedir Cotización por WhatsApp</span> </button> <button onclick="requestEmail()" class="btn-email w-full text-white py-4 rounded-xl font-bold text-lg flex items-center justify-center space-x-2">
-        <svg class="w-6 h-6" fill="currentColor" viewbox="0 0 24 24"><path d="M24 5.457v13.909c0 .904-.732 1.636-1.636 1.636h-3.819V11.73L12 16.64l-6.545-4.91v9.273H1.636A1.636 1.636 0 0 1 0 19.366V5.457c0-.904.732-1.636 1.636-1.636h3.819l6.545 4.91 6.545-4.91h3.819A1.636 1.636 0 0 1 24 5.457z" />
-        </svg><span>Consultar por Email</span> </button>
       </div>
      </div>
     </div>
    </div>
-  </div><!-- Enterprise Modal -->
-  <div id="enterprise-modal" class="modal fixed inset-0 z-50 hidden">
-   <div class="flex items-center justify-center min-h-screen p-4">
-    <div class="modal-content rounded-2xl shadow-2xl max-w-3xl w-full">
-     <div class="enterprise-section text-white p-8 rounded-t-2xl">
-      <div class="flex justify-between items-start mb-6">
-       <h2 class="text-3xl font-bold">Compras Empresariales</h2><button onclick="closeEnterpriseModal()" class="text-white hover:text-gray-300 text-2xl">×</button>
+  </div><!-- WhatsApp Floating Button --> <a href="https://wa.me/595981234567?text=Hola! Me interesa consultar sobre sus productos de sublimación" target="_blank" class="whatsapp-btn" title="Contactar por WhatsApp"> 📱 </a> <!-- Footer -->
+  <footer class="gradient-bg text-white py-12">
+   <div class="max-w-7xl mx-auto px-4">
+    <div class="grid md:grid-cols-3 gap-8">
+     <div>
+      <div class="flex items-center space-x-3 mb-4"><img src="https://aurical.org/images/PanuLogo.jpg" alt="Panu Logo" class="w-12 h-12 rounded-full bg-white p-2" onerror="this.style.display='none';">
+       <h3 class="text-2xl font-bold">Panu</h3>
       </div>
-      <p class="text-lg opacity-90">Soluciones personalizadas para tu empresa</p>
+      <p class="opacity-90">Sublimaciones premium con la mejor calidad y atención personalizada.</p>
      </div>
-     <div class="p-8">
-      <div class="grid md:grid-cols-2 gap-8 mb-8">
-       <div class="text-center p-6 bg-gray-50 rounded-xl">
-        <div class="text-4xl mb-4">
-         🏢
-        </div>
-        <h3 class="text-xl font-bold mb-2">Pedidos Grandes</h3>
-        <p class="text-gray-600">Descuentos especiales para pedidos de 50+ unidades</p>
-       </div>
-       <div class="text-center p-6 bg-gray-50 rounded-xl">
-        <div class="text-4xl mb-4">
-         🎨
-        </div>
-        <h3 class="text-xl font-bold mb-2">Diseños Personalizados</h3>
-        <p class="text-gray-600">Creamos diseños únicos para tu marca</p>
-       </div>
+     <div>
+      <h4 class="text-lg font-bold mb-4">Contacto</h4>
+      <div class="space-y-2 opacity-90">
+       <p>📱 WhatsApp: +595 98 123 4567</p>
+       <p>📧 Email: info@panu.com</p>
+       <p>📍 Asunción, Paraguay</p>
       </div>
-      <div class="space-y-4"><button onclick="contactEnterpriseWhatsApp()" class="btn-whatsapp w-full text-white py-4 rounded-xl font-bold text-lg flex items-center justify-center space-x-2">
-        <svg class="w-6 h-6" fill="currentColor" viewbox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.885 3.488" />
-        </svg><span>Contactar por WhatsApp</span> </button> <button onclick="contactEnterpriseEmail()" class="btn-email w-full text-white py-4 rounded-xl font-bold text-lg flex items-center justify-center space-x-2">
-        <svg class="w-6 h-6" fill="currentColor" viewbox="0 0 24 24"><path d="M24 5.457v13.909c0 .904-.732 1.636-1.636 1.636h-3.819V11.73L12 16.64l-6.545-4.91v9.273H1.636A1.636 1.636 0 0 1 0 19.366V5.457c0-.904.732-1.636 1.636-1.636h3.819l6.545 4.91 6.545-4.91h3.819A1.636 1.636 0 0 1 24 5.457z" />
-        </svg><span>Enviar Email Empresarial</span> </button>
+     </div>
+     <div>
+      <h4 class="text-lg font-bold mb-4">Horarios</h4>
+      <div class="space-y-2 opacity-90">
+       <p>🕒 Lunes a Viernes: 8:00 - 18:00</p>
+       <p>🕒 Sábados: 8:00 - 12:00</p>
+       <p>🕒 Domingos: Cerrado</p>
       </div>
      </div>
     </div>
-   </div>
-  </div><!-- Footer -->
-  <footer class="bg-gray-800 text-white py-12 mt-16">
-   <div class="max-w-7xl mx-auto px-4 text-center">
-    <h3 class="text-2xl font-bold mb-4">Panu - Sublimaciones Premium</h3>
-    <div class="flex justify-center space-x-8 mb-6">
-     <div class="flex items-center space-x-2">
-      <svg class="w-5 h-5" fill="currentColor" viewbox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.885 3.488" />
-      </svg><span id="footer-whatsapp">+595985501874</span>
-     </div>
-     <div class="flex items-center space-x-2">
-      <svg class="w-5 h-5" fill="currentColor" viewbox="0 0 24 24"><path d="M24 5.457v13.909c0 .904-.732 1.636-1.636 1.636h-3.819V11.73L12 16.64l-6.545-4.91v9.273H1.636A1.636 1.636 0 0 1 0 19.366V5.457c0-.904.732-1.636 1.636-1.636h3.819l6.545 4.91 6.545-4.91h3.819A1.636 1.636 0 0 1 24 5.457z" />
-      </svg><span id="footer-email">panu@aurical.org</span>
-     </div>
+    <div class="border-t border-white border-opacity-20 mt-8 pt-8 text-center opacity-75">
+     <p>© 2024 Panu - Sublimaciones Premium. Todos los derechos reservados.</p>
     </div>
-    <p class="text-gray-400">© 2024 Panu - Aurical Family. Todos los derechos reservados.</p>
-    <p class="text-gray-500 text-sm mt-2">v1.002</p>
    </div>
   </footer>
   <script>
-        // Default configuration
-        const defaultConfig = {
-            store_title: "Panu - Sublimaciones Premium",
-            store_subtitle: "Personaliza tus productos favoritos con la mejor calidad",
-            whatsapp_number: "+595985501874",
-            email_address: "panu@aurical.org"
-        };
-
         // Supabase configuration
         const SUPABASE_URL = 'https://sxihojciyiypolxahoej.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN4aWhvamNpeWl5cG9seGFob2VqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA3Nzc3OTEsImV4cCI6MjA3NjM1Mzc5MX0.PGIGHwPmhTjpGCl-m61P2HXrSNwiR1ku8rgIshc-RUA';
         
         // Initialize Supabase client
-        let supabase;
-        try {
-            supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-        } catch (error) {
-            console.log('Supabase not configured, using demo data');
-        }
-
-
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         let allProducts = [];
+        let filteredProducts = [];
         let currentCategory = 'all';
+        let currentSearchTerm = '';
         let selectedProduct = null;
-        let currentImageIndex = 0;
-        let currentImages = [];
 
-        // Show connection status notification
-        function showConnectionStatus(type, message) {
-            const statusDiv = document.getElementById('connection-status');
-            const statusIcon = document.getElementById('status-icon');
-            const statusText = document.getElementById('status-text');
-            
-            // Remove existing classes
-            statusDiv.className = 'fixed top-4 right-4 z-50 px-4 py-2 rounded-lg shadow-lg';
-            
-            if (type === 'success') {
-                statusDiv.classList.add('bg-green-100', 'border', 'border-green-300', 'text-green-800');
-                statusIcon.innerHTML = '✅';
-            } else if (type === 'error') {
-                statusDiv.classList.add('bg-red-100', 'border', 'border-red-300', 'text-red-800');
-                statusIcon.innerHTML = '❌';
-            } else if (type === 'warning') {
-                statusDiv.classList.add('bg-yellow-100', 'border', 'border-yellow-300', 'text-yellow-800');
-                statusIcon.innerHTML = '⚠️';
-            }
-            
-            statusText.textContent = message;
-            statusDiv.classList.remove('hidden');
-            
-            // Auto hide after 4 seconds
-            setTimeout(() => {
-                statusDiv.classList.add('hidden');
-            }, 4000);
-        }
-
-        // Load products from Supabase or use demo data
+        // Load products from database
         async function loadProducts() {
-            const loadingState = document.getElementById('loading-state');
-            const loadingDetail = document.getElementById('loading-detail');
+            const loadingDiv = document.getElementById('loading-products');
             const productsGrid = document.getElementById('products-grid');
-            const noProducts = document.getElementById('no-products');
-
+            const noProductsDiv = document.getElementById('no-products');
+            
             try {
-                if (supabase) {
-                    loadingDetail.textContent = 'Conectando con Supabase...';
-                    
-                    const { data, error } = await supabase
-                        .from('producto')
-                        .select('*')
-                        .eq('disponible', true)
-                        .order('fecha_creacion', { ascending: false });
+                loadingDiv.classList.remove('hidden');
+                productsGrid.innerHTML = '';
+                noProductsDiv.classList.add('hidden');
 
-                    if (error) throw error;
-                    
-                    // Show success notification
-                    showConnectionStatus('success', `✅ Conectado a Supabase - ${data?.length || 0} productos encontrados`);
-                    
-                    // Transform data to match our display format
-                    allProducts = (data || []).map(product => ({
-                        id: product.id,
-                        name: product.nombre,
-                        description: product.descripcion,
-                        price: `Gs. ${product.precio.toLocaleString()}`,
-                        category: product.categoria,
-                        image_url: product.imagen_principal || "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300' viewBox='0 0 300 300'%3E%3Crect width='300' height='300' fill='%23f8fafc'/%3E%3Ccircle cx='150' cy='150' r='60' fill='%23667eea' opacity='0.8'/%3E%3Ctext x='150' y='250' text-anchor='middle' font-family='Arial' font-size='16' fill='%23374151'%3EProducto%3C/text%3E%3C/svg%3E",
-                        gallery_images: product.imagenes_galeria || [],
-                        available: product.disponible,
-                        created_at: product.fecha_creacion,
-                        raw_price: product.precio
-                    }));
-                } else {
-                    // No Supabase connection - show warning
-                    showConnectionStatus('warning', '⚠️ Base de datos no configurada - Sin productos');
-                    allProducts = [];
-                }
+                const { data, error } = await supabase
+                    .from('producto')
+                    .select('*')
+                    .eq('disponible', true)
+                    .order('fecha_creacion', { ascending: false });
 
-                loadingState.classList.add('hidden');
+                if (error) throw error;
+
+                allProducts = data || [];
+                filteredProducts = [...allProducts];
                 
+                loadingDiv.classList.add('hidden');
+
                 if (allProducts.length === 0) {
-                    noProducts.classList.remove('hidden');
+                    noProductsDiv.classList.remove('hidden');
                 } else {
-                    displayProducts(allProducts);
+                    displayProducts(filteredProducts);
                 }
+
+                updateStats();
+                updateProductCount();
             } catch (error) {
                 console.error('Error loading products:', error);
-                
-                // Show error notification
-                showConnectionStatus('error', `❌ Error de conexión: ${error.message}`);
-                
-                loadingState.classList.add('hidden');
-                // Show no products on error
-                allProducts = [];
-                noProducts.classList.remove('hidden');
+                loadingDiv.classList.add('hidden');
+                noProductsDiv.classList.remove('hidden');
             }
         }
 
         // Display products in grid
         function displayProducts(products) {
             const productsGrid = document.getElementById('products-grid');
-            const noProducts = document.getElementById('no-products');
-
+            const noSearchResults = document.getElementById('no-search-results');
+            
             if (products.length === 0) {
                 productsGrid.innerHTML = '';
-                noProducts.classList.remove('hidden');
+                if (currentSearchTerm || currentCategory !== 'all') {
+                    noSearchResults.classList.remove('hidden');
+                }
                 return;
             }
-
-            noProducts.classList.add('hidden');
             
-            productsGrid.innerHTML = products.map(product => `
-                <div class="product-card rounded-2xl shadow-lg overflow-hidden cursor-pointer" onclick="showProductModal(${product.id})">
-                    <div class="aspect-square overflow-hidden">
-                        <img src="${product.image_url}" alt="${product.name}" class="w-full h-full object-cover">
-                    </div>
-                    <div class="p-6">
-                        <h3 class="text-xl font-bold text-gray-800 mb-2">${product.name}</h3>
-                        <p class="text-gray-600 text-sm mb-4 line-clamp-2">${product.description}</p>
-                        <div class="flex justify-between items-center">
-                            <span class="price-tag px-3 py-1 rounded-full font-bold">${product.price}</span>
-                            <span class="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full">${product.category}</span>
+            noSearchResults.classList.add('hidden');
+            
+            productsGrid.innerHTML = products.map(product => {
+                // Handle gallery images
+                let galleryImages = [];
+                if (product.imagen_galeria) {
+                    try {
+                        if (Array.isArray(product.imagen_galeria)) {
+                            galleryImages = product.imagen_galeria;
+                        } else if (typeof product.imagen_galeria === 'string') {
+                            galleryImages = JSON.parse(product.imagen_galeria);
+                        }
+                    } catch (error) {
+                        console.error('Error parsing gallery images:', error);
+                        galleryImages = [];
+                    }
+                }
+
+                const mainImage = product.imagen_principal || 'data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'300\' height=\'250\' viewBox=\'0 0 300 250\'%3E%3Crect width=\'300\' height=\'250\' fill=\'%23f3f4f6\'/%3E%3Ctext x=\'150\' y=\'130\' text-anchor=\'middle\' font-size=\'18\' fill=\'%236b7280\'%3EImagen no disponible%3C/text%3E%3C/svg%3E';
+
+                return `
+                    <div class="product-card rounded-xl shadow-lg overflow-hidden fade-in" onclick="showProductDetail(${product.id})">
+                        <div class="relative">
+                            <img src="${mainImage}" alt="${product.nombre}" class="product-image">
+                            ${!product.disponible ? '<div class="unavailable-overlay absolute inset-0">No Disponible</div>' : ''}
+                            ${galleryImages.length > 0 ? `<div class="absolute top-3 right-3 bg-black bg-opacity-50 text-white px-2 py-1 rounded-full text-xs">+${galleryImages.length + 1}</div>` : ''}
+                        </div>
+                        
+                        <div class="p-6">
+                            <div class="flex justify-between items-start mb-3">
+                                <h3 class="text-xl font-bold text-gray-800 line-clamp-2">${product.nombre}</h3>
+                                <span class="inline-block px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-medium ml-2">
+                                    ${getCategoryIcon(product.categoria)} ${product.categoria}
+                                </span>
+                            </div>
+                            
+                            <p class="text-gray-600 mb-4 line-clamp-2">${product.descripcion}</p>
+                            
+                            <div class="flex justify-between items-center">
+                                <div class="price-tag">
+                                    Gs. ${product.precio.toLocaleString()}
+                                </div>
+                                
+                                <button class="btn-primary text-white px-4 py-2 rounded-lg text-sm font-medium">
+                                    Ver Detalles
+                                </button>
+                            </div>
                         </div>
                     </div>
-                </div>
-            `).join('');
+                `;
+            }).join('');
+        }
+
+        // Get category icon
+        function getCategoryIcon(category) {
+            const icons = {
+                'tazas': '☕',
+                'remeras': '👕',
+                'accesorios': '🎁',
+                'otros': '📦'
+            };
+            return icons[category] || '📦';
         }
 
         // Filter products by category
-        function filterProducts(category) {
+        function filterByCategory(category) {
             currentCategory = category;
             
             // Update active button
@@ -383,234 +532,200 @@
                 btn.classList.remove('active');
             });
             event.target.classList.add('active');
-
-            // Filter products
-            const filteredProducts = category === 'all' 
-                ? allProducts 
-                : allProducts.filter(product => product.category === category);
             
-            displayProducts(filteredProducts);
+            applyFilters();
         }
 
-        // Show product modal
-        function showProductModal(productId) {
+        // Apply all filters (category + search)
+        function applyFilters() {
+            let filtered = [...allProducts];
+            
+            // Apply category filter
+            if (currentCategory !== 'all') {
+                filtered = filtered.filter(product => product.categoria === currentCategory);
+            }
+            
+            // Apply search filter
+            if (currentSearchTerm) {
+                filtered = filtered.filter(product => 
+                    product.nombre.toLowerCase().includes(currentSearchTerm.toLowerCase()) ||
+                    product.descripcion.toLowerCase().includes(currentSearchTerm.toLowerCase()) ||
+                    product.categoria.toLowerCase().includes(currentSearchTerm.toLowerCase())
+                );
+            }
+            
+            filteredProducts = filtered;
+            displayProducts(filteredProducts);
+            updateProductCount();
+        }
+
+        // Search functionality
+        function setupSearch() {
+            const searchInputs = ['search-input', 'mobile-search-input'];
+            
+            searchInputs.forEach(inputId => {
+                const input = document.getElementById(inputId);
+                if (input) {
+                    input.addEventListener('input', function(e) {
+                        currentSearchTerm = e.target.value.trim();
+                        
+                        // Sync both search inputs
+                        searchInputs.forEach(id => {
+                            const otherInput = document.getElementById(id);
+                            if (otherInput && otherInput !== e.target) {
+                                otherInput.value = currentSearchTerm;
+                            }
+                        });
+                        
+                        applyFilters();
+                    });
+                }
+            });
+        }
+
+        // Toggle mobile search
+        function toggleSearch() {
+            const mobileSearch = document.getElementById('mobile-search');
+            mobileSearch.classList.toggle('hidden');
+            
+            if (!mobileSearch.classList.contains('hidden')) {
+                document.getElementById('mobile-search-input').focus();
+            }
+        }
+
+        // Clear search
+        function clearSearch() {
+            currentSearchTerm = '';
+            document.getElementById('search-input').value = '';
+            document.getElementById('mobile-search-input').value = '';
+            
+            // Reset to all categories
+            currentCategory = 'all';
+            document.querySelectorAll('.category-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelector('.category-btn[onclick="filterByCategory(\'all\')"]').classList.add('active');
+            
+            applyFilters();
+        }
+
+        // Show product detail modal
+        function showProductDetail(productId) {
             selectedProduct = allProducts.find(p => p.id === productId);
             if (!selectedProduct) return;
 
-            // Setup images array
-            currentImages = [selectedProduct.image_url];
-            if (selectedProduct.gallery_images && selectedProduct.gallery_images.length > 0) {
-                currentImages = currentImages.concat(selectedProduct.gallery_images);
+            // Set basic info
+            document.getElementById('modal-product-name').textContent = selectedProduct.nombre;
+            document.getElementById('modal-category').textContent = `${getCategoryIcon(selectedProduct.categoria)} ${selectedProduct.categoria}`;
+            document.getElementById('modal-price').textContent = `Gs. ${selectedProduct.precio.toLocaleString()}`;
+            document.getElementById('modal-description').textContent = selectedProduct.descripcion;
+            
+            // Set availability
+            const availabilityDiv = document.getElementById('modal-availability');
+            if (selectedProduct.disponible) {
+                availabilityDiv.innerHTML = '<span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">✅ Disponible</span>';
+            } else {
+                availabilityDiv.innerHTML = '<span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-red-100 text-red-800">❌ No Disponible</span>';
             }
-            currentImageIndex = 0;
 
-            // Update modal content
-            document.getElementById('modal-title').textContent = selectedProduct.name;
-            document.getElementById('modal-description').textContent = selectedProduct.description;
-            document.getElementById('modal-price').textContent = selectedProduct.price;
-            document.getElementById('modal-category').textContent = selectedProduct.category;
+            // Set main image
+            const mainImage = selectedProduct.imagen_principal || 'data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'400\' height=\'400\' viewBox=\'0 0 400 400\'%3E%3Crect width=\'400\' height=\'400\' fill=\'%23f3f4f6\'/%3E%3Ctext x=\'200\' y=\'210\' text-anchor=\'middle\' font-size=\'24\' fill=\'%236b7280\'%3EImagen no disponible%3C/text%3E%3C/svg%3E';
+            document.getElementById('modal-main-image').src = mainImage;
+
+            // Set gallery
+            const galleryDiv = document.getElementById('modal-gallery');
+            let allImages = [mainImage];
             
-            // Setup image gallery
-            updateModalImage();
-            setupImageGallery();
-            
+            if (selectedProduct.imagen_galeria) {
+                try {
+                    let galleryImages = [];
+                    if (Array.isArray(selectedProduct.imagen_galeria)) {
+                        galleryImages = selectedProduct.imagen_galeria;
+                    } else if (typeof selectedProduct.imagen_galeria === 'string') {
+                        galleryImages = JSON.parse(selectedProduct.imagen_galeria);
+                    }
+                    allImages = allImages.concat(galleryImages);
+                } catch (error) {
+                    console.error('Error parsing gallery images:', error);
+                }
+            }
+
+            if (allImages.length > 1) {
+                galleryDiv.innerHTML = allImages.map((imageUrl, index) => `
+                    <img src="${imageUrl}" alt="Imagen ${index + 1}" 
+                         class="gallery-image ${index === 0 ? 'active' : ''}" 
+                         onclick="changeMainImage('${imageUrl}', this)">
+                `).join('');
+            } else {
+                galleryDiv.innerHTML = '';
+            }
+
+            // Show modal
             document.getElementById('product-modal').classList.remove('hidden');
         }
 
-        // Update modal image
-        function updateModalImage() {
-            const modalImage = document.getElementById('modal-image');
-            modalImage.src = currentImages[currentImageIndex];
-            modalImage.alt = selectedProduct.name;
-        }
-
-        // Setup image gallery navigation
-        function setupImageGallery() {
-            const galleryNav = document.getElementById('gallery-nav');
-            const indicators = document.getElementById('image-indicators');
+        // Change main image in modal
+        function changeMainImage(imageUrl, element) {
+            document.getElementById('modal-main-image').src = imageUrl;
             
-            if (currentImages.length > 1) {
-                galleryNav.classList.remove('hidden');
-                indicators.classList.remove('hidden');
-                
-                // Create indicators
-                indicators.innerHTML = currentImages.map((_, index) => 
-                    `<button onclick="goToImage(${index})" class="w-3 h-3 rounded-full ${index === currentImageIndex ? 'bg-blue-500' : 'bg-gray-300'}"></button>`
-                ).join('');
-            } else {
-                galleryNav.classList.add('hidden');
-                indicators.classList.add('hidden');
-            }
-        }
-
-        // Navigate to specific image
-        function goToImage(index) {
-            currentImageIndex = index;
-            updateModalImage();
-            setupImageGallery();
-        }
-
-        // Previous image
-        function previousImage() {
-            currentImageIndex = currentImageIndex > 0 ? currentImageIndex - 1 : currentImages.length - 1;
-            updateModalImage();
-            setupImageGallery();
-        }
-
-        // Next image
-        function nextImage() {
-            currentImageIndex = currentImageIndex < currentImages.length - 1 ? currentImageIndex + 1 : 0;
-            updateModalImage();
-            setupImageGallery();
+            // Update active gallery image
+            document.querySelectorAll('.gallery-image').forEach(img => {
+                img.classList.remove('active');
+            });
+            element.classList.add('active');
         }
 
         // Close product modal
-        function closeModal() {
+        function closeProductModal() {
             document.getElementById('product-modal').classList.add('hidden');
             selectedProduct = null;
         }
 
-        // Show enterprise modal
-        function showEnterpriseModal() {
-            document.getElementById('enterprise-modal').classList.remove('hidden');
-        }
-
-        // Close enterprise modal
-        function closeEnterpriseModal() {
-            document.getElementById('enterprise-modal').classList.add('hidden');
-        }
-
-        // Request quote via WhatsApp
-        function requestQuote() {
+        // Contact via WhatsApp
+        function contactWhatsApp() {
             if (!selectedProduct) return;
             
-            const config = window.elementSdk?.config || defaultConfig;
-            const whatsappNumber = config.whatsapp_number || defaultConfig.whatsapp_number;
-            const message = `¡Hola! Me interesa el producto: *${selectedProduct.name}*\n\nPrecio: ${selectedProduct.price}\n\n¿Podrían darme más información y cotización?`;
-            const whatsappUrl = `https://wa.me/${whatsappNumber.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(message)}`;
+            const message = `Hola! Me interesa el producto: ${selectedProduct.nombre} - Gs. ${selectedProduct.precio.toLocaleString()}. ¿Podrías darme más información?`;
+            const whatsappUrl = `https://wa.me/595981234567?text=${encodeURIComponent(message)}`;
+            window.open(whatsappUrl, '_blank');
+        }
+
+        // Update statistics
+        function updateStats() {
+            const totalProducts = allProducts.length;
+            const categories = new Set(allProducts.map(p => p.categoria)).size;
             
-            window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
+            document.getElementById('total-products-stat').textContent = totalProducts;
+            document.getElementById('categories-stat').textContent = categories;
         }
 
-        // Request via email
-        function requestEmail() {
-            if (!selectedProduct) return;
-            
-            const config = window.elementSdk?.config || defaultConfig;
-            const email = config.email_address || defaultConfig.email_address;
-            const subject = `Consulta sobre: ${selectedProduct.name}`;
-            const body = `Hola,\n\nMe interesa el siguiente producto:\n\nProducto: ${selectedProduct.name}\nPrecio: ${selectedProduct.price}\nDescripción: ${selectedProduct.description}\n\n¿Podrían darme más información y cotización?\n\nGracias.`;
-            
-            const mailtoUrl = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-            window.open(mailtoUrl, '_blank', 'noopener,noreferrer');
+        // Update product count
+        function updateProductCount() {
+            const count = filteredProducts.length;
+            const countText = count === 1 ? '1 producto' : `${count} productos`;
+            document.getElementById('product-count').textContent = countText;
         }
 
-        // Contact enterprise via WhatsApp
-        function contactEnterpriseWhatsApp() {
-            const config = window.elementSdk?.config || defaultConfig;
-            const whatsappNumber = config.whatsapp_number || defaultConfig.whatsapp_number;
-            const message = `¡Hola! Me interesa hacer una *compra empresarial* con Panu.\n\nNecesito información sobre:\n- Descuentos por volumen\n- Diseños personalizados\n- Tiempos de entrega\n- Opciones de pago\n\n¿Podrían contactarme?`;
-            const whatsappUrl = `https://wa.me/${whatsappNumber.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(message)}`;
-            
-            window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
-        }
-
-        // Contact enterprise via email
-        function contactEnterpriseEmail() {
-            const config = window.elementSdk?.config || defaultConfig;
-            const email = config.email_address || defaultConfig.email_address;
-            const subject = 'Consulta Compra Empresarial - Panu';
-            const body = `Estimados,\n\nMe pongo en contacto para consultar sobre compras empresariales.\n\nNecesito información sobre:\n- Descuentos por volumen (cantidad estimada: ___)\n- Diseños personalizados para nuestra marca\n- Tiempos de entrega\n- Opciones de pago\n- Muestras disponibles\n\nDatos de la empresa:\nNombre: ___\nRubro: ___\nContacto: ___\n\nQuedo a la espera de su respuesta.\n\nSaludos cordiales.`;
-            
-            const mailtoUrl = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-            window.open(mailtoUrl, '_blank', 'noopener,noreferrer');
-        }
-
-        // Render function for Element SDK
-        async function render(config) {
-            const customFont = config.font_family || defaultConfig.font_family || 'Inter';
-            const baseSize = config.font_size || defaultConfig.font_size || 16;
-
-            // Apply font family
-            if (customFont) {
-                document.body.style.fontFamily = `${customFont}, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif`;
-            }
-
-            // Apply font sizes proportionally
-            document.getElementById('store-title').style.fontSize = `${baseSize * 3}px`;
-            document.getElementById('store-subtitle').style.fontSize = `${baseSize * 1.25}px`;
-
-            // Update text content
-            document.getElementById('store-title').textContent = config.store_title || defaultConfig.store_title;
-            document.getElementById('store-subtitle').textContent = config.store_subtitle || defaultConfig.store_subtitle;
-            document.getElementById('footer-whatsapp').textContent = config.whatsapp_number || defaultConfig.whatsapp_number;
-            document.getElementById('footer-email').textContent = config.email_address || defaultConfig.email_address;
-        }
-
-        // Capabilities mapping
-        function mapToCapabilities(config) {
-            return {
-                recolorables: [],
-                borderables: [],
-                fontEditable: {
-                    get: () => config.font_family || defaultConfig.font_family || 'Inter',
-                    set: (value) => {
-                        config.font_family = value;
-                        if (window.elementSdk) {
-                            window.elementSdk.setConfig({ font_family: value });
-                        }
-                    }
-                },
-                fontSizeable: {
-                    get: () => config.font_size || defaultConfig.font_size || 16,
-                    set: (value) => {
-                        config.font_size = value;
-                        if (window.elementSdk) {
-                            window.elementSdk.setConfig({ font_size: value });
-                        }
-                    }
-                }
-            };
-        }
-
-        // Edit panel values mapping
-        function mapToEditPanelValues(config) {
-            return new Map([
-                ["store_title", config.store_title || defaultConfig.store_title],
-                ["store_subtitle", config.store_subtitle || defaultConfig.store_subtitle],
-                ["whatsapp_number", config.whatsapp_number || defaultConfig.whatsapp_number],
-                ["email_address", config.email_address || defaultConfig.email_address]
-            ]);
-        }
-
-        // Initialize Element SDK
-        if (window.elementSdk) {
-            window.elementSdk.init({
-                defaultConfig,
-                render,
-                mapToCapabilities,
-                mapToEditPanelValues
-            });
-        }
-
-        // Close modals when clicking outside
+        // Close modal when clicking outside
         document.getElementById('product-modal').addEventListener('click', function(e) {
             if (e.target === this) {
-                closeModal();
-            }
-        });
-
-        document.getElementById('enterprise-modal').addEventListener('click', function(e) {
-            if (e.target === this) {
-                closeEnterpriseModal();
+                closeProductModal();
             }
         });
 
         // Initialize app
         document.addEventListener('DOMContentLoaded', function() {
+            setupSearch();
             loadProducts();
-            render(defaultConfig);
+            console.log('Panu catalog loaded successfully');
+        });
+
+        // Handle keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeProductModal();
+            }
         });
     </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9909bf67c510116c',t:'MTc2MDgwODQ1OS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'99111a6920ae116c',t:'MTc2MDg4NTU4Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
