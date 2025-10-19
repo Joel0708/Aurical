@@ -164,7 +164,7 @@
      <div>
       <h1 class="text-3xl font-bold">Panel de Administración</h1>
       <p class="opacity-90">Gestión de productos - Panu</p>
-      <p class="text-xs opacity-75 mt-1">Versión 1.025</p>
+      <p class="text-xs opacity-75 mt-1">Versión 1.026</p>
      </div>
      <div class="flex items-center space-x-4"><span id="admin-user" class="text-sm opacity-90"></span> <button onclick="logout()" class="bg-white bg-opacity-20 hover:bg-opacity-30 px-4 py-2 rounded-lg transition-all"> Cerrar Sesión </button>
      </div>
@@ -495,46 +495,66 @@
         function displayProducts(products) {
             const tableBody = document.getElementById('products-table-body');
             
-            tableBody.innerHTML = products.map(product => `
-                <tr class="hover:bg-gray-50">
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <div class="flex items-center">
-                            <img src="${product.imagen_principal || 'data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'80\' height=\'80\' viewBox=\'0 0 80 80\'%3E%3Crect width=\'80\' height=\'80\' fill=\'%23f3f4f6\'/%3E%3Ctext x=\'40\' y=\'45\' text-anchor=\'middle\' font-size=\'12\' fill=\'%236b7280\'%3EImg%3C/text%3E%3C/svg%3E'}" 
-                                 alt="${product.nombre}" class="product-image mr-4">
-                            <div>
-                                <div class="text-sm font-medium text-gray-900">${product.nombre}</div>
-                                <div class="text-sm text-gray-500">${product.descripcion.substring(0, 50)}${product.descripcion.length > 50 ? '...' : ''}</div>
+            tableBody.innerHTML = products.map(product => {
+                // Handle gallery images display
+                let galleryImages = [];
+                if (product.imagen_galeria) {
+                    try {
+                        // Try parsing as JSON first (for backward compatibility)
+                        if (typeof product.imagen_galeria === 'string' && product.imagen_galeria.startsWith('[')) {
+                            galleryImages = JSON.parse(product.imagen_galeria);
+                        } else if (Array.isArray(product.imagen_galeria)) {
+                            // Already an array
+                            galleryImages = product.imagen_galeria;
+                        }
+                    } catch (error) {
+                        console.error('Error parsing gallery images:', error);
+                        galleryImages = [];
+                    }
+                }
+
+                return `
+                    <tr class="hover:bg-gray-50">
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="flex items-center">
+                                <img src="${product.imagen_principal || 'data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'80\' height=\'80\' viewBox=\'0 0 80 80\'%3E%3Crect width=\'80\' height=\'80\' fill=\'%23f3f4f6\'/%3E%3Ctext x=\'40\' y=\'45\' text-anchor=\'middle\' font-size=\'12\' fill=\'%236b7280\'%3EImg%3C/text%3E%3C/svg%3E'}" 
+                                     alt="${product.nombre}" class="product-image mr-4">
+                                <div>
+                                    <div class="text-sm font-medium text-gray-900">${product.nombre}</div>
+                                    <div class="text-sm text-gray-500">${product.descripcion.substring(0, 50)}${product.descripcion.length > 50 ? '...' : ''}</div>
+                                    ${galleryImages.length > 0 ? `<div class="text-xs text-blue-600 mt-1">📷 ${galleryImages.length} imagen(es) adicionales</div>` : ''}
+                                </div>
                             </div>
-                        </div>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                            ${product.categoria}
-                        </span>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        Gs. ${product.precio.toLocaleString()}
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${product.disponible ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">
-                            ${product.disponible ? 'Disponible' : 'No Disponible'}
-                        </span>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        ${new Date(product.fecha_creacion).toLocaleDateString('es-ES')}
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                        <div class="flex space-x-2">
-                            <button onclick="editProduct(${product.id})" class="btn-warning text-white px-3 py-1 rounded text-xs">
-                                Editar
-                            </button>
-                            <button onclick="showDeleteModal(${product.id})" class="btn-danger text-white px-3 py-1 rounded text-xs">
-                                Eliminar
-                            </button>
-                        </div>
-                    </td>
-                </tr>
-            `).join('');
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                ${product.categoria}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            Gs. ${product.precio.toLocaleString()}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${product.disponible ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">
+                                ${product.disponible ? 'Disponible' : 'No Disponible'}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            ${new Date(product.fecha_creacion).toLocaleDateString('es-ES')}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                            <div class="flex space-x-2">
+                                <button onclick="editProduct(${product.id})" class="btn-warning text-white px-3 py-1 rounded text-xs">
+                                    Editar
+                                </button>
+                                <button onclick="showDeleteModal(${product.id})" class="btn-danger text-white px-3 py-1 rounded text-xs">
+                                    Eliminar
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
         }
 
         // Update statistics
@@ -597,8 +617,15 @@
             // Show existing gallery images if any
             if (editingProduct.imagen_galeria) {
                 try {
-                    // Parse gallery URLs (stored as JSON string)
-                    const galleryUrls = JSON.parse(editingProduct.imagen_galeria);
+                    let galleryUrls = [];
+                    
+                    // Handle both array and JSON string formats
+                    if (Array.isArray(editingProduct.imagen_galeria)) {
+                        galleryUrls = editingProduct.imagen_galeria;
+                    } else if (typeof editingProduct.imagen_galeria === 'string') {
+                        galleryUrls = JSON.parse(editingProduct.imagen_galeria);
+                    }
+                    
                     existingGalleryUrls = [...galleryUrls];
                     
                     if (galleryUrls.length > 0) {
@@ -725,7 +752,13 @@
 
                 if (productToDelete.imagen_galeria) {
                     try {
-                        const galleryUrls = JSON.parse(productToDelete.imagen_galeria);
+                        let galleryUrls = [];
+                        if (Array.isArray(productToDelete.imagen_galeria)) {
+                            galleryUrls = productToDelete.imagen_galeria;
+                        } else if (typeof productToDelete.imagen_galeria === 'string') {
+                            galleryUrls = JSON.parse(productToDelete.imagen_galeria);
+                        }
+                        
                         for (const url of galleryUrls) {
                             await deleteImageFromStorage(url);
                         }
@@ -1051,7 +1084,7 @@
                     productData.imagen_principal = null;
                 }
 
-                // Handle gallery images
+                // Handle gallery images - FIXED: Store as PostgreSQL array, not JSON string
                 const allGalleryUrls = [...existingGalleryUrls]; // Keep existing URLs
                 
                 // Upload new gallery images
@@ -1065,15 +1098,21 @@
                     }
                 }
                 
-                // Store gallery URLs as JSON string
-                productData.imagen_galeria = allGalleryUrls.length > 0 ? JSON.stringify(allGalleryUrls) : null;
+                // Store gallery URLs as PostgreSQL array (not JSON string)
+                productData.imagen_galeria = allGalleryUrls.length > 0 ? allGalleryUrls : null;
 
                 let result;
                 if (editingProduct) {
                     // Delete removed gallery images from storage
                     if (editingProduct.imagen_galeria) {
                         try {
-                            const oldGalleryUrls = JSON.parse(editingProduct.imagen_galeria);
+                            let oldGalleryUrls = [];
+                            if (Array.isArray(editingProduct.imagen_galeria)) {
+                                oldGalleryUrls = editingProduct.imagen_galeria;
+                            } else if (typeof editingProduct.imagen_galeria === 'string') {
+                                oldGalleryUrls = JSON.parse(editingProduct.imagen_galeria);
+                            }
+                            
                             const removedUrls = oldGalleryUrls.filter(url => !existingGalleryUrls.includes(url));
                             
                             for (const url of removedUrls) {
@@ -1111,8 +1150,6 @@
             }
         });
 
-
-
         // Close modals when clicking outside
         document.getElementById('product-modal').addEventListener('click', function(e) {
             if (e.target === this) {
@@ -1129,8 +1166,8 @@
         // Initialize app
         document.addEventListener('DOMContentLoaded', function() {
             // Check if already logged in (you could implement session storage here)
-            console.log('Admin panel loaded');
+            console.log('Admin panel loaded - v1.026');
         });
     </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'990a8f59c453116c',t:'MTc2MDgxNjk3Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9910f056d60b116c',t:'MTc2MDg4Mzg2NC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
