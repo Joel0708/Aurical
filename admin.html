@@ -134,6 +134,34 @@
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
         }
+
+        .logo-container {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            margin: 0 auto 20px auto;
+        }
+
+        .logo-container img {
+            width: 60px;
+            height: 60px;
+            object-fit: contain;
+        }
+
+        .header-logo {
+            width: 50px;
+            height: 50px;
+            object-fit: contain;
+            background: white;
+            border-radius: 50%;
+            padding: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
     </style>
   <style>@view-transition { navigation: auto; }</style>
   <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
@@ -142,9 +170,11 @@
   <div id="login-screen" class="login-container flex items-center justify-center p-4">
    <div class="login-card rounded-2xl shadow-2xl p-8 w-full max-w-md">
     <div class="text-center mb-8">
+     <div class="logo-container"><img src="https://aurical.org/images/PanuLogo.jpg" alt="Panu Logo" onerror="this.style.display='none';">
+     </div>
      <h1 class="text-3xl font-bold text-gray-800 mb-2">Panel de Administración</h1>
      <p class="text-gray-600">Panu - Sublimaciones Premium</p>
-     <p class="text-xs text-gray-500 mt-2">v1.027</p>
+     <p class="text-xs text-gray-500 mt-2">v1.029</p>
     </div>
     <form id="login-form" class="space-y-6">
      <div><label for="username" class="block text-sm font-medium text-gray-700 mb-2">Usuario</label> <input type="text" id="username" name="username" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
@@ -161,10 +191,12 @@
   <div id="admin-dashboard" class="hidden min-h-screen"><!-- Header -->
    <header class="gradient-bg text-white py-6 shadow-lg">
     <div class="max-w-7xl mx-auto px-4 flex justify-between items-center">
-     <div>
-      <h1 class="text-3xl font-bold">Panel de Administración</h1>
-      <p class="opacity-90">Gestión de productos - Panu</p>
-      <p class="text-xs opacity-75 mt-1">Versión 1.026</p>
+     <div class="flex items-center space-x-4"><img src="https://aurical.org/images/PanuLogo.jpg" alt="Panu Logo" class="header-logo" onerror="this.style.display='none';">
+      <div>
+       <h1 class="text-3xl font-bold">Panel de Administración</h1>
+       <p class="opacity-90">Gestión de productos - Panu</p>
+       <p class="text-xs opacity-75 mt-1">Versión 1.026</p>
+      </div>
      </div>
      <div class="flex items-center space-x-4"><span id="admin-user" class="text-sm opacity-90"></span> <button onclick="logout()" class="bg-white bg-opacity-20 hover:bg-opacity-30 px-4 py-2 rounded-lg transition-all"> Cerrar Sesión </button>
      </div>
@@ -270,7 +302,7 @@
        <div class="grid md:grid-cols-2 gap-6">
         <div><label for="product-name" class="block text-sm font-medium text-gray-700 mb-2">Nombre del Producto</label> <input type="text" id="product-name" name="nombre" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
         </div>
-        <div><label for="product-category" class="block text-sm font-medium text-gray-700 mb-2">Categoría</label> <select id="product-category" name="categoria" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"> <option value="">Seleccionar categoría</option> <option value="tazas">Tazas</option> <option value="remeras">Remeras</option> <option value="accesorios">Accesorios</option> </select>
+        <div><label for="product-category" class="block text-sm font-medium text-gray-700 mb-2">Categoría</label> <select id="product-category" name="categoria" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"> <option value="">Seleccionar categoría</option> <option value="tazas">Tazas</option> <option value="remeras">Remeras</option> <option value="accesorios">Accesorios</option> <option value="otros">Otros</option> </select>
         </div>
        </div>
        <div><label for="product-description" class="block text-sm font-medium text-gray-700 mb-2">Descripción</label> <textarea id="product-description" name="descripcion" rows="3" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"></textarea>
@@ -1169,5 +1201,5 @@
             console.log('Admin panel loaded - v1.026');
         });
     </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9910f056d60b116c',t:'MTc2MDg4Mzg2NC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'99110ac1b298116c',t:'MTc2MDg4NDk0Ni4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
