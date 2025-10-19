@@ -245,26 +245,26 @@
  </head>
  <body class="bg-gray-50"><!-- Header -->
   <header class="gradient-bg text-white shadow-lg sticky top-0 z-50">
-   <div class="max-w-7xl mx-auto px-3 py-3">
+   <div class="max-w-7xl mx-auto px-4 py-4">
     <div class="flex items-center justify-between">
-     <div class="flex items-center space-x-2"><img src="https://aurical.org/images/PanuLogo.jpg" alt="Panu Logo" class="w-10 h-10 md:w-12 md:h-12 rounded-full bg-white p-1 md:p-2" onerror="this.style.display='none';">
+     <div class="flex items-center space-x-4"><img src="https://aurical.org/images/PanuLogo.png" alt="Panu Logo" class="header-logo" onerror="this.style.display='none';">
       <div>
-       <h1 class="text-lg md:text-3xl font-bold">Panu</h1>
-       <p class="text-xs md:text-sm opacity-90 hidden sm:block">Sublimaciones Premium</p>
+       <h1 class="text-3xl font-bold">Panu</h1>
+       <p class="text-sm opacity-90">Sublimaciones Premium</p>
       </div>
-     </div><!-- Search Bar Desktop -->
-     <div class="search-container hidden lg:block">
+     </div><!-- Search Bar -->
+     <div class="search-container hidden md:block">
       <div class="search-icon">
        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
        </svg>
       </div><input type="text" id="search-input" placeholder="Buscar productos..." class="search-input w-80 py-3 pr-4 text-gray-800 focus:outline-none">
      </div>
-     <div class="flex items-center space-x-2"><button onclick="toggleSearch()" class="lg:hidden p-2 rounded-lg bg-white bg-opacity-20 hover:bg-opacity-30 transition-all">
+     <div class="flex items-center space-x-4"><button onclick="toggleSearch()" class="md:hidden p-2 rounded-lg bg-white bg-opacity-20 hover:bg-opacity-30 transition-all">
        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-       </svg></button> <span id="product-count" class="text-xs md:text-sm opacity-90 hidden sm:block">0 productos</span>
+       </svg></button> <span id="product-count" class="text-sm opacity-90">0 productos</span>
      </div>
     </div><!-- Mobile Search -->
-    <div id="mobile-search" class="mt-3 hidden lg:hidden">
+    <div id="mobile-search" class="mt-4 hidden md:hidden">
      <div class="search-container">
       <div class="search-icon">
        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
@@ -275,97 +275,97 @@
    </div>
   </header><!-- Hero Section -->
   <section class="hero-section">
-   <div class="max-w-7xl mx-auto px-3 py-8 md:py-16">
-    <div class="logo-container w-16 h-16 md:w-20 md:h-20"><img src="https://aurical.org/images/PanuLogo.jpg" alt="Panu Logo" onerror="this.style.display='none';">
+   <div class="max-w-7xl mx-auto px-4 py-16">
+    <div class="logo-container"><img src="https://aurical.org/images/PanuLogo.png" alt="Panu Logo" onerror="this.style.display='none';">
     </div>
-    <h2 class="text-2xl sm:text-3xl md:text-6xl font-bold mb-2 md:mb-4">Sublimaciones Premium</h2>
-    <p class="text-sm sm:text-lg md:text-2xl opacity-90 mb-6 md:mb-8">Calidad excepcional en cada producto</p><!-- Stats -->
-    <div class="grid grid-cols-3 md:grid-cols-3 gap-3 md:gap-6 max-w-4xl mx-auto">
-     <div class="stats-card p-3 md:p-8">
-      <div class="text-xl md:text-3xl font-bold mb-1 md:mb-2" id="total-products-stat">
+    <h2 class="text-6xl font-bold mb-4">Sublimaciones Premium</h2>
+    <p class="text-2xl opacity-90 mb-8">Calidad excepcional en cada producto</p><!-- Stats -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+     <div class="stats-card">
+      <div class="text-3xl font-bold mb-2" id="total-products-stat">
        0
       </div>
-      <div class="text-xs md:text-sm opacity-90">
-       Productos
+      <div class="text-sm opacity-90">
+       Productos Disponibles
       </div>
      </div>
-     <div class="stats-card p-3 md:p-8">
-      <div class="text-xl md:text-3xl font-bold mb-1 md:mb-2" id="categories-stat">
+     <div class="stats-card">
+      <div class="text-3xl font-bold mb-2" id="categories-stat">
        0
       </div>
-      <div class="text-xs md:text-sm opacity-90">
+      <div class="text-sm opacity-90">
        Categorías
       </div>
      </div>
-     <div class="stats-card p-3 md:p-8">
-      <div class="text-xl md:text-3xl font-bold mb-1 md:mb-2">
+     <div class="stats-card">
+      <div class="text-3xl font-bold mb-2">
        ⭐
       </div>
-      <div class="text-xs md:text-sm opacity-90">
-       Premium
+      <div class="text-sm opacity-90">
+       Calidad Premium
       </div>
      </div>
     </div>
    </div>
   </section><!-- Category Filters -->
-  <section class="py-4 md:py-8 bg-white shadow-sm">
-   <div class="max-w-7xl mx-auto px-3">
-    <h3 class="text-lg md:text-2xl font-bold text-gray-800 mb-4 md:mb-6 text-center">Categorías</h3>
-    <div class="flex flex-wrap justify-center gap-2 md:gap-4" id="category-filters"><button onclick="filterByCategory('all')" class="category-btn active px-3 py-2 md:px-6 md:py-3 rounded-full font-medium bg-gray-100 text-gray-800 text-sm md:text-base"> <span class="hidden sm:inline">Todos los Productos</span> <span class="sm:hidden">Todos</span> </button> <button onclick="filterByCategory('tazas')" class="category-btn px-3 py-2 md:px-6 md:py-3 rounded-full font-medium bg-gray-100 text-gray-800 text-sm md:text-base"> ☕ <span class="hidden xs:inline">Tazas</span> </button> <button onclick="filterByCategory('remeras')" class="category-btn px-3 py-2 md:px-6 md:py-3 rounded-full font-medium bg-gray-100 text-gray-800 text-sm md:text-base"> 👕 <span class="hidden xs:inline">Remeras</span> </button> <button onclick="filterByCategory('accesorios')" class="category-btn px-3 py-2 md:px-6 md:py-3 rounded-full font-medium bg-gray-100 text-gray-800 text-sm md:text-base"> 🎁 <span class="hidden xs:inline">Accesorios</span> </button> <button onclick="filterByCategory('otros')" class="category-btn px-3 py-2 md:px-6 md:py-3 rounded-full font-medium bg-gray-100 text-gray-800 text-sm md:text-base"> 📦 <span class="hidden xs:inline">Otros</span> </button>
+  <section class="py-8 bg-white shadow-sm">
+   <div class="max-w-7xl mx-auto px-4">
+    <h3 class="text-2xl font-bold text-gray-800 mb-6 text-center">Categorías</h3>
+    <div class="flex flex-wrap justify-center gap-4" id="category-filters"><button onclick="filterByCategory('all')" class="category-btn active px-6 py-3 rounded-full font-medium bg-gray-100 text-gray-800"> Todos los Productos </button> <button onclick="filterByCategory('tazas')" class="category-btn px-6 py-3 rounded-full font-medium bg-gray-100 text-gray-800"> ☕ Tazas </button> <button onclick="filterByCategory('remeras')" class="category-btn px-6 py-3 rounded-full font-medium bg-gray-100 text-gray-800"> 👕 Remeras </button> <button onclick="filterByCategory('accesorios')" class="category-btn px-6 py-3 rounded-full font-medium bg-gray-100 text-gray-800"> 🎁 Accesorios </button> <button onclick="filterByCategory('otros')" class="category-btn px-6 py-3 rounded-full font-medium bg-gray-100 text-gray-800"> 📦 Otros </button>
     </div>
    </div>
   </section><!-- Products Section -->
-  <section class="py-6 md:py-12">
-   <div class="max-w-7xl mx-auto px-3"><!-- Loading State -->
-    <div id="loading-products" class="flex justify-center items-center py-12 md:py-20">
+  <section class="py-12">
+   <div class="max-w-7xl mx-auto px-4"><!-- Loading State -->
+    <div id="loading-products" class="flex justify-center items-center py-20">
      <div class="text-center">
       <div class="loading-spinner mx-auto mb-4"></div>
-      <p class="text-gray-600 text-sm md:text-lg">Cargando productos...</p>
+      <p class="text-gray-600 text-lg">Cargando productos...</p>
      </div>
     </div><!-- No Products State -->
-    <div id="no-products" class="text-center py-12 md:py-20 hidden">
-     <div class="text-4xl md:text-8xl mb-4 md:mb-6">
+    <div id="no-products" class="text-center py-20 hidden">
+     <div class="text-8xl mb-6">
       📦
      </div>
-     <h3 class="text-lg md:text-2xl font-bold text-gray-700 mb-2 md:mb-4">No hay productos disponibles</h3>
-     <p class="text-gray-500 text-sm md:text-lg">Vuelve pronto para ver nuestros nuevos productos</p>
+     <h3 class="text-2xl font-bold text-gray-700 mb-4">No hay productos disponibles</h3>
+     <p class="text-gray-500 text-lg">Vuelve pronto para ver nuestros nuevos productos</p>
     </div><!-- No Search Results -->
-    <div id="no-search-results" class="text-center py-12 md:py-20 hidden">
-     <div class="text-4xl md:text-8xl mb-4 md:mb-6">
+    <div id="no-search-results" class="text-center py-20 hidden">
+     <div class="text-8xl mb-6">
       🔍
      </div>
-     <h3 class="text-lg md:text-2xl font-bold text-gray-700 mb-2 md:mb-4">No se encontraron productos</h3>
-     <p class="text-gray-500 text-sm md:text-lg px-4">Intenta con otros términos de búsqueda</p><button onclick="clearSearch()" class="btn-primary text-white px-4 py-2 md:px-6 md:py-3 rounded-lg mt-3 md:mt-4 text-sm md:text-base"> Ver todos los productos </button>
+     <h3 class="text-2xl font-bold text-gray-700 mb-4">No se encontraron productos</h3>
+     <p class="text-gray-500 text-lg">Intenta con otros términos de búsqueda</p><button onclick="clearSearch()" class="btn-primary text-white px-6 py-3 rounded-lg mt-4"> Ver todos los productos </button>
     </div><!-- Products Grid -->
-    <div id="products-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-8"><!-- Products will be loaded here -->
+    <div id="products-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8"><!-- Products will be loaded here -->
     </div>
    </div>
   </section><!-- Product Detail Modal -->
   <div id="product-modal" class="modal fixed inset-0 z-50 hidden">
-   <div class="flex items-center justify-center min-h-screen p-2 md:p-4">
-    <div class="modal-content rounded-xl md:rounded-2xl shadow-2xl max-w-4xl w-full max-h-screen overflow-y-auto">
-     <div class="p-4 md:p-8">
-      <div class="flex justify-between items-start mb-4 md:mb-6">
-       <h2 id="modal-product-name" class="text-xl md:text-3xl font-bold text-gray-800 pr-4"></h2><button onclick="closeProductModal()" class="text-gray-500 hover:text-gray-700 text-2xl md:text-3xl font-bold flex-shrink-0">×</button>
+   <div class="flex items-center justify-center min-h-screen p-4">
+    <div class="modal-content rounded-2xl shadow-2xl max-w-4xl w-full max-h-screen overflow-y-auto">
+     <div class="p-8">
+      <div class="flex justify-between items-start mb-6">
+       <h2 id="modal-product-name" class="text-3xl font-bold text-gray-800"></h2><button onclick="closeProductModal()" class="text-gray-500 hover:text-gray-700 text-3xl font-bold">×</button>
       </div>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8"><!-- Image Gallery -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8"><!-- Image Gallery -->
        <div>
-        <div class="mb-3 md:mb-4"><img id="modal-main-image" src="" alt="" class="w-full h-64 md:h-96 object-cover rounded-lg md:rounded-xl">
+        <div class="mb-4"><img id="modal-main-image" src="" alt="" class="w-full h-96 object-cover rounded-xl">
         </div>
         <div id="modal-gallery" class="flex space-x-2 overflow-x-auto pb-2"><!-- Gallery images will be loaded here -->
         </div>
        </div><!-- Product Info -->
        <div>
-        <div class="mb-4 md:mb-6"><span id="modal-category" class="inline-block px-2 py-1 md:px-3 md:py-1 bg-blue-100 text-blue-800 rounded-full text-xs md:text-sm font-medium mb-3 md:mb-4"></span>
-         <div id="modal-price" class="price-tag inline-block mb-3 md:mb-4 text-sm md:text-base"></div>
-         <div id="modal-availability" class="mb-3 md:mb-4"></div>
+        <div class="mb-6"><span id="modal-category" class="inline-block px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium mb-4"></span>
+         <div id="modal-price" class="price-tag inline-block mb-4"></div>
+         <div id="modal-availability" class="mb-4"></div>
         </div>
-        <div class="mb-6 md:mb-8">
-         <h3 class="text-lg md:text-xl font-bold text-gray-800 mb-2 md:mb-3">Descripción</h3>
-         <p id="modal-description" class="text-gray-600 leading-relaxed text-sm md:text-base"></p>
+        <div class="mb-8">
+         <h3 class="text-xl font-bold text-gray-800 mb-3">Descripción</h3>
+         <p id="modal-description" class="text-gray-600 leading-relaxed"></p>
         </div>
-        <div class="space-y-3 md:space-y-4"><button id="modal-whatsapp-btn" onclick="contactWhatsApp()" class="w-full bg-green-500 hover:bg-green-600 text-white py-3 md:py-4 px-4 md:px-6 rounded-lg md:rounded-xl font-bold text-base md:text-lg flex items-center justify-center space-x-2 md:space-x-3 transition-all"> <span>📱</span> <span>Consultar por WhatsApp</span> </button>
-         <div class="text-center text-xs md:text-sm text-gray-500 space-y-1">
+        <div class="space-y-4"><button id="modal-whatsapp-btn" onclick="contactWhatsApp()" class="w-full bg-green-500 hover:bg-green-600 text-white py-4 px-6 rounded-xl font-bold text-lg flex items-center justify-center space-x-3 transition-all"> <span>📱</span> <span>Consultar por WhatsApp</span> </button>
+         <div class="text-center text-sm text-gray-500 space-y-1">
           <p>💬 Respuesta inmediata</p>
           <p>🚚 Consulta sobre envíos</p>
           <p>💳 Métodos de pago disponibles</p>
@@ -377,35 +377,35 @@
     </div>
    </div>
   </div><!-- WhatsApp Floating Button --> <a href="https://wa.me/595981234567?text=Hola! Me interesa consultar sobre sus productos de sublimación" target="_blank" class="whatsapp-btn" title="Contactar por WhatsApp"> 📱 </a> <!-- Footer -->
-  <footer class="gradient-bg text-white py-8 md:py-12">
-   <div class="max-w-7xl mx-auto px-3">
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
+  <footer class="gradient-bg text-white py-12">
+   <div class="max-w-7xl mx-auto px-4">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
      <div class="text-center md:text-left">
-      <div class="flex items-center justify-center md:justify-start space-x-3 mb-3 md:mb-4"><img src="https://aurical.org/images/PanuLogo.jpg" alt="Panu Logo" class="w-10 h-10 md:w-12 md:h-12 rounded-full bg-white p-1 md:p-2" onerror="this.style.display='none';">
-       <h3 class="text-xl md:text-2xl font-bold">Panu</h3>
+      <div class="flex items-center justify-center md:justify-start space-x-3 mb-4"><img src="https://aurical.org/images/PanuLogo.png" alt="Panu Logo" class="w-12 h-12 rounded-full bg-white p-2" onerror="this.style.display='none';">
+       <h3 class="text-2xl font-bold">Panu</h3>
       </div>
-      <p class="opacity-90 text-sm md:text-base">Sublimaciones premium con la mejor calidad y atención personalizada.</p>
+      <p class="opacity-90">Sublimaciones premium con la mejor calidad y atención personalizada.</p>
      </div>
      <div class="text-center md:text-left">
-      <h4 class="text-base md:text-lg font-bold mb-3 md:mb-4">Contacto</h4>
-      <div class="space-y-1 md:space-y-2 opacity-90 text-sm md:text-base">
+      <h4 class="text-lg font-bold mb-4">Contacto</h4>
+      <div class="space-y-2 opacity-90">
        <p>📱 WhatsApp: +595 98 123 4567</p>
        <p>📧 Email: info@panu.com</p>
        <p>📍 Asunción, Paraguay</p>
       </div>
      </div>
      <div class="text-center md:text-left">
-      <h4 class="text-base md:text-lg font-bold mb-3 md:mb-4">Horarios</h4>
-      <div class="space-y-1 md:space-y-2 opacity-90 text-sm md:text-base">
+      <h4 class="text-lg font-bold mb-4">Horarios</h4>
+      <div class="space-y-2 opacity-90">
        <p>🕒 Lunes a Viernes: 8:00 - 18:00</p>
        <p>🕒 Sábados: 8:00 - 12:00</p>
        <p>🕒 Domingos: Cerrado</p>
       </div>
      </div>
     </div>
-    <div class="border-t border-white border-opacity-20 mt-6 md:mt-8 pt-6 md:pt-8 text-center opacity-75">
-     <p class="text-sm md:text-base">© 2024 Panu - Sublimaciones Premium. Todos los derechos reservados.</p>
-     <p class="text-xs md:text-sm mt-2 opacity-60">v1.030 - Construido por Joel Páez y Ren_q (Alexa Ferreira)</p>
+    <div class="border-t border-white border-opacity-20 mt-8 pt-8 text-center opacity-75">
+     <p>© 2024 Panu - Sublimaciones Premium. Todos los derechos reservados.</p>
+     <p class="text-sm mt-2 opacity-60">v1.032 - Construido por Joel Páez y Ren_q (Alexa Ferreira)</p>
     </div>
    </div>
   </footer>
@@ -496,29 +496,29 @@
                 const mainImage = product.imagen_principal || 'data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'300\' height=\'250\' viewBox=\'0 0 300 250\'%3E%3Crect width=\'300\' height=\'250\' fill=\'%23f3f4f6\'/%3E%3Ctext x=\'150\' y=\'130\' text-anchor=\'middle\' font-size=\'18\' fill=\'%236b7280\'%3EImagen no disponible%3C/text%3E%3C/svg%3E';
 
                 return `
-                    <div class="product-card rounded-lg md:rounded-xl shadow-lg overflow-hidden fade-in cursor-pointer" onclick="showProductDetail(${product.id})">
+                    <div class="product-card rounded-xl shadow-lg overflow-hidden fade-in cursor-pointer" onclick="showProductDetail(${product.id})">
                         <div class="relative">
-                            <img src="${mainImage}" alt="${product.nombre}" class="w-full h-48 md:h-64 object-cover">
-                            ${!product.disponible ? '<div class="unavailable-overlay absolute inset-0 rounded-lg md:rounded-xl">No Disponible</div>' : ''}
+                            <img src="${mainImage}" alt="${product.nombre}" class="w-full h-64 object-cover">
+                            ${!product.disponible ? '<div class="unavailable-overlay absolute inset-0 rounded-xl">No Disponible</div>' : ''}
                             ${galleryImages.length > 0 ? `<div class="absolute top-2 right-2 bg-black bg-opacity-50 text-white px-2 py-1 rounded-full text-xs">+${galleryImages.length + 1}</div>` : ''}
                         </div>
                         
-                        <div class="p-3 md:p-6">
-                            <div class="mb-2 md:mb-3">
+                        <div class="p-6">
+                            <div class="mb-3">
                                 <span class="inline-block px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-medium mb-2">
                                     ${getCategoryIcon(product.categoria)} ${product.categoria}
                                 </span>
-                                <h3 class="text-base md:text-xl font-bold text-gray-800 line-clamp-2">${product.nombre}</h3>
+                                <h3 class="text-xl font-bold text-gray-800 line-clamp-2">${product.nombre}</h3>
                             </div>
                             
-                            <p class="text-gray-600 mb-3 md:mb-4 line-clamp-2 text-sm md:text-base">${product.descripcion}</p>
+                            <p class="text-gray-600 mb-4 line-clamp-2">${product.descripcion}</p>
                             
-                            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
-                                <div class="price-tag text-sm md:text-base">
+                            <div class="flex justify-between items-center">
+                                <div class="price-tag">
                                     Gs. ${product.precio.toLocaleString()}
                                 </div>
                                 
-                                <button class="btn-primary text-white px-3 py-2 md:px-4 md:py-2 rounded-lg text-xs md:text-sm font-medium w-full sm:w-auto">
+                                <button class="btn-primary text-white px-4 py-2 rounded-lg text-sm font-medium">
                                     Ver Detalles
                                 </button>
                             </div>
@@ -743,5 +743,5 @@
             }
         });
     </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'99112928a008116c',t:'MTc2MDg4NjE5MS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'99115f21855b116c',t:'MTc2MDg4ODQwMi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
