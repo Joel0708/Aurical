@@ -461,6 +461,217 @@
  </head>
  <body class="bg-stone-50"><!-- Header -->
   <header class="gradient-bg text-white shadow-lg sticky top-0 z-50">
+    <!-- 🔥 INICIO SECCIÓN PROMOCIÓN -->
+<section id="promotion-section" class="hidden">
+  <div id="promotion-content" class="promotion-banner fade-in"></div>
+</section>
+
+<style>
+  /* --- ESTILOS PROMOCIÓN --- */
+  .promotion-banner {
+    background: linear-gradient(135deg, #8B4513, #A0522D);
+    border-radius: 20px;
+    overflow: hidden;
+    position: relative;
+    margin: 1rem auto 2rem auto;
+    box-shadow: 0 12px 40px rgba(139, 69, 19, 0.3);
+    max-width: 1200px;
+  }
+
+  .promotion-media {
+    width: 100%;
+    height: 300px;
+    object-fit: cover;
+  }
+
+  .promotion-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
+    color: white;
+    padding: 2rem;
+  }
+
+  .promotion-title {
+    font-size: 2rem;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  }
+
+  .promotion-description {
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+    opacity: 0.9;
+  }
+
+  .promotion-cta {
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    color: white;
+    padding: 12px 24px;
+    border-radius: 25px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    cursor: pointer;
+  }
+
+  .promotion-cta:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateY(-2px);
+  }
+
+  .countdown-timer {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 10px;
+    padding: 1rem;
+    margin-top: 1rem;
+    text-align: center;
+  }
+
+  .countdown-item {
+    display: inline-block;
+    margin: 0 0.5rem;
+    text-align: center;
+  }
+
+  .countdown-number {
+    display: block;
+    font-size: 1.5rem;
+    font-weight: bold;
+  }
+
+  .countdown-label {
+    font-size: 0.8rem;
+    opacity: 0.8;
+  }
+
+  @media (max-width: 768px) {
+    .promotion-title { font-size: 1.5rem; }
+    .promotion-description { font-size: 1rem; }
+    .promotion-media { height: 200px; }
+  }
+</style>
+
+<script>
+  // --- FUNCIÓN DE PROMOCIONES ---
+  let activePromotion = null;
+  let countdownInterval = null;
+
+  document.addEventListener("DOMContentLoaded", () => {
+    loadActivePromotion();
+    setInterval(loadActivePromotion, 5 * 60 * 1000); // refresca cada 5 min
+  });
+
+  async function loadActivePromotion() {
+    try {
+      const { data, error } = await supabase
+        .from("promociones")
+        .select("*")
+        .eq("activa", true)
+        .single();
+
+      if (error && error.code !== "PGRST116") throw error;
+
+      if (data) {
+        const isExpired =
+          data.fecha_expiracion &&
+          new Date(data.fecha_expiracion) < new Date();
+
+        if (!isExpired) {
+          activePromotion = data;
+          displayPromotion();
+        } else {
+          hidePromotion();
+        }
+      } else {
+        hidePromotion();
+      }
+    } catch (error) {
+      console.error("Error cargando promoción:", error);
+    }
+  }
+
+  function displayPromotion() {
+    const section = document.getElementById("promotion-section");
+    const content = document.getElementById("promotion-content");
+
+    if (!activePromotion) return hidePromotion();
+
+    const isVideo = activePromotion.tipo_media === "video";
+    const mediaElement = isVideo
+      ? `<video src="${activePromotion.url_media}" class="promotion-media" autoplay muted loop></video>`
+      : `<img src="${activePromotion.url_media}" alt="${activePromotion.titulo}" class="promotion-media">`;
+
+    content.innerHTML = `
+      ${mediaElement}
+      <div class="promotion-overlay">
+        <h2 class="promotion-title">${activePromotion.titulo}</h2>
+        ${activePromotion.descripcion ? `<p class="promotion-description">${activePromotion.descripcion}</p>` : ""}
+        <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+          <button onclick="toggleContactInfo()" class="promotion-cta">🛒 ¡Aprovechá la oferta!</button>
+          ${
+            activePromotion.fecha_expiracion
+              ? `<div class="countdown-timer">
+                  <div class="text-sm mb-2">⏰ Oferta válida hasta:</div>
+                  <div id="countdown-display" class="flex justify-center space-x-4"></div>
+                </div>`
+              : ""
+          }
+        </div>
+      </div>
+    `;
+
+    section.classList.remove("hidden");
+
+    if (activePromotion.fecha_expiracion) {
+      startCountdown(new Date(activePromotion.fecha_expiracion));
+    }
+  }
+
+  function hidePromotion() {
+    document.getElementById("promotion-section").classList.add("hidden");
+  }
+
+  function startCountdown(targetDate) {
+    function updateCountdown() {
+      const now = new Date().getTime();
+      const distance = targetDate.getTime() - now;
+
+      if (distance < 0) {
+        clearInterval(countdownInterval);
+        const el = document.getElementById("countdown-display");
+        if (el) el.innerHTML = '<span class="text-red-300">¡Oferta expirada!</span>';
+        return;
+      }
+
+      const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+      const el = document.getElementById("countdown-display");
+      if (el) {
+        el.innerHTML = `
+          <div class="countdown-item"><span class="countdown-number">${days}</span><span class="countdown-label">días</span></div>
+          <div class="countdown-item"><span class="countdown-number">${hours}</span><span class="countdown-label">hrs</span></div>
+          <div class="countdown-item"><span class="countdown-number">${minutes}</span><span class="countdown-label">min</span></div>
+          <div class="countdown-item"><span class="countdown-number">${seconds}</span><span class="countdown-label">seg</span></div>
+        `;
+      }
+    }
+
+    updateCountdown();
+    clearInterval(countdownInterval);
+    countdownInterval = setInterval(updateCountdown, 1000);
+  }
+</script>
+<!-- 🔥 FIN SECCIÓN PROMOCIÓN -->
+
    <div class="max-w-7xl mx-auto px-4 py-4">
     <div class="flex items-center justify-between">
      <div class="flex items-center space-x-4"><img src="https://aurical.org/images/PanuLogo.png" alt="Panu Logo" class="header-logo" onerror="this.style.display='none';">
