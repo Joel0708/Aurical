@@ -3,58 +3,121 @@
  <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin Panel - Panu</title>
+  <title>Admin - Panu Sublimaciones</title>
   <script src="/_sdk/element_sdk.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
         body {
             box-sizing: border-box;
-        }
-        
-        .gradient-bg {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
         }
         
         .admin-card {
-            background: linear-gradient(145deg, #ffffff, #f8fafc);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(222, 184, 135, 0.3);
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
             transition: all 0.3s ease;
         }
         
         .admin-card:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
         }
         
         .btn-primary {
-            background: linear-gradient(135deg, #667eea, #764ba2);
+            background: linear-gradient(135deg, #8B4513, #A0522D);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
             transition: all 0.3s ease;
+            min-height: 44px;
         }
         
         .btn-primary:hover {
+            background: linear-gradient(135deg, #A0522D, #CD853F);
             transform: translateY(-1px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+            box-shadow: 0 4px 15px rgba(139, 69, 19, 0.3);
         }
         
-        .btn-success {
-            background: linear-gradient(135deg, #10b981, #059669);
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.8);
+            color: #8B4513;
+            border: 2px solid #8B4513;
+            padding: 10px 22px;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            min-height: 44px;
+        }
+        
+        .btn-secondary:hover {
+            background: #8B4513;
+            color: white;
         }
         
         .btn-danger {
-            background: linear-gradient(135deg, #ef4444, #dc2626);
+            background: linear-gradient(135deg, #dc2626, #ef4444);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            min-height: 44px;
         }
         
-        .btn-warning {
-            background: linear-gradient(135deg, #f59e0b, #d97706);
+        .btn-danger:hover {
+            background: linear-gradient(135deg, #b91c1c, #dc2626);
+            transform: translateY(-1px);
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.9);
+            transition: all 0.3s ease;
+            font-size: 16px;
+            min-height: 44px;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: #8B4513;
+            box-shadow: 0 0 0 3px rgba(139, 69, 19, 0.1);
+        }
+        
+        .form-textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+        
+        .modal {
+            backdrop-filter: blur(10px);
+            background: rgba(0, 0, 0, 0.7);
+        }
+        
+        .modal-content {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(222, 184, 135, 0.3);
+            border-radius: 16px;
+            max-height: 90vh;
+            overflow-y: auto;
         }
         
         .loading-spinner {
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid #667eea;
+            border: 3px solid #F5F5DC;
+            border-top: 3px solid #8B4513;
             border-radius: 50%;
-            width: 20px;
-            height: 20px;
+            width: 40px;
+            height: 40px;
             animation: spin 1s linear infinite;
         }
         
@@ -63,308 +126,399 @@
             100% { transform: rotate(360deg); }
         }
         
-        .modal {
-            backdrop-filter: blur(10px);
-            background: rgba(0, 0, 0, 0.5);
-        }
-        
-        .modal-content {
-            background: linear-gradient(145deg, #ffffff, #f8fafc);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-        
         .stats-card {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-        }
-        
-        .notification {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 1000;
-            padding: 16px 24px;
-            border-radius: 8px;
+            background: linear-gradient(135deg, #8B4513, #A0522D);
             color: white;
-            font-weight: 500;
-            transform: translateX(400px);
-            transition: transform 0.3s ease;
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
         }
         
-        .notification.show {
-            transform: translateX(0);
+        .product-row {
+            background: rgba(255, 255, 255, 0.8);
+            border: 1px solid rgba(222, 184, 135, 0.2);
+            border-radius: 8px;
+            transition: all 0.3s ease;
         }
         
-        .notification.success {
-            background: linear-gradient(135deg, #10b981, #059669);
-        }
-        
-        .notification.error {
-            background: linear-gradient(135deg, #ef4444, #dc2626);
-        }
-        
-        .notification.warning {
-            background: linear-gradient(135deg, #f59e0b, #d97706);
+        .product-row:hover {
+            background: rgba(255, 255, 255, 0.95);
+            border-color: rgba(222, 184, 135, 0.4);
+            transform: translateY(-1px);
         }
         
         .image-preview {
-            max-width: 100px;
-            max-height: 100px;
-            object-fit: cover;
-            border-radius: 8px;
-        }
-        
-        .product-image {
             width: 80px;
             height: 80px;
             object-fit: cover;
             border-radius: 8px;
+            border: 2px solid #e5e7eb;
         }
         
-        .table-container {
-            max-height: 600px;
-            overflow-y: auto;
+        .tab-nav {
+            border-bottom: 2px solid #e5e7eb;
         }
         
-        .login-container {
-            min-height: 100vh;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        .tab-btn {
+            padding: 1rem 2rem;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            min-height: 44px;
         }
         
-        .login-card {
+        .tab-btn.active {
+            border-bottom-color: #8B4513;
+            background: rgba(139, 69, 19, 0.1);
+            color: #8B4513;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .category-tag {
+            background: rgba(139, 69, 19, 0.1);
+            color: #8B4513;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            border: 1px solid rgba(139, 69, 19, 0.2);
+        }
+        
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+        
+        .status-available {
+            background: rgba(34, 197, 94, 0.1);
+            color: #16a34a;
+            border: 1px solid rgba(34, 197, 94, 0.2);
+        }
+        
+        .status-unavailable {
+            background: rgba(239, 68, 68, 0.1);
+            color: #dc2626;
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+
+        .category-item {
+            background: rgba(255, 255, 255, 0.8);
+            border: 1px solid rgba(222, 184, 135, 0.2);
+            border-radius: 8px;
+            padding: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .category-item:hover {
             background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
+            border-color: rgba(222, 184, 135, 0.4);
+            transform: translateY(-1px);
         }
 
-        .logo-container {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            background: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-            margin: 0 auto 20px auto;
+        .category-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
         }
 
-        .logo-container img {
-            width: 60px;
-            height: 60px;
-            object-fit: contain;
-        }
-
-        .header-logo {
-            width: 50px;
-            height: 50px;
-            object-fit: contain;
-            background: white;
-            border-radius: 50%;
-            padding: 8px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        /* Mobile responsive */
+        @media (max-width: 640px) {
+            .admin-card {
+                margin: 0.5rem;
+                padding: 1rem;
+            }
+            
+            .modal-content {
+                margin: 0.5rem;
+                max-height: calc(100vh - 1rem);
+            }
+            
+            .tab-btn {
+                padding: 0.75rem 1rem;
+                font-size: 0.875rem;
+            }
+            
+            .image-preview {
+                width: 60px;
+                height: 60px;
+            }
         }
     </style>
   <style>@view-transition { navigation: auto; }</style>
   <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
  </head>
- <body class="bg-gray-50"><!-- Login Screen -->
-  <div id="login-screen" class="login-container flex items-center justify-center p-4">
-   <div class="login-card rounded-2xl shadow-2xl p-8 w-full max-w-md">
-    <div class="text-center mb-8">
-     <div class="logo-container"><img src="https://aurical.org/images/PanuLogo.jpg" alt="Panu Logo" onerror="this.style.display='none';">
-     </div>
-     <h1 class="text-3xl font-bold text-gray-800 mb-2">Panel de Administración</h1>
-     <p class="text-gray-600">Panu - Sublimaciones Premium</p>
-     <p class="text-xs text-gray-500 mt-2">v1.029</p>
-    </div>
-    <form id="login-form" class="space-y-6">
-     <div><label for="username" class="block text-sm font-medium text-gray-700 mb-2">Usuario</label> <input type="text" id="username" name="username" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-     </div>
-     <div><label for="password" class="block text-sm font-medium text-gray-700 mb-2">Contraseña</label> <input type="password" id="password" name="password" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-     </div><button type="submit" id="login-btn" class="btn-primary w-full text-white py-3 rounded-lg font-medium flex items-center justify-center space-x-2"> <span>Iniciar Sesión</span>
-      <div id="login-spinner" class="loading-spinner hidden"></div></button>
-    </form>
-    <div id="login-error" class="hidden mt-4 p-3 bg-red-100 border border-red-300 text-red-700 rounded-lg text-sm">
-     Usuario o contraseña incorrectos
-    </div>
-   </div>
-  </div><!-- Admin Dashboard -->
-  <div id="admin-dashboard" class="hidden min-h-screen"><!-- Header -->
-   <header class="gradient-bg text-white py-6 shadow-lg">
-    <div class="max-w-7xl mx-auto px-4 flex justify-between items-center">
-     <div class="flex items-center space-x-4"><img src="https://aurical.org/images/PanuLogo.jpg" alt="Panu Logo" class="header-logo" onerror="this.style.display='none';">
+ <body><!-- Header -->
+  <header class="bg-gradient-to-r from-amber-900 to-amber-700 text-white shadow-lg">
+   <div class="max-w-7xl mx-auto px-4 py-6">
+    <div class="flex items-center justify-between">
+     <div class="flex items-center space-x-4"><img src="https://aurical.org/images/PanuLogo.png" alt="Panu Logo" class="w-12 h-12 rounded-full bg-white p-2" onerror="this.style.display='none';">
       <div>
        <h1 class="text-3xl font-bold">Panel de Administración</h1>
-       <p class="opacity-90">Gestión de productos - Panu</p>
-       <p class="text-xs opacity-75 mt-1">Versión 1.026</p>
+       <p class="text-amber-100">Gestión de productos y categorías</p>
       </div>
      </div>
-     <div class="flex items-center space-x-4"><span id="admin-user" class="text-sm opacity-90"></span> <button onclick="logout()" class="bg-white bg-opacity-20 hover:bg-opacity-30 px-4 py-2 rounded-lg transition-all"> Cerrar Sesión </button>
-     </div>
-    </div>
-   </header><!-- Stats Cards -->
-   <div class="max-w-7xl mx-auto px-4 py-8">
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-     <div class="stats-card text-white rounded-xl p-6">
-      <div class="flex items-center justify-between">
-       <div>
-        <p class="text-sm opacity-90">Total Productos</p>
-        <p id="total-products" class="text-3xl font-bold">0</p>
-       </div>
-       <div class="text-4xl opacity-80">
-        📦
-       </div>
-      </div>
-     </div>
-     <div class="bg-green-500 text-white rounded-xl p-6">
-      <div class="flex items-center justify-between">
-       <div>
-        <p class="text-sm opacity-90">Disponibles</p>
-        <p id="available-products" class="text-3xl font-bold">0</p>
-       </div>
-       <div class="text-4xl opacity-80">
-        ✅
-       </div>
-      </div>
-     </div>
-     <div class="bg-yellow-500 text-white rounded-xl p-6">
-      <div class="flex items-center justify-between">
-       <div>
-        <p class="text-sm opacity-90">No Disponibles</p>
-        <p id="unavailable-products" class="text-3xl font-bold">0</p>
-       </div>
-       <div class="text-4xl opacity-80">
-        ⏸️
-       </div>
-      </div>
-     </div>
-     <div class="bg-purple-500 text-white rounded-xl p-6">
-      <div class="flex items-center justify-between">
-       <div>
-        <p class="text-sm opacity-90">Categorías</p>
-        <p id="total-categories" class="text-3xl font-bold">0</p>
-       </div>
-       <div class="text-4xl opacity-80">
-        🏷️
-       </div>
-      </div>
-     </div>
-    </div><!-- Actions Bar -->
-    <div class="flex justify-between items-center mb-6">
-     <h2 class="text-2xl font-bold text-gray-800">Gestión de Productos</h2>
-     <div class="flex space-x-4"><button onclick="refreshProducts()" class="btn-primary text-white px-4 py-2 rounded-lg flex items-center space-x-2">
-       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
-       </svg><span>Actualizar</span> </button> <button onclick="showAddProductModal()" class="btn-success text-white px-6 py-2 rounded-lg flex items-center space-x-2">
-       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-       </svg><span>Nuevo Producto</span> </button>
-     </div>
-    </div><!-- Products Table -->
-    <div class="admin-card rounded-xl shadow-lg overflow-hidden">
-     <div class="table-container">
-      <table class="w-full">
-       <thead class="bg-gray-50 border-b">
-        <tr>
-         <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Producto</th>
-         <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Categoría</th>
-         <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Precio</th>
-         <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
-         <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha</th>
-         <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
-        </tr>
-       </thead>
-       <tbody id="products-table-body" class="bg-white divide-y divide-gray-200"><!-- Products will be loaded here -->
-       </tbody>
-      </table>
-     </div>
-     <div id="loading-products" class="flex justify-center items-center py-12">
-      <div class="text-center">
-       <div class="loading-spinner mx-auto mb-4"></div>
-       <p class="text-gray-600">Cargando productos...</p>
-      </div>
-     </div>
-     <div id="no-products" class="text-center py-12 hidden">
-      <div class="text-6xl mb-4">
-       📦
-      </div>
-      <h3 class="text-xl font-bold text-gray-700 mb-2">No hay productos</h3>
-      <p class="text-gray-500">Comienza agregando tu primer producto</p>
+     <div class="flex items-center space-x-4"><a href="panu.html" class="btn-secondary bg-white bg-opacity-20 hover:bg-opacity-30 border-white text-white"> 🏠 Ver Catálogo </a> <span id="admin-time" class="text-amber-100 text-sm"></span>
      </div>
     </div>
    </div>
-  </div><!-- Add/Edit Product Modal -->
+  </header><!-- Stats Dashboard -->
+  <section class="py-8">
+   <div class="max-w-7xl mx-auto px-4">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+     <div class="stats-card">
+      <div class="text-3xl font-bold mb-2" id="total-products">
+       0
+      </div>
+      <div class="text-amber-100">
+       Total Productos
+      </div>
+     </div>
+     <div class="stats-card">
+      <div class="text-3xl font-bold mb-2" id="available-products">
+       0
+      </div>
+      <div class="text-amber-100">
+       Disponibles
+      </div>
+     </div>
+     <div class="stats-card">
+      <div class="text-3xl font-bold mb-2" id="total-categories">
+       0
+      </div>
+      <div class="text-amber-100">
+       Categorías
+      </div>
+     </div>
+     <div class="stats-card">
+      <div class="text-3xl font-bold mb-2" id="last-update">
+       -
+      </div>
+      <div class="text-amber-100">
+       Última Actualización
+      </div>
+     </div>
+    </div>
+   </div>
+  </section><!-- Tab Navigation -->
+  <section class="bg-white shadow-sm">
+   <div class="max-w-7xl mx-auto px-4">
+    <div class="tab-nav flex overflow-x-auto"><button onclick="switchTab('products')" id="products-tab" class="tab-btn active whitespace-nowrap"> 📦 Productos </button> <button onclick="switchTab('categories')" id="categories-tab" class="tab-btn whitespace-nowrap"> 🏷️ Categorías </button> <button onclick="switchTab('bulk')" id="bulk-tab" class="tab-btn whitespace-nowrap"> 📊 Acciones Masivas </button> <button onclick="switchTab('analytics')" id="analytics-tab" class="tab-btn whitespace-nowrap"> 📈 Analíticas </button>
+    </div>
+   </div>
+  </section><!-- Products Tab -->
+  <div id="products-content" class="tab-content active">
+   <section class="py-8">
+    <div class="max-w-7xl mx-auto px-4"><!-- Products Header -->
+     <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 space-y-4 md:space-y-0">
+      <h2 class="text-2xl font-bold text-gray-800">Gestión de Productos</h2>
+      <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4"><button onclick="openProductModal()" class="btn-primary"> ➕ Nuevo Producto </button> <button onclick="refreshProducts()" class="btn-secondary"> 🔄 Actualizar </button>
+      </div>
+     </div><!-- Products Filter -->
+     <div class="admin-card p-6 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+       <div><label class="block text-sm font-medium text-gray-700 mb-2">Buscar</label> <input type="text" id="search-products" placeholder="Nombre del producto..." class="form-input" onkeyup="filterProducts()">
+       </div>
+       <div><label class="block text-sm font-medium text-gray-700 mb-2">Categoría</label> <select id="filter-category" class="form-input" onchange="filterProducts()"> <option value="">Todas las categorías</option> </select>
+       </div>
+       <div><label class="block text-sm font-medium text-gray-700 mb-2">Estado</label> <select id="filter-status" class="form-input" onchange="filterProducts()"> <option value="">Todos los estados</option> <option value="true">Disponible</option> <option value="false">No disponible</option> </select>
+       </div>
+       <div class="flex items-end"><button onclick="clearFilters()" class="btn-secondary w-full"> 🗑️ Limpiar Filtros </button>
+       </div>
+      </div>
+     </div><!-- Products List -->
+     <div class="admin-card">
+      <div class="p-6">
+       <div id="products-loading" class="text-center py-8">
+        <div class="loading-spinner mx-auto mb-4"></div>
+        <p class="text-gray-600">Cargando productos...</p>
+       </div>
+       <div id="products-list" class="hidden">
+        <div class="overflow-x-auto">
+         <table class="w-full">
+          <thead>
+           <tr class="border-b border-gray-200">
+            <th class="text-left py-3 px-4 font-semibold text-gray-700">Imagen</th>
+            <th class="text-left py-3 px-4 font-semibold text-gray-700">Producto</th>
+            <th class="text-left py-3 px-4 font-semibold text-gray-700">Categoría</th>
+            <th class="text-left py-3 px-4 font-semibold text-gray-700">Precio</th>
+            <th class="text-left py-3 px-4 font-semibold text-gray-700">Estado</th>
+            <th class="text-left py-3 px-4 font-semibold text-gray-700">Acciones</th>
+           </tr>
+          </thead>
+          <tbody id="products-table-body"><!-- Products will be loaded here -->
+          </tbody>
+         </table>
+        </div>
+       </div>
+       <div id="no-products" class="text-center py-12 hidden">
+        <div class="text-6xl mb-4">
+         📦
+        </div>
+        <h3 class="text-xl font-bold text-gray-700 mb-2">No hay productos</h3>
+        <p class="text-gray-500 mb-6">Comienza agregando tu primer producto</p><button onclick="openProductModal()" class="btn-primary"> ➕ Crear Primer Producto </button>
+       </div>
+      </div>
+     </div>
+    </div>
+   </section>
+  </div><!-- Categories Tab -->
+  <div id="categories-content" class="tab-content">
+   <section class="py-8">
+    <div class="max-w-7xl mx-auto px-4"><!-- Categories Header -->
+     <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 space-y-4 md:space-y-0">
+      <div>
+       <h2 class="text-2xl font-bold text-gray-800">Gestión de Categorías</h2>
+       <p class="text-gray-600 mt-2">Las categorías se generan automáticamente desde los productos existentes</p>
+      </div>
+      <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4"><button onclick="openCategoryModal()" class="btn-primary"> ➕ Nueva Categoría </button> <button onclick="refreshCategories()" class="btn-secondary"> 🔄 Actualizar </button>
+      </div>
+     </div><!-- Categories Grid -->
+     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" id="categories-grid"><!-- Categories will be loaded here -->
+     </div><!-- Categories Loading -->
+     <div id="categories-loading" class="text-center py-12">
+      <div class="loading-spinner mx-auto mb-4"></div>
+      <p class="text-gray-600">Cargando categorías...</p>
+     </div><!-- No Categories -->
+     <div id="no-categories" class="text-center py-12 hidden">
+      <div class="text-6xl mb-4">
+       🏷️
+      </div>
+      <h3 class="text-xl font-bold text-gray-700 mb-2">No hay categorías</h3>
+      <p class="text-gray-500 mb-6">Las categorías aparecerán automáticamente cuando agregues productos</p>
+     </div>
+    </div>
+   </section>
+  </div><!-- Bulk Actions Tab -->
+  <div id="bulk-content" class="tab-content">
+   <section class="py-8">
+    <div class="max-w-7xl mx-auto px-4">
+     <h2 class="text-2xl font-bold text-gray-800 mb-8">Acciones Masivas</h2>
+     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8"><!-- Bulk Operations -->
+      <div class="admin-card p-6">
+       <h3 class="text-xl font-bold text-gray-800 mb-6">Operaciones Masivas</h3>
+       <div class="space-y-4">
+        <div><label class="block text-sm font-medium text-gray-700 mb-2">Seleccionar por categoría</label> <select id="bulk-category" class="form-input"> <option value="">Seleccionar categoría...</option> </select>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4"><button onclick="bulkUpdateAvailability(true)" class="btn-primary"> ✅ Marcar Disponibles </button> <button onclick="bulkUpdateAvailability(false)" class="btn-secondary"> ❌ Marcar No Disponibles </button>
+        </div>
+        <div class="border-t pt-4"><button onclick="bulkDeleteCategory()" class="btn-danger w-full"> 🗑️ Eliminar Categoría Completa </button>
+         <p class="text-xs text-gray-500 mt-2">⚠️ Esta acción eliminará todos los productos de la categoría seleccionada</p>
+        </div>
+       </div>
+      </div><!-- Import/Export -->
+      <div class="admin-card p-6">
+       <h3 class="text-xl font-bold text-gray-800 mb-6">Importar/Exportar</h3>
+       <div class="space-y-4">
+        <div><button onclick="exportProducts()" class="btn-primary w-full"> 📤 Exportar Productos (CSV) </button>
+         <p class="text-xs text-gray-500 mt-2">Descarga todos los productos en formato CSV</p>
+        </div>
+        <div><label class="block text-sm font-medium text-gray-700 mb-2">Importar productos</label> <input type="file" id="import-file" accept=".csv" class="form-input"> <button onclick="importProducts()" class="btn-secondary w-full mt-2"> 📥 Importar CSV </button>
+         <p class="text-xs text-gray-500 mt-2">Formato: nombre,categoria,precio,descripcion,disponible</p>
+        </div>
+        <div class="border-t pt-4"><button onclick="backupDatabase()" class="btn-secondary w-full"> 💾 Crear Respaldo </button>
+         <p class="text-xs text-gray-500 mt-2">Genera un respaldo completo de la base de datos</p>
+        </div>
+       </div>
+      </div>
+     </div>
+    </div>
+   </section>
+  </div><!-- Analytics Tab -->
+  <div id="analytics-content" class="tab-content">
+   <section class="py-8">
+    <div class="max-w-7xl mx-auto px-4">
+     <h2 class="text-2xl font-bold text-gray-800 mb-8">Analíticas del Catálogo</h2>
+     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8"><!-- Category Distribution -->
+      <div class="admin-card p-6">
+       <h3 class="text-xl font-bold text-gray-800 mb-6">Distribución por Categorías</h3>
+       <div id="category-analytics" class="space-y-4"><!-- Analytics will be loaded here -->
+       </div>
+      </div><!-- Price Analysis -->
+      <div class="admin-card p-6">
+       <h3 class="text-xl font-bold text-gray-800 mb-6">Análisis de Precios</h3>
+       <div id="price-analytics" class="space-y-4"><!-- Price analytics will be loaded here -->
+       </div>
+      </div>
+     </div>
+    </div>
+   </section>
+  </div><!-- Product Modal -->
   <div id="product-modal" class="modal fixed inset-0 z-50 hidden">
    <div class="flex items-center justify-center min-h-screen p-4">
-    <div class="modal-content rounded-2xl shadow-2xl max-w-2xl w-full max-h-screen overflow-y-auto">
-     <div class="p-8">
-      <div class="flex justify-between items-center mb-6">
-       <h2 id="modal-title" class="text-2xl font-bold text-gray-800">Nuevo Producto</h2><button onclick="closeProductModal()" class="text-gray-500 hover:text-gray-700 text-2xl">×</button>
-      </div>
-      <form id="product-form" class="space-y-6"><input type="hidden" id="product-id" name="id">
-       <div class="grid md:grid-cols-2 gap-6">
-        <div><label for="product-name" class="block text-sm font-medium text-gray-700 mb-2">Nombre del Producto</label> <input type="text" id="product-name" name="nombre" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-        </div>
-        <div><label for="product-category" class="block text-sm font-medium text-gray-700 mb-2">Categoría</label> <select id="product-category" name="categoria" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"> <option value="">Seleccionar categoría</option> <option value="tazas">Tazas</option> <option value="remeras">Remeras</option> <option value="accesorios">Accesorios</option> <option value="otros">Otros</option> </select>
-        </div>
-       </div>
-       <div><label for="product-description" class="block text-sm font-medium text-gray-700 mb-2">Descripción</label> <textarea id="product-description" name="descripcion" rows="3" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"></textarea>
-       </div>
-       <div class="grid md:grid-cols-2 gap-6">
-        <div><label for="product-price" class="block text-sm font-medium text-gray-700 mb-2">Precio (Gs.)</label> <input type="number" id="product-price" name="precio" required min="0" step="1000" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-        </div>
-        <div><label for="product-available" class="block text-sm font-medium text-gray-700 mb-2">Estado</label> <select id="product-available" name="disponible" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"> <option value="true">Disponible</option> <option value="false">No Disponible</option> </select>
-        </div>
-       </div>
-       <div><label for="product-image" class="block text-sm font-medium text-gray-700 mb-2">Imagen Principal</label>
-        <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-blue-400 transition-colors"><input type="file" id="product-image" name="imagen_principal" accept="image/*" class="hidden" onchange="handleMainImageUpload(this)">
-         <div id="image-upload-area" class="cursor-pointer" onclick="document.getElementById('product-image').click()">
-          <div class="text-4xl mb-2">
-           📷
-          </div>
-          <p class="text-gray-600">Haz clic para seleccionar imagen</p>
-          <p class="text-xs text-gray-500 mt-1">JPG, PNG, GIF hasta 10MB (se optimizará automáticamente)</p>
-         </div>
-         <div id="image-preview" class="mt-4 hidden"><img id="preview-img" src="" alt="Vista previa" class="image-preview mx-auto"> <button type="button" onclick="removeMainImage()" class="mt-2 text-red-600 hover:text-red-800 text-sm"> ❌ Eliminar imagen </button>
-         </div>
-        </div>
-       </div>
-       <div><label class="block text-sm font-medium text-gray-700 mb-2">Galería de Imágenes (Opcional)</label>
-        <div class="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-blue-400 transition-colors"><input type="file" id="gallery-images" multiple accept="image/*" class="hidden" onchange="handleGalleryImagesUpload(this)">
-         <div class="cursor-pointer" onclick="document.getElementById('gallery-images').click()">
-          <div class="text-3xl mb-2">
-           🖼️
-          </div>
-          <p class="text-gray-600">Agregar imágenes a la galería</p>
-          <p class="text-xs text-gray-500 mt-1">Múltiples imágenes para mostrar el producto</p>
-         </div>
-        </div>
-        <div id="gallery-images-preview" class="mt-4 grid grid-cols-3 gap-4 hidden"><!-- Gallery images will be shown here -->
-        </div>
-       </div>
-       <div class="flex justify-end space-x-4 pt-6 border-t"><button type="button" onclick="closeProductModal()" class="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"> Cancelar </button> <button type="submit" id="save-product-btn" class="btn-primary text-white px-6 py-3 rounded-lg flex items-center space-x-2"> <span>Guardar Producto</span>
-         <div id="save-spinner" class="loading-spinner hidden"></div></button>
-       </div>
-      </form>
+    <div class="modal-content max-w-2xl w-full p-8">
+     <div class="flex justify-between items-center mb-6">
+      <h2 id="modal-title" class="text-2xl font-bold text-gray-800">Nuevo Producto</h2><button onclick="closeProductModal()" class="text-gray-500 hover:text-gray-700 text-2xl font-bold">×</button>
      </div>
+     <form id="product-form" class="space-y-6">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+       <div><label class="block text-sm font-medium text-gray-700 mb-2">Nombre del Producto *</label> <input type="text" id="product-name" class="form-input" required>
+       </div>
+       <div><label class="block text-sm font-medium text-gray-700 mb-2">Categoría *</label>
+        <div class="flex space-x-2"><select id="product-category" class="form-input flex-1" required> <option value="">Seleccionar categoría...</option> </select> <button type="button" onclick="addNewCategoryInline()" class="btn-secondary px-3">+</button>
+        </div><input type="text" id="new-category-input" class="form-input mt-2 hidden" placeholder="Nueva categoría...">
+       </div>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+       <div><label class="block text-sm font-medium text-gray-700 mb-2">Precio (Gs.) *</label> <input type="number" id="product-price" class="form-input" min="0" step="1000" required>
+       </div>
+       <div><label class="block text-sm font-medium text-gray-700 mb-2">Estado</label> <select id="product-available" class="form-input"> <option value="true">Disponible</option> <option value="false">No disponible</option> </select>
+       </div>
+      </div>
+      <div><label class="block text-sm font-medium text-gray-700 mb-2">Descripción</label> <textarea id="product-description" class="form-input form-textarea" rows="4" placeholder="Describe las características del producto..."></textarea>
+      </div>
+      <div><label class="block text-sm font-medium text-gray-700 mb-2">Imagen Principal</label> <input type="url" id="product-image" class="form-input" placeholder="https://ejemplo.com/imagen.jpg">
+       <p class="text-xs text-gray-500 mt-1">URL de la imagen principal del producto</p>
+      </div>
+      <div><label class="block text-sm font-medium text-gray-700 mb-2">Galería de Imágenes</label> <textarea id="product-gallery" class="form-input" rows="3" placeholder="https://ejemplo.com/imagen1.jpg
+https://ejemplo.com/imagen2.jpg
+https://ejemplo.com/imagen3.jpg"></textarea>
+       <p class="text-xs text-gray-500 mt-1">Una URL por línea para imágenes adicionales</p>
+      </div>
+      <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4 pt-6"><button type="submit" class="btn-primary flex-1"> <span id="save-btn-text">💾 Guardar Producto</span> </button> <button type="button" onclick="closeProductModal()" class="btn-secondary flex-1"> ❌ Cancelar </button>
+      </div>
+     </form>
+    </div>
+   </div>
+  </div><!-- Category Modal -->
+  <div id="category-modal" class="modal fixed inset-0 z-50 hidden">
+   <div class="flex items-center justify-center min-h-screen p-4">
+    <div class="modal-content max-w-md w-full p-8">
+     <div class="flex justify-between items-center mb-6">
+      <h2 class="text-2xl font-bold text-gray-800">Nueva Categoría</h2><button onclick="closeCategoryModal()" class="text-gray-500 hover:text-gray-700 text-2xl font-bold">×</button>
+     </div>
+     <form id="category-form" class="space-y-6">
+      <div><label class="block text-sm font-medium text-gray-700 mb-2">Nombre de la Categoría *</label> <input type="text" id="category-name" class="form-input" required placeholder="ej: tazas, remeras, accesorios...">
+       <p class="text-xs text-gray-500 mt-1">Usa nombres descriptivos y en minúsculas</p>
+      </div>
+      <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4 pt-6"><button type="submit" class="btn-primary flex-1"> 💾 Crear Categoría </button> <button type="button" onclick="closeCategoryModal()" class="btn-secondary flex-1"> ❌ Cancelar </button>
+      </div>
+     </form>
     </div>
    </div>
   </div><!-- Delete Confirmation Modal -->
   <div id="delete-modal" class="modal fixed inset-0 z-50 hidden">
    <div class="flex items-center justify-center min-h-screen p-4">
-    <div class="modal-content rounded-2xl shadow-2xl max-w-md w-full p-8">
+    <div class="modal-content max-w-md w-full p-8">
      <div class="text-center">
       <div class="text-6xl mb-4">
-       🗑️
+       ⚠️
       </div>
-      <h3 class="text-xl font-bold text-gray-800 mb-2">¿Eliminar Producto?</h3>
-      <p class="text-gray-600 mb-6">Esta acción no se puede deshacer</p>
-      <p id="delete-product-name" class="font-medium text-gray-800 mb-6"></p>
-      <div class="flex space-x-4"><button onclick="closeDeleteModal()" class="flex-1 px-4 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"> Cancelar </button> <button onclick="confirmDelete()" id="confirm-delete-btn" class="btn-danger flex-1 text-white px-4 py-3 rounded-lg flex items-center justify-center space-x-2"> <span>Eliminar</span>
-        <div id="delete-spinner" class="loading-spinner hidden"></div></button>
+      <h2 class="text-2xl font-bold text-gray-800 mb-4">Confirmar Eliminación</h2>
+      <p id="delete-message" class="text-gray-600 mb-8"></p>
+      <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4"><button onclick="confirmDelete()" class="btn-danger flex-1"> 🗑️ Eliminar </button> <button onclick="closeDeleteModal()" class="btn-secondary flex-1"> ❌ Cancelar </button>
       </div>
      </div>
     </div>
    </div>
-  </div><!-- Notification Container -->
-  <div id="notification-container"></div>
+  </div>
   <script>
         // Supabase configuration
         const SUPABASE_URL = 'https://sxihojciyiypolxahoej.supabase.co';
@@ -373,132 +527,63 @@
         // Initialize Supabase client
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        let currentUser = null;
+        // Global variables
         let allProducts = [];
-        let editingProduct = null;
-        let productToDelete = null;
-        let mainImageFile = null;
-        let galleryImageFiles = [];
-        let existingGalleryUrls = [];
+        let availableCategories = [];
+        let filteredProducts = [];
+        let editingProductId = null;
+        let deleteCallback = null;
 
-        // Show notification
-        function showNotification(message, type = 'success') {
-            const container = document.getElementById('notification-container');
-            const notification = document.createElement('div');
-            notification.className = `notification ${type}`;
-            notification.innerHTML = `
-                <div class="flex items-center space-x-2">
-                    <span>${type === 'success' ? '✅' : type === 'error' ? '❌' : '⚠️'}</span>
-                    <span>${message}</span>
-                </div>
-            `;
-            
-            container.appendChild(notification);
-            
-            // Show notification
-            setTimeout(() => notification.classList.add('show'), 100);
-            
-            // Hide and remove notification
-            setTimeout(() => {
-                notification.classList.remove('show');
-                setTimeout(() => container.removeChild(notification), 300);
-            }, 4000);
+        // Initialize admin panel
+        document.addEventListener('DOMContentLoaded', function() {
+            updateTime();
+            setInterval(updateTime, 1000);
+            loadProducts();
+            loadCategories();
+            setupEventListeners();
+        });
+
+        // Update time display
+        function updateTime() {
+            const now = new Date();
+            const timeString = now.toLocaleString('es-PY', {
+                weekday: 'short',
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+            document.getElementById('admin-time').textContent = timeString;
         }
 
-        // Login function
-        async function login(username, password) {
-            try {
-                console.log('Intentando login con:', { usuario: username, pass: password });
-                
-                // Primero verificar si existe la tabla login
-                const { data: allUsers, error: listError } = await supabase
-                    .from('login')
-                    .select('*');
-                
-                console.log('Todos los usuarios en la tabla login:', allUsers);
-                console.log('Error al listar usuarios:', listError);
-                
-                // Intentar login específico
-                const { data, error } = await supabase
-                    .from('login')
-                    .select('*')
-                    .eq('usuario', username)
-                    .eq('pass', password)
-                    .single();
-
-                console.log('Resultado del login:', { data, error });
-
-                if (error) {
-                    console.log('Error de Supabase:', error);
-                    
-                    // Verificar si el usuario existe (sin contraseña)
-                    const { data: userCheck, error: userError } = await supabase
-                        .from('login')
-                        .select('*')
-                        .eq('usuario', username)
-                        .single();
-                    
-                    console.log('Verificación de usuario:', { userCheck, userError });
-                    
-                    if (userError && userError.code === 'PGRST116') {
-                        throw new Error('Usuario no encontrado');
-                    } else if (userCheck && !data) {
-                        throw new Error('Contraseña incorrecta');
-                    } else {
-                        throw new Error('Error de conexión: ' + error.message);
-                    }
-                }
-
-                if (data) {
-                    currentUser = data;
-                    document.getElementById('admin-user').textContent = `Bienvenido, ${data.usuario}`;
-                    
-                    // Hide login screen and show dashboard
-                    document.getElementById('login-screen').classList.add('hidden');
-                    document.getElementById('admin-dashboard').classList.remove('hidden');
-                    
-                    // Load products
-                    await loadProducts();
-                    
-                    showNotification('Sesión iniciada correctamente');
-                    return true;
-                }
-                
-                throw new Error('Usuario o contraseña incorrectos');
-                
-            } catch (error) {
-                console.error('Login error:', error);
-                
-                // Mostrar el error específico en la interfaz
-                const errorDiv = document.getElementById('login-error');
-                errorDiv.textContent = error.message;
-                errorDiv.classList.remove('hidden');
-                
-                return false;
-            }
-        }
-
-        // Logout function
-        function logout() {
-            currentUser = null;
-            document.getElementById('login-screen').classList.remove('hidden');
-            document.getElementById('admin-dashboard').classList.add('hidden');
-            document.getElementById('login-form').reset();
-            document.getElementById('login-error').classList.add('hidden');
-            showNotification('Sesión cerrada', 'warning');
+        // Setup event listeners
+        function setupEventListeners() {
+            // Product form submission
+            document.getElementById('product-form').addEventListener('submit', handleProductSubmit);
+            
+            // Category form submission
+            document.getElementById('category-form').addEventListener('submit', handleCategorySubmit);
+            
+            // Close modals when clicking outside
+            document.getElementById('product-modal').addEventListener('click', function(e) {
+                if (e.target === this) closeProductModal();
+            });
+            
+            document.getElementById('category-modal').addEventListener('click', function(e) {
+                if (e.target === this) closeCategoryModal();
+            });
+            
+            document.getElementById('delete-modal').addEventListener('click', function(e) {
+                if (e.target === this) closeDeleteModal();
+            });
         }
 
         // Load products from database
         async function loadProducts() {
-            const loadingDiv = document.getElementById('loading-products');
-            const tableBody = document.getElementById('products-table-body');
-            const noProductsDiv = document.getElementById('no-products');
-            
             try {
-                loadingDiv.classList.remove('hidden');
-                tableBody.innerHTML = '';
-                noProductsDiv.classList.add('hidden');
-
+                showProductsLoading(true);
+                
                 const { data, error } = await supabase
                     .from('producto')
                     .select('*')
@@ -507,699 +592,842 @@
                 if (error) throw error;
 
                 allProducts = data || [];
-                loadingDiv.classList.add('hidden');
-
-                if (allProducts.length === 0) {
-                    noProductsDiv.classList.remove('hidden');
-                } else {
-                    displayProducts(allProducts);
-                }
-
+                filteredProducts = [...allProducts];
+                
+                // Extract categories from products
+                availableCategories = [...new Set(allProducts.map(p => p.categoria))].sort();
+                
+                displayProducts();
                 updateStats();
+                updateCategorySelects();
+                showProductsLoading(false);
+                
             } catch (error) {
                 console.error('Error loading products:', error);
-                loadingDiv.classList.add('hidden');
-                showNotification('Error al cargar productos: ' + error.message, 'error');
+                showToast('Error al cargar productos: ' + error.message, 'error');
+                showProductsLoading(false);
+            }
+        }
+
+        // Load categories
+        async function loadCategories() {
+            try {
+                // Categories are extracted from products, so we use the same data
+                await loadProducts(); // This will update availableCategories
+                displayCategories();
+                updateCategoryAnalytics();
+            } catch (error) {
+                console.error('Error loading categories:', error);
+                showToast('Error al cargar categorías: ' + error.message, 'error');
             }
         }
 
         // Display products in table
-        function displayProducts(products) {
-            const tableBody = document.getElementById('products-table-body');
+        function displayProducts() {
+            const tbody = document.getElementById('products-table-body');
+            const productsList = document.getElementById('products-list');
+            const noProducts = document.getElementById('no-products');
             
-            tableBody.innerHTML = products.map(product => {
-                // Handle gallery images display
-                let galleryImages = [];
-                if (product.imagen_galeria) {
-                    try {
-                        // Try parsing as JSON first (for backward compatibility)
-                        if (typeof product.imagen_galeria === 'string' && product.imagen_galeria.startsWith('[')) {
-                            galleryImages = JSON.parse(product.imagen_galeria);
-                        } else if (Array.isArray(product.imagen_galeria)) {
-                            // Already an array
-                            galleryImages = product.imagen_galeria;
-                        }
-                    } catch (error) {
-                        console.error('Error parsing gallery images:', error);
-                        galleryImages = [];
-                    }
-                }
+            if (filteredProducts.length === 0) {
+                productsList.classList.add('hidden');
+                noProducts.classList.remove('hidden');
+                return;
+            }
+            
+            productsList.classList.remove('hidden');
+            noProducts.classList.add('hidden');
+            
+            tbody.innerHTML = filteredProducts.map(product => `
+                <tr class="product-row border-b border-gray-100">
+                    <td class="py-4 px-4">
+                        <img src="${product.imagen_principal || getPlaceholderImage()}" 
+                             alt="${product.nombre}" class="image-preview">
+                    </td>
+                    <td class="py-4 px-4">
+                        <div class="font-semibold text-gray-800">${product.nombre}</div>
+                        <div class="text-sm text-gray-500 line-clamp-2">${product.descripcion || 'Sin descripción'}</div>
+                    </td>
+                    <td class="py-4 px-4">
+                        <span class="category-tag">${getCategoryIcon(product.categoria)} ${product.categoria}</span>
+                    </td>
+                    <td class="py-4 px-4">
+                        <div class="font-semibold">Gs. ${product.precio.toLocaleString()}</div>
+                    </td>
+                    <td class="py-4 px-4">
+                        <span class="status-badge ${product.disponible ? 'status-available' : 'status-unavailable'}">
+                            ${product.disponible ? '✅ Disponible' : '❌ No disponible'}
+                        </span>
+                    </td>
+                    <td class="py-4 px-4">
+                        <div class="flex space-x-2">
+                            <button onclick="editProduct(${product.id})" class="btn-secondary text-xs px-3 py-1">
+                                ✏️ Editar
+                            </button>
+                            <button onclick="deleteProduct(${product.id})" class="btn-danger text-xs px-3 py-1">
+                                🗑️ Eliminar
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
 
+        // Display categories
+        function displayCategories() {
+            const grid = document.getElementById('categories-grid');
+            const loading = document.getElementById('categories-loading');
+            const noCategories = document.getElementById('no-categories');
+            
+            loading.classList.add('hidden');
+            
+            if (availableCategories.length === 0) {
+                grid.classList.add('hidden');
+                noCategories.classList.remove('hidden');
+                return;
+            }
+            
+            grid.classList.remove('hidden');
+            noCategories.classList.add('hidden');
+            
+            grid.innerHTML = availableCategories.map(category => {
+                const productCount = allProducts.filter(p => p.categoria === category).length;
+                const availableCount = allProducts.filter(p => p.categoria === category && p.disponible).length;
+                
                 return `
-                    <tr class="hover:bg-gray-50">
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="flex items-center">
-                                <img src="${product.imagen_principal || 'data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'80\' height=\'80\' viewBox=\'0 0 80 80\'%3E%3Crect width=\'80\' height=\'80\' fill=\'%23f3f4f6\'/%3E%3Ctext x=\'40\' y=\'45\' text-anchor=\'middle\' font-size=\'12\' fill=\'%236b7280\'%3EImg%3C/text%3E%3C/svg%3E'}" 
-                                     alt="${product.nombre}" class="product-image mr-4">
-                                <div>
-                                    <div class="text-sm font-medium text-gray-900">${product.nombre}</div>
-                                    <div class="text-sm text-gray-500">${product.descripcion.substring(0, 50)}${product.descripcion.length > 50 ? '...' : ''}</div>
-                                    ${galleryImages.length > 0 ? `<div class="text-xs text-blue-600 mt-1">📷 ${galleryImages.length} imagen(es) adicionales</div>` : ''}
-                                </div>
+                    <div class="category-item">
+                        <div class="text-center">
+                            <div class="category-icon">${getCategoryIcon(category)}</div>
+                            <h3 class="font-bold text-gray-800 mb-2">${category}</h3>
+                            <div class="text-sm text-gray-600 mb-4">
+                                <div>${productCount} productos</div>
+                                <div>${availableCount} disponibles</div>
                             </div>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                                ${product.categoria}
-                            </span>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                            Gs. ${product.precio.toLocaleString()}
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${product.disponible ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">
-                                ${product.disponible ? 'Disponible' : 'No Disponible'}
-                            </span>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                            ${new Date(product.fecha_creacion).toLocaleDateString('es-ES')}
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                             <div class="flex space-x-2">
-                                <button onclick="editProduct(${product.id})" class="btn-warning text-white px-3 py-1 rounded text-xs">
-                                    Editar
+                                <button onclick="filterByCategory('${category}')" class="btn-secondary text-xs px-3 py-1 flex-1">
+                                    👁️ Ver
                                 </button>
-                                <button onclick="showDeleteModal(${product.id})" class="btn-danger text-white px-3 py-1 rounded text-xs">
-                                    Eliminar
+                                <button onclick="deleteCategoryConfirm('${category}')" class="btn-danger text-xs px-3 py-1 flex-1">
+                                    🗑️
                                 </button>
                             </div>
-                        </td>
-                    </tr>
+                        </div>
+                    </div>
                 `;
             }).join('');
+        }
+
+        // Get category icon
+        function getCategoryIcon(category) {
+            const icons = {
+                'tazas': '☕',
+                'remeras': '👕',
+                'accesorios': '🎁',
+                'otros': '📦',
+                'gorras': '🧢',
+                'bolsos': '👜',
+                'termos': '🍶',
+                'llaveros': '🔑',
+                'mouse pads': '🖱️',
+                'almohadas': '🛏️',
+                'jarros': '☕',
+                'vasos': '🥤',
+                'platos': '🍽️',
+                'cuadros': '🖼️',
+                'calendarios': '📅',
+                'libretas': '📓',
+                'stickers': '🏷️',
+                'magnetos': '🧲'
+            };
+            return icons[category.toLowerCase()] || '📦';
+        }
+
+        // Get placeholder image
+        function getPlaceholderImage() {
+            return 'data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'80\' height=\'80\' viewBox=\'0 0 80 80\'%3E%3Crect width=\'80\' height=\'80\' fill=\'%23f3f4f6\'/%3E%3Ctext x=\'40\' y=\'45\' text-anchor=\'middle\' font-size=\'10\' fill=\'%236b7280\'%3ESin imagen%3C/text%3E%3C/svg%3E';
         }
 
         // Update statistics
         function updateStats() {
             const total = allProducts.length;
             const available = allProducts.filter(p => p.disponible).length;
-            const unavailable = total - available;
-            const categories = new Set(allProducts.map(p => p.categoria)).size;
-
+            const categories = availableCategories.length;
+            const lastUpdate = allProducts.length > 0 ? 
+                new Date(Math.max(...allProducts.map(p => new Date(p.fecha_creacion)))).toLocaleDateString('es-PY') : 
+                'Nunca';
+            
             document.getElementById('total-products').textContent = total;
             document.getElementById('available-products').textContent = available;
-            document.getElementById('unavailable-products').textContent = unavailable;
             document.getElementById('total-categories').textContent = categories;
+            document.getElementById('last-update').textContent = lastUpdate;
         }
 
-        // Show add product modal
-        function showAddProductModal() {
-            editingProduct = null;
-            mainImageFile = null;
-            galleryImageFiles = [];
-            existingGalleryUrls = [];
+        // Update category selects
+        function updateCategorySelects() {
+            const selects = ['product-category', 'filter-category', 'bulk-category'];
             
-            document.getElementById('modal-title').textContent = 'Nuevo Producto';
-            document.getElementById('product-form').reset();
-            document.getElementById('product-id').value = '';
-            document.getElementById('image-preview').classList.add('hidden');
-            document.getElementById('image-upload-area').classList.remove('hidden');
-            document.getElementById('gallery-images-preview').classList.add('hidden');
-            document.getElementById('product-modal').classList.remove('hidden');
-        }
-
-        // Edit product
-        function editProduct(productId) {
-            editingProduct = allProducts.find(p => p.id === productId);
-            if (!editingProduct) return;
-
-            // Reset image states
-            mainImageFile = null;
-            galleryImageFiles = [];
-            existingGalleryUrls = [];
-
-            document.getElementById('modal-title').textContent = 'Editar Producto';
-            document.getElementById('product-id').value = editingProduct.id;
-            document.getElementById('product-name').value = editingProduct.nombre;
-            document.getElementById('product-category').value = editingProduct.categoria;
-            document.getElementById('product-description').value = editingProduct.descripcion;
-            document.getElementById('product-price').value = editingProduct.precio;
-            document.getElementById('product-available').value = editingProduct.disponible.toString();
-            
-            // Show existing main image if exists
-            if (editingProduct.imagen_principal) {
-                document.getElementById('preview-img').src = editingProduct.imagen_principal;
-                document.getElementById('image-preview').classList.remove('hidden');
-                document.getElementById('image-upload-area').classList.add('hidden');
-            } else {
-                document.getElementById('image-preview').classList.add('hidden');
-                document.getElementById('image-upload-area').classList.remove('hidden');
-            }
-
-            // Show existing gallery images if any
-            if (editingProduct.imagen_galeria) {
-                try {
-                    let galleryUrls = [];
-                    
-                    // Handle both array and JSON string formats
-                    if (Array.isArray(editingProduct.imagen_galeria)) {
-                        galleryUrls = editingProduct.imagen_galeria;
-                    } else if (typeof editingProduct.imagen_galeria === 'string') {
-                        galleryUrls = JSON.parse(editingProduct.imagen_galeria);
-                    }
-                    
-                    existingGalleryUrls = [...galleryUrls];
-                    
-                    if (galleryUrls.length > 0) {
-                        const container = document.getElementById('gallery-images-preview');
-                        container.classList.remove('hidden');
-                        container.innerHTML = galleryUrls.map((imageUrl, index) => `
-                            <div class="relative">
-                                <img src="${imageUrl}" alt="Imagen galería ${index + 1}" 
-                                     class="w-full h-24 object-cover rounded-lg">
-                                <button type="button" onclick="removeExistingGalleryImage(${index})" 
-                                        class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-600">
-                                    ×
-                                </button>
-                            </div>
-                        `).join('');
-                    }
-                } catch (error) {
-                    console.error('Error parsing gallery images:', error);
-                    document.getElementById('gallery-images-preview').classList.add('hidden');
-                }
-            } else {
-                document.getElementById('gallery-images-preview').classList.add('hidden');
-            }
-
-            document.getElementById('product-modal').classList.remove('hidden');
-        }
-
-        // Remove existing gallery image (for editing)
-        function removeExistingGalleryImage(index) {
-            existingGalleryUrls.splice(index, 1);
-            displayExistingGalleryImages();
-        }
-
-        // Display existing gallery images
-        function displayExistingGalleryImages() {
-            const container = document.getElementById('gallery-images-preview');
-            
-            if (existingGalleryUrls.length === 0 && galleryImageFiles.length === 0) {
-                container.classList.add('hidden');
-                return;
-            }
-
-            container.classList.remove('hidden');
-            
-            // Show existing images
-            const existingImagesHtml = existingGalleryUrls.map((imageUrl, index) => `
-                <div class="relative">
-                    <img src="${imageUrl}" alt="Imagen galería ${index + 1}" 
-                         class="w-full h-24 object-cover rounded-lg">
-                    <button type="button" onclick="removeExistingGalleryImage(${index})" 
-                            class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-600">
-                        ×
-                    </button>
-                </div>
-            `).join('');
-
-            // Show new images
-            const newImagesHtml = galleryImageFiles.map((file, index) => {
-                const reader = new FileReader();
-                const imageId = `gallery-img-${index}`;
+            selects.forEach(selectId => {
+                const select = document.getElementById(selectId);
+                if (!select) return;
                 
-                reader.onload = function(e) {
-                    const imgElement = document.getElementById(imageId);
-                    if (imgElement) {
-                        imgElement.src = e.target.result;
-                    }
-                };
-                reader.readAsDataURL(file);
-
-                return `
-                    <div class="relative">
-                        <img id="${imageId}" src="" alt="Nueva imagen ${index + 1}" 
-                             class="w-full h-24 object-cover rounded-lg">
-                        <button type="button" onclick="removeNewGalleryImage(${index})" 
-                                class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-600">
-                            ×
-                        </button>
-                    </div>
-                `;
-            }).join('');
-
-            container.innerHTML = existingImagesHtml + newImagesHtml;
+                const currentValue = select.value;
+                const isFilterSelect = selectId === 'filter-category';
+                
+                select.innerHTML = isFilterSelect ? 
+                    '<option value="">Todas las categorías</option>' : 
+                    '<option value="">Seleccionar categoría...</option>';
+                
+                availableCategories.forEach(category => {
+                    const option = document.createElement('option');
+                    option.value = category;
+                    option.textContent = `${getCategoryIcon(category)} ${category}`;
+                    select.appendChild(option);
+                });
+                
+                if (currentValue && availableCategories.includes(currentValue)) {
+                    select.value = currentValue;
+                }
+            });
         }
 
-        // Close product modal
+        // Filter products
+        function filterProducts() {
+            const searchTerm = document.getElementById('search-products').value.toLowerCase();
+            const categoryFilter = document.getElementById('filter-category').value;
+            const statusFilter = document.getElementById('filter-status').value;
+            
+            filteredProducts = allProducts.filter(product => {
+                const matchesSearch = !searchTerm || 
+                    product.nombre.toLowerCase().includes(searchTerm) ||
+                    product.descripcion.toLowerCase().includes(searchTerm);
+                
+                const matchesCategory = !categoryFilter || product.categoria === categoryFilter;
+                
+                const matchesStatus = !statusFilter || product.disponible.toString() === statusFilter;
+                
+                return matchesSearch && matchesCategory && matchesStatus;
+            });
+            
+            displayProducts();
+        }
+
+        // Clear filters
+        function clearFilters() {
+            document.getElementById('search-products').value = '';
+            document.getElementById('filter-category').value = '';
+            document.getElementById('filter-status').value = '';
+            filteredProducts = [...allProducts];
+            displayProducts();
+        }
+
+        // Filter by category
+        function filterByCategory(category) {
+            switchTab('products');
+            document.getElementById('filter-category').value = category;
+            filterProducts();
+        }
+
+        // Product modal functions
+        function openProductModal(productId = null) {
+            editingProductId = productId;
+            const modal = document.getElementById('product-modal');
+            const title = document.getElementById('modal-title');
+            const form = document.getElementById('product-form');
+            
+            if (productId) {
+                const product = allProducts.find(p => p.id === productId);
+                if (!product) return;
+                
+                title.textContent = 'Editar Producto';
+                document.getElementById('product-name').value = product.nombre;
+                document.getElementById('product-category').value = product.categoria;
+                document.getElementById('product-price').value = product.precio;
+                document.getElementById('product-available').value = product.disponible.toString();
+                document.getElementById('product-description').value = product.descripcion || '';
+                document.getElementById('product-image').value = product.imagen_principal || '';
+                
+                // Handle gallery images
+                if (product.imagen_galeria) {
+                    try {
+                        let galleryImages = [];
+                        if (Array.isArray(product.imagen_galeria)) {
+                            galleryImages = product.imagen_galeria;
+                        } else if (typeof product.imagen_galeria === 'string') {
+                            galleryImages = JSON.parse(product.imagen_galeria);
+                        }
+                        document.getElementById('product-gallery').value = galleryImages.join('\n');
+                    } catch (error) {
+                        console.error('Error parsing gallery images:', error);
+                        document.getElementById('product-gallery').value = '';
+                    }
+                }
+                
+                document.getElementById('save-btn-text').textContent = '💾 Actualizar Producto';
+            } else {
+                title.textContent = 'Nuevo Producto';
+                form.reset();
+                document.getElementById('save-btn-text').textContent = '💾 Guardar Producto';
+            }
+            
+            modal.classList.remove('hidden');
+        }
+
         function closeProductModal() {
             document.getElementById('product-modal').classList.add('hidden');
-            editingProduct = null;
-            mainImageFile = null;
-            galleryImageFiles = [];
-            existingGalleryUrls = [];
+            document.getElementById('product-form').reset();
+            document.getElementById('new-category-input').classList.add('hidden');
+            editingProductId = null;
         }
 
-        // Show delete modal
-        function showDeleteModal(productId) {
-            productToDelete = allProducts.find(p => p.id === productId);
-            if (!productToDelete) return;
-
-            document.getElementById('delete-product-name').textContent = productToDelete.nombre;
-            document.getElementById('delete-modal').classList.remove('hidden');
-        }
-
-        // Close delete modal
-        function closeDeleteModal() {
-            document.getElementById('delete-modal').classList.add('hidden');
-            productToDelete = null;
-        }
-
-        // Confirm delete
-        async function confirmDelete() {
-            if (!productToDelete) return;
-
-            const deleteBtn = document.getElementById('confirm-delete-btn');
-            const deleteSpinner = document.getElementById('delete-spinner');
-            
-            try {
-                deleteBtn.disabled = true;
-                deleteSpinner.classList.remove('hidden');
-
-                // Delete images from storage before deleting product
-                if (productToDelete.imagen_principal) {
-                    await deleteImageFromStorage(productToDelete.imagen_principal);
-                }
-
-                if (productToDelete.imagen_galeria) {
-                    try {
-                        let galleryUrls = [];
-                        if (Array.isArray(productToDelete.imagen_galeria)) {
-                            galleryUrls = productToDelete.imagen_galeria;
-                        } else if (typeof productToDelete.imagen_galeria === 'string') {
-                            galleryUrls = JSON.parse(productToDelete.imagen_galeria);
-                        }
-                        
-                        for (const url of galleryUrls) {
-                            await deleteImageFromStorage(url);
-                        }
-                    } catch (error) {
-                        console.error('Error deleting gallery images:', error);
-                    }
-                }
-
-                // Delete product from database
-                const { error } = await supabase
-                    .from('producto')
-                    .delete()
-                    .eq('id', productToDelete.id);
-
-                if (error) throw error;
-
-                showNotification('Producto eliminado correctamente');
-                closeDeleteModal();
-                await loadProducts();
-            } catch (error) {
-                console.error('Error deleting product:', error);
-                showNotification('Error al eliminar producto: ' + error.message, 'error');
-            } finally {
-                deleteBtn.disabled = false;
-                deleteSpinner.classList.add('hidden');
-            }
-        }
-
-        // Refresh products
-        async function refreshProducts() {
-            await loadProducts();
-            showNotification('Productos actualizados');
-        }
-
-        // Compress image function
-        function compressImage(file, maxWidth = 800, quality = 0.8) {
-            return new Promise((resolve) => {
-                const canvas = document.createElement('canvas');
-                const ctx = canvas.getContext('2d');
-                const img = new Image();
-                
-                img.onload = function() {
-                    // Calculate new dimensions
-                    let { width, height } = img;
-                    
-                    if (width > maxWidth) {
-                        height = (height * maxWidth) / width;
-                        width = maxWidth;
-                    }
-                    
-                    canvas.width = width;
-                    canvas.height = height;
-                    
-                    // Draw and compress
-                    ctx.drawImage(img, 0, 0, width, height);
-                    
-                    canvas.toBlob(resolve, 'image/jpeg', quality);
-                };
-                
-                img.src = URL.createObjectURL(file);
-            });
-        }
-
-        // Handle main image upload
-        async function handleMainImageUpload(input) {
-            const file = input.files[0];
-            if (!file) return;
-
-            // Validate file size (10MB max before compression)
-            if (file.size > 10 * 1024 * 1024) {
-                showNotification('La imagen es muy grande. Máximo 10MB permitido.', 'error');
-                input.value = '';
-                return;
-            }
-
-            // Validate file type
-            if (!file.type.startsWith('image/')) {
-                showNotification('Por favor selecciona un archivo de imagen válido.', 'error');
-                input.value = '';
-                return;
-            }
-
-            try {
-                // Show compression message for large files
-                if (file.size > 1024 * 1024) { // 1MB
-                    showNotification('Optimizando imagen...', 'warning');
-                }
-
-                // Compress image
-                const compressedFile = await compressImage(file);
-                mainImageFile = new File([compressedFile], file.name, { type: 'image/jpeg' });
-                
-                // Show preview
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    document.getElementById('preview-img').src = e.target.result;
-                    document.getElementById('image-preview').classList.remove('hidden');
-                    document.getElementById('image-upload-area').classList.add('hidden');
-                };
-                reader.readAsDataURL(mainImageFile);
-
-                // Show compression info
-                const originalSize = (file.size / 1024 / 1024).toFixed(2);
-                const compressedSize = (mainImageFile.size / 1024 / 1024).toFixed(2);
-                if (file.size > mainImageFile.size) {
-                    showNotification(`Imagen optimizada: ${originalSize}MB → ${compressedSize}MB`);
-                }
-            } catch (error) {
-                console.error('Error compressing image:', error);
-                showNotification('Error al procesar la imagen', 'error');
-                input.value = '';
-            }
-        }
-
-        // Remove main image
-        function removeMainImage() {
-            mainImageFile = null;
-            document.getElementById('product-image').value = '';
-            document.getElementById('image-preview').classList.add('hidden');
-            document.getElementById('image-upload-area').classList.remove('hidden');
-        }
-
-        // Handle gallery images upload
-        async function handleGalleryImagesUpload(input) {
-            const files = Array.from(input.files);
-            
-            if (files.length > 0) {
-                showNotification('Procesando imágenes de galería...', 'warning');
-            }
-            
-            for (const file of files) {
-                // Validate file size
-                if (file.size > 10 * 1024 * 1024) {
-                    showNotification(`${file.name} es muy grande. Máximo 10MB permitido.`, 'error');
-                    continue;
-                }
-
-                // Validate file type
-                if (!file.type.startsWith('image/')) {
-                    showNotification(`${file.name} no es un archivo de imagen válido.`, 'error');
-                    continue;
-                }
-
-                try {
-                    // Compress gallery images (smaller size for gallery)
-                    const compressedFile = await compressImage(file, 600, 0.7);
-                    const compressedFileObj = new File([compressedFile], file.name, { type: 'image/jpeg' });
-                    galleryImageFiles.push(compressedFileObj);
-                } catch (error) {
-                    console.error('Error compressing gallery image:', error);
-                    showNotification(`Error procesando ${file.name}`, 'error');
-                }
-            }
-
-            displayExistingGalleryImages();
-            input.value = ''; // Reset input
-            
-            if (files.length > 0) {
-                showNotification(`${files.length} imagen(es) agregada(s) a la galería`);
-            }
-        }
-
-        // Remove new gallery image
-        function removeNewGalleryImage(index) {
-            galleryImageFiles.splice(index, 1);
-            displayExistingGalleryImages();
-        }
-
-        // Convert image to base64 data URL (alternative to storage)
-        async function convertImageToBase64(file) {
-            return new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.onload = () => resolve(reader.result);
-                reader.onerror = reject;
-                reader.readAsDataURL(file);
-            });
-        }
-
-        // Upload image to Supabase Storage with fallback to base64
-        async function uploadImageToStorage(file, folder = 'products') {
-            try {
-                // Generate unique filename
-                const fileExt = file.name.split('.').pop();
-                const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
-                const filePath = `${folder}/${fileName}`;
-
-                // Show upload progress
-                const originalSize = (file.size / 1024).toFixed(1);
-                console.log(`Subiendo ${file.name} (${originalSize}KB) a ${filePath}`);
-
-                // Try uploading to Supabase Storage first
-                const { data, error } = await supabase.storage
-                    .from('product')
-                    .upload(filePath, file, {
-                        cacheControl: '3600',
-                        upsert: false
-                    });
-
-                if (error) {
-                    console.log('Storage upload failed, using base64 fallback:', error.message);
-                    
-                    // Fallback to base64 encoding
-                    const base64Url = await convertImageToBase64(file);
-                    console.log(`✅ Imagen convertida a base64 (${originalSize}KB)`);
-                    return base64Url;
-                }
-
-                // Get public URL if storage upload succeeded
-                const { data: urlData } = supabase.storage
-                    .from('product')
-                    .getPublicUrl(filePath);
-
-                console.log(`✅ Imagen subida exitosamente: ${urlData.publicUrl}`);
-                return urlData.publicUrl;
-            } catch (error) {
-                console.error('Error uploading image, trying base64 fallback:', error);
-                
-                // Final fallback to base64
-                try {
-                    const base64Url = await convertImageToBase64(file);
-                    console.log(`✅ Imagen convertida a base64 como respaldo`);
-                    return base64Url;
-                } catch (base64Error) {
-                    console.error('Base64 conversion also failed:', base64Error);
-                    throw new Error('No se pudo procesar la imagen');
-                }
-            }
-        }
-
-        // Delete image from storage (only for Supabase URLs, skip base64)
-        async function deleteImageFromStorage(imageUrl) {
-            try {
-                // Skip deletion for base64 data URLs
-                if (!imageUrl || imageUrl.startsWith('data:')) {
-                    console.log('Skipping deletion of base64 image');
-                    return;
-                }
-                
-                // Only delete if it's a Supabase storage URL
-                if (!imageUrl.includes('supabase')) {
-                    console.log('Skipping deletion of non-Supabase URL');
-                    return;
-                }
-                
-                // Extract file path from URL
-                const urlParts = imageUrl.split('/');
-                const bucketIndex = urlParts.findIndex(part => part === 'product');
-                if (bucketIndex === -1) return;
-                
-                const filePath = urlParts.slice(bucketIndex + 1).join('/');
-                
-                const { error } = await supabase.storage
-                    .from('product')
-                    .remove([filePath]);
-
-                if (error) {
-                    console.log('Could not delete image from storage:', error.message);
-                } else {
-                    console.log('✅ Image deleted from storage:', filePath);
-                }
-            } catch (error) {
-                console.error('Error deleting image from storage:', error);
-            }
-        }
-
-        // Event Listeners
-        document.getElementById('login-form').addEventListener('submit', async function(e) {
+        // Handle product form submission
+        async function handleProductSubmit(e) {
             e.preventDefault();
             
-            const loginBtn = document.getElementById('login-btn');
-            const loginSpinner = document.getElementById('login-spinner');
-            const loginError = document.getElementById('login-error');
+            const name = document.getElementById('product-name').value.trim();
+            const category = document.getElementById('product-category').value || 
+                           document.getElementById('new-category-input').value.trim();
+            const price = parseInt(document.getElementById('product-price').value);
+            const available = document.getElementById('product-available').value === 'true';
+            const description = document.getElementById('product-description').value.trim();
+            const image = document.getElementById('product-image').value.trim();
+            const galleryText = document.getElementById('product-gallery').value.trim();
             
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
-            
-            loginBtn.disabled = true;
-            loginSpinner.classList.remove('hidden');
-            loginError.classList.add('hidden');
-            
-            const success = await login(username, password);
-            
-            if (!success) {
-                loginError.classList.remove('hidden');
+            if (!name || !category || !price) {
+                showToast('Por favor completa todos los campos requeridos', 'error');
+                return;
             }
             
-            loginBtn.disabled = false;
-            loginSpinner.classList.add('hidden');
-        });
-
-        document.getElementById('product-form').addEventListener('submit', async function(e) {
-            e.preventDefault();
+            // Process gallery images
+            let galleryImages = [];
+            if (galleryText) {
+                galleryImages = galleryText.split('\n')
+                    .map(url => url.trim())
+                    .filter(url => url.length > 0);
+            }
             
-            const saveBtn = document.getElementById('save-product-btn');
-            const saveSpinner = document.getElementById('save-spinner');
+            const productData = {
+                nombre: name,
+                categoria: category.toLowerCase(),
+                precio: price,
+                disponible: available,
+                descripcion: description,
+                imagen_principal: image || null,
+                imagen_galeria: galleryImages.length > 0 ? galleryImages : null,
+                fecha_creacion: new Date().toISOString()
+            };
             
             try {
-                saveBtn.disabled = true;
-                saveSpinner.classList.remove('hidden');
-
-                const formData = new FormData(this);
-                const productData = {
-                    nombre: formData.get('nombre'),
-                    categoria: formData.get('categoria'),
-                    descripcion: formData.get('descripcion'),
-                    precio: parseInt(formData.get('precio')),
-                    disponible: formData.get('disponible') === 'true'
-                };
-
-                // Handle main image
-                if (mainImageFile) {
-                    // Upload new main image to storage
-                    productData.imagen_principal = await uploadImageToStorage(mainImageFile, 'products/main');
-                    
-                    // Delete old main image if editing
-                    if (editingProduct && editingProduct.imagen_principal) {
-                        await deleteImageFromStorage(editingProduct.imagen_principal);
-                    }
-                } else if (editingProduct && editingProduct.imagen_principal) {
-                    // Keep existing image if no new image uploaded
-                    productData.imagen_principal = editingProduct.imagen_principal;
-                } else {
-                    productData.imagen_principal = null;
-                }
-
-                // Handle gallery images - FIXED: Store as PostgreSQL array, not JSON string
-                const allGalleryUrls = [...existingGalleryUrls]; // Keep existing URLs
-                
-                // Upload new gallery images
-                for (const file of galleryImageFiles) {
-                    try {
-                        const imageUrl = await uploadImageToStorage(file, 'products/gallery');
-                        allGalleryUrls.push(imageUrl);
-                    } catch (error) {
-                        console.error('Error uploading gallery image:', error);
-                        showNotification(`Error subiendo imagen: ${file.name}`, 'warning');
-                    }
-                }
-                
-                // Store gallery URLs as PostgreSQL array (not JSON string)
-                productData.imagen_galeria = allGalleryUrls.length > 0 ? allGalleryUrls : null;
-
                 let result;
-                if (editingProduct) {
-                    // Delete removed gallery images from storage
-                    if (editingProduct.imagen_galeria) {
-                        try {
-                            let oldGalleryUrls = [];
-                            if (Array.isArray(editingProduct.imagen_galeria)) {
-                                oldGalleryUrls = editingProduct.imagen_galeria;
-                            } else if (typeof editingProduct.imagen_galeria === 'string') {
-                                oldGalleryUrls = JSON.parse(editingProduct.imagen_galeria);
-                            }
-                            
-                            const removedUrls = oldGalleryUrls.filter(url => !existingGalleryUrls.includes(url));
-                            
-                            for (const url of removedUrls) {
-                                await deleteImageFromStorage(url);
-                            }
-                        } catch (error) {
-                            console.error('Error deleting old gallery images:', error);
-                        }
-                    }
-                    
+                
+                if (editingProductId) {
                     // Update existing product
                     result = await supabase
                         .from('producto')
                         .update(productData)
-                        .eq('id', editingProduct.id);
+                        .eq('id', editingProductId);
                 } else {
                     // Create new product
-                    productData.fecha_creacion = new Date().toISOString();
                     result = await supabase
                         .from('producto')
                         .insert([productData]);
                 }
-
+                
                 if (result.error) throw result.error;
-
-                showNotification(editingProduct ? 'Producto actualizado correctamente' : 'Producto creado correctamente');
+                
+                showToast(editingProductId ? 'Producto actualizado exitosamente' : 'Producto creado exitosamente', 'success');
                 closeProductModal();
-                await loadProducts();
+                loadProducts();
+                
             } catch (error) {
                 console.error('Error saving product:', error);
-                showNotification('Error al guardar producto: ' + error.message, 'error');
-            } finally {
-                saveBtn.disabled = false;
-                saveSpinner.classList.add('hidden');
+                showToast('Error al guardar producto: ' + error.message, 'error');
             }
-        });
+        }
 
-        // Close modals when clicking outside
-        document.getElementById('product-modal').addEventListener('click', function(e) {
-            if (e.target === this) {
-                closeProductModal();
+        // Edit product
+        function editProduct(productId) {
+            openProductModal(productId);
+        }
+
+        // Delete product
+        function deleteProduct(productId) {
+            const product = allProducts.find(p => p.id === productId);
+            if (!product) return;
+            
+            showDeleteConfirmation(
+                `¿Estás seguro de que quieres eliminar "${product.nombre}"?`,
+                async () => {
+                    try {
+                        const { error } = await supabase
+                            .from('producto')
+                            .delete()
+                            .eq('id', productId);
+                        
+                        if (error) throw error;
+                        
+                        showToast('Producto eliminado exitosamente', 'success');
+                        loadProducts();
+                    } catch (error) {
+                        console.error('Error deleting product:', error);
+                        showToast('Error al eliminar producto: ' + error.message, 'error');
+                    }
+                }
+            );
+        }
+
+        // Category management
+        function openCategoryModal() {
+            document.getElementById('category-modal').classList.remove('hidden');
+        }
+
+        function closeCategoryModal() {
+            document.getElementById('category-modal').classList.add('hidden');
+            document.getElementById('category-form').reset();
+        }
+
+        // Handle category form submission
+        async function handleCategorySubmit(e) {
+            e.preventDefault();
+            
+            const categoryName = document.getElementById('category-name').value.trim().toLowerCase();
+            
+            if (!categoryName) {
+                showToast('Por favor ingresa un nombre para la categoría', 'error');
+                return;
             }
-        });
+            
+            if (availableCategories.includes(categoryName)) {
+                showToast('Esta categoría ya existe', 'error');
+                return;
+            }
+            
+            // Create a placeholder product for the new category
+            const productData = {
+                nombre: `Producto de ${categoryName}`,
+                categoria: categoryName,
+                precio: 0,
+                disponible: false,
+                descripcion: `Categoría creada: ${categoryName}`,
+                imagen_principal: null,
+                imagen_galeria: null,
+                fecha_creacion: new Date().toISOString()
+            };
+            
+            try {
+                const { error } = await supabase
+                    .from('producto')
+                    .insert([productData]);
+                
+                if (error) throw error;
+                
+                showToast('Categoría creada exitosamente', 'success');
+                closeCategoryModal();
+                loadProducts();
+                
+            } catch (error) {
+                console.error('Error creating category:', error);
+                showToast('Error al crear categoría: ' + error.message, 'error');
+            }
+        }
 
-        document.getElementById('delete-modal').addEventListener('click', function(e) {
-            if (e.target === this) {
+        // Add new category inline in product form
+        function addNewCategoryInline() {
+            const select = document.getElementById('product-category');
+            const input = document.getElementById('new-category-input');
+            
+            if (input.classList.contains('hidden')) {
+                input.classList.remove('hidden');
+                input.focus();
+                select.value = '';
+            } else {
+                input.classList.add('hidden');
+                input.value = '';
+            }
+        }
+
+        // Delete category confirmation
+        function deleteCategoryConfirm(category) {
+            const productCount = allProducts.filter(p => p.categoria === category).length;
+            
+            showDeleteConfirmation(
+                `¿Estás seguro de que quieres eliminar la categoría "${category}"? Esto eliminará ${productCount} producto(s).`,
+                async () => {
+                    try {
+                        const { error } = await supabase
+                            .from('producto')
+                            .delete()
+                            .eq('categoria', category);
+                        
+                        if (error) throw error;
+                        
+                        showToast('Categoría eliminada exitosamente', 'success');
+                        loadProducts();
+                        loadCategories();
+                    } catch (error) {
+                        console.error('Error deleting category:', error);
+                        showToast('Error al eliminar categoría: ' + error.message, 'error');
+                    }
+                }
+            );
+        }
+
+        // Bulk operations
+        async function bulkUpdateAvailability(available) {
+            const category = document.getElementById('bulk-category').value;
+            
+            if (!category) {
+                showToast('Por favor selecciona una categoría', 'error');
+                return;
+            }
+            
+            try {
+                const { error } = await supabase
+                    .from('producto')
+                    .update({ disponible: available })
+                    .eq('categoria', category);
+                
+                if (error) throw error;
+                
+                const action = available ? 'marcados como disponibles' : 'marcados como no disponibles';
+                showToast(`Productos de "${category}" ${action} exitosamente`, 'success');
+                loadProducts();
+                
+            } catch (error) {
+                console.error('Error updating products:', error);
+                showToast('Error al actualizar productos: ' + error.message, 'error');
+            }
+        }
+
+        async function bulkDeleteCategory() {
+            const category = document.getElementById('bulk-category').value;
+            
+            if (!category) {
+                showToast('Por favor selecciona una categoría', 'error');
+                return;
+            }
+            
+            deleteCategoryConfirm(category);
+        }
+
+        // Export/Import functions
+        function exportProducts() {
+            const csvContent = [
+                ['Nombre', 'Categoría', 'Precio', 'Descripción', 'Disponible', 'Imagen Principal'],
+                ...allProducts.map(product => [
+                    product.nombre,
+                    product.categoria,
+                    product.precio,
+                    product.descripcion || '',
+                    product.disponible ? 'Sí' : 'No',
+                    product.imagen_principal || ''
+                ])
+            ].map(row => row.map(field => `"${field}"`).join(',')).join('\n');
+            
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            link.setAttribute('href', url);
+            link.setAttribute('download', `productos-panu-${new Date().toISOString().split('T')[0]}.csv`);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            showToast('Productos exportados exitosamente', 'success');
+        }
+
+        function importProducts() {
+            const fileInput = document.getElementById('import-file');
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                showToast('Por favor selecciona un archivo CSV', 'error');
+                return;
+            }
+            
+            const reader = new FileReader();
+            reader.onload = async function(e) {
+                try {
+                    const csv = e.target.result;
+                    const lines = csv.split('\n');
+                    const headers = lines[0].split(',').map(h => h.replace(/"/g, '').trim());
+                    
+                    const products = [];
+                    for (let i = 1; i < lines.length; i++) {
+                        const line = lines[i].trim();
+                        if (!line) continue;
+                        
+                        const values = line.split(',').map(v => v.replace(/"/g, '').trim());
+                        
+                        if (values.length >= 5) {
+                            products.push({
+                                nombre: values[0],
+                                categoria: values[1].toLowerCase(),
+                                precio: parseInt(values[2]) || 0,
+                                descripcion: values[3] || '',
+                                disponible: values[4].toLowerCase() === 'sí' || values[4].toLowerCase() === 'true',
+                                imagen_principal: values[5] || null,
+                                imagen_galeria: null,
+                                fecha_creacion: new Date().toISOString()
+                            });
+                        }
+                    }
+                    
+                    if (products.length === 0) {
+                        showToast('No se encontraron productos válidos en el archivo', 'error');
+                        return;
+                    }
+                    
+                    const { error } = await supabase
+                        .from('producto')
+                        .insert(products);
+                    
+                    if (error) throw error;
+                    
+                    showToast(`${products.length} productos importados exitosamente`, 'success');
+                    fileInput.value = '';
+                    loadProducts();
+                    
+                } catch (error) {
+                    console.error('Error importing products:', error);
+                    showToast('Error al importar productos: ' + error.message, 'error');
+                }
+            };
+            
+            reader.readAsText(file);
+        }
+
+        function backupDatabase() {
+            exportProducts(); // For now, backup is the same as export
+            showToast('Respaldo creado exitosamente', 'success');
+        }
+
+        // Analytics functions
+        function updateCategoryAnalytics() {
+            const analyticsDiv = document.getElementById('category-analytics');
+            
+            if (availableCategories.length === 0) {
+                analyticsDiv.innerHTML = '<p class="text-gray-500">No hay datos para mostrar</p>';
+                return;
+            }
+            
+            const categoryStats = availableCategories.map(category => {
+                const products = allProducts.filter(p => p.categoria === category);
+                const available = products.filter(p => p.disponible).length;
+                const percentage = ((products.length / allProducts.length) * 100).toFixed(1);
+                
+                return {
+                    category,
+                    count: products.length,
+                    available,
+                    percentage
+                };
+            }).sort((a, b) => b.count - a.count);
+            
+            analyticsDiv.innerHTML = categoryStats.map(stat => `
+                <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <div class="flex items-center space-x-3">
+                        <span class="text-2xl">${getCategoryIcon(stat.category)}</span>
+                        <div>
+                            <div class="font-medium">${stat.category}</div>
+                            <div class="text-sm text-gray-500">${stat.available}/${stat.count} disponibles</div>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <div class="font-bold">${stat.percentage}%</div>
+                        <div class="text-sm text-gray-500">${stat.count} productos</div>
+                    </div>
+                </div>
+            `).join('');
+            
+            // Update price analytics
+            updatePriceAnalytics();
+        }
+
+        function updatePriceAnalytics() {
+            const priceDiv = document.getElementById('price-analytics');
+            
+            if (allProducts.length === 0) {
+                priceDiv.innerHTML = '<p class="text-gray-500">No hay datos para mostrar</p>';
+                return;
+            }
+            
+            const prices = allProducts.map(p => p.precio);
+            const minPrice = Math.min(...prices);
+            const maxPrice = Math.max(...prices);
+            const avgPrice = prices.reduce((a, b) => a + b, 0) / prices.length;
+            
+            const priceRanges = [
+                { label: 'Hasta Gs. 50.000', min: 0, max: 50000 },
+                { label: 'Gs. 50.000 - 100.000', min: 50000, max: 100000 },
+                { label: 'Gs. 100.000 - 200.000', min: 100000, max: 200000 },
+                { label: 'Más de Gs. 200.000', min: 200000, max: Infinity }
+            ];
+            
+            priceDiv.innerHTML = `
+                <div class="space-y-4">
+                    <div class="grid grid-cols-3 gap-4 text-center">
+                        <div class="p-3 bg-gray-50 rounded-lg">
+                            <div class="font-bold text-green-600">Gs. ${minPrice.toLocaleString()}</div>
+                            <div class="text-sm text-gray-500">Mínimo</div>
+                        </div>
+                        <div class="p-3 bg-gray-50 rounded-lg">
+                            <div class="font-bold text-blue-600">Gs. ${Math.round(avgPrice).toLocaleString()}</div>
+                            <div class="text-sm text-gray-500">Promedio</div>
+                        </div>
+                        <div class="p-3 bg-gray-50 rounded-lg">
+                            <div class="font-bold text-red-600">Gs. ${maxPrice.toLocaleString()}</div>
+                            <div class="text-sm text-gray-500">Máximo</div>
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-2">
+                        ${priceRanges.map(range => {
+                            const count = allProducts.filter(p => p.precio >= range.min && p.precio < range.max).length;
+                            const percentage = ((count / allProducts.length) * 100).toFixed(1);
+                            
+                            return `
+                                <div class="flex items-center justify-between p-2 bg-gray-50 rounded">
+                                    <span class="text-sm">${range.label}</span>
+                                    <div class="text-right">
+                                        <span class="font-medium">${count} productos</span>
+                                        <span class="text-sm text-gray-500 ml-2">(${percentage}%)</span>
+                                    </div>
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        // Tab switching
+        function switchTab(tabName) {
+            // Hide all tab contents
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            // Remove active class from all tab buttons
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Show selected tab content
+            document.getElementById(tabName + '-content').classList.add('active');
+            document.getElementById(tabName + '-tab').classList.add('active');
+            
+            // Load data for specific tabs
+            if (tabName === 'categories') {
+                loadCategories();
+            } else if (tabName === 'analytics') {
+                updateCategoryAnalytics();
+            }
+        }
+
+        // Utility functions
+        function showProductsLoading(show) {
+            const loading = document.getElementById('products-loading');
+            const list = document.getElementById('products-list');
+            
+            if (show) {
+                loading.classList.remove('hidden');
+                list.classList.add('hidden');
+            } else {
+                loading.classList.add('hidden');
+                if (filteredProducts.length > 0) {
+                    list.classList.remove('hidden');
+                }
+            }
+        }
+
+        function refreshProducts() {
+            loadProducts();
+            showToast('Productos actualizados', 'success');
+        }
+
+        function refreshCategories() {
+            loadCategories();
+            showToast('Categorías actualizadas', 'success');
+        }
+
+        // Delete confirmation modal
+        function showDeleteConfirmation(message, callback) {
+            document.getElementById('delete-message').textContent = message;
+            document.getElementById('delete-modal').classList.remove('hidden');
+            deleteCallback = callback;
+        }
+
+        function closeDeleteModal() {
+            document.getElementById('delete-modal').classList.add('hidden');
+            deleteCallback = null;
+        }
+
+        function confirmDelete() {
+            if (deleteCallback) {
+                deleteCallback();
                 closeDeleteModal();
             }
-        });
+        }
 
-        // Initialize app
-        document.addEventListener('DOMContentLoaded', function() {
-            // Check if already logged in (you could implement session storage here)
-            console.log('Admin panel loaded - v1.026');
+        // Toast notifications
+        function showToast(message, type = 'info') {
+            const toast = document.createElement('div');
+            toast.className = `fixed top-4 right-4 z-50 px-6 py-3 rounded-lg shadow-lg text-white font-medium transition-all duration-300 transform translate-x-full`;
+            
+            switch (type) {
+                case 'success':
+                    toast.classList.add('bg-green-500');
+                    break;
+                case 'error':
+                    toast.classList.add('bg-red-500');
+                    break;
+                case 'warning':
+                    toast.classList.add('bg-yellow-500');
+                    break;
+                default:
+                    toast.classList.add('bg-blue-500');
+            }
+            
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            
+            // Animate in
+            setTimeout(() => {
+                toast.classList.remove('translate-x-full');
+            }, 100);
+            
+            // Animate out and remove
+            setTimeout(() => {
+                toast.classList.add('translate-x-full');
+                setTimeout(() => {
+                    if (document.body.contains(toast)) {
+                        document.body.removeChild(toast);
+                    }
+                }, 300);
+            }, 3000);
+        }
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeProductModal();
+                closeCategoryModal();
+                closeDeleteModal();
+            }
+            
+            if (e.ctrlKey || e.metaKey) {
+                switch (e.key) {
+                    case 'n':
+                        e.preventDefault();
+                        openProductModal();
+                        break;
+                    case 'r':
+                        e.preventDefault();
+                        refreshProducts();
+                        break;
+                }
+            }
         });
     </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'99110ac1b298116c',t:'MTc2MDg4NDk0Ni4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'99184ca2c7c8116c',t:'MTc2MDk2MTA0NS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
