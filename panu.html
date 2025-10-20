@@ -1081,15 +1081,27 @@
         }
 
         // Filter products by category
-        function filterByCategory(category) {
+        // Accepts either (category) or (category, elementOrEvent)
+        function filterByCategory(category, elementOrEvent) {
             currentCategory = category;
-            
+
             // Update active button
-            document.querySelectorAll('.category-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            event.target.classList.add('active');
-            
+            document.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active'));
+
+            // elementOrEvent may be an Event or an Element; try to extract the element
+            let el = null;
+            if (elementOrEvent) {
+                if (elementOrEvent.target) el = elementOrEvent.target;
+                else if (elementOrEvent instanceof Element) el = elementOrEvent;
+            }
+
+            // If we couldn't get an element, try to find the button by its onclick attribute
+            if (!el) {
+                el = document.querySelector(`.category-btn[onclick="filterByCategory('${category}')"]`) || document.querySelector(`.category-btn[onclick="filterByCategory(\\'${category}\\')"]`);
+            }
+
+            if (el && el.classList) el.classList.add('active');
+
             applyFilters();
         }
 
