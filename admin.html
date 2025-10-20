@@ -229,6 +229,62 @@
             margin-bottom: 0.5rem;
         }
 
+        /* Promotion specific styles */
+        .promotion-card {
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid rgba(222, 184, 135, 0.3);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .promotion-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+        
+        .media-preview {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+        
+        .upload-zone {
+            border: 2px dashed #8B4513;
+            border-radius: 12px;
+            padding: 2rem;
+            text-align: center;
+            background: rgba(139, 69, 19, 0.05);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .upload-zone:hover {
+            background: rgba(139, 69, 19, 0.1);
+            border-color: #A0522D;
+        }
+        
+        .upload-zone.dragover {
+            background: rgba(139, 69, 19, 0.15);
+            border-color: #CD853F;
+            transform: scale(1.02);
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e5e7eb;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #8B4513, #A0522D);
+            transition: width 0.3s ease;
+        }
+
         /* Mobile responsive */
         @media (max-width: 640px) {
             .admin-card {
@@ -262,7 +318,7 @@
      <div class="flex items-center space-x-4"><img src="https://aurical.org/images/PanuLogo.png" alt="Panu Logo" class="w-12 h-12 rounded-full bg-white p-2" onerror="this.style.display='none';">
       <div>
        <h1 class="text-3xl font-bold">Panel de Administración</h1>
-       <p class="text-amber-100">Gestión de productos y categorías</p>
+       <p class="text-amber-100">Gestión de productos, categorías y promociones</p>
       </div>
      </div>
      <div class="flex items-center space-x-4"><a href="panu.html" class="btn-secondary bg-white bg-opacity-20 hover:bg-opacity-30 border-white text-white"> 🏠 Ver Catálogo </a> <span id="admin-time" class="text-amber-100 text-sm"></span>
@@ -272,7 +328,7 @@
   </header><!-- Stats Dashboard -->
   <section class="py-8">
    <div class="max-w-7xl mx-auto px-4">
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+    <div class="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8">
      <div class="stats-card">
       <div class="text-3xl font-bold mb-2" id="total-products">
        0
@@ -298,6 +354,14 @@
       </div>
      </div>
      <div class="stats-card">
+      <div class="text-3xl font-bold mb-2" id="active-promotions">
+       0
+      </div>
+      <div class="text-amber-100">
+       Promociones Activas
+      </div>
+     </div>
+     <div class="stats-card">
       <div class="text-3xl font-bold mb-2" id="last-update">
        -
       </div>
@@ -310,7 +374,7 @@
   </section><!-- Tab Navigation -->
   <section class="bg-white shadow-sm">
    <div class="max-w-7xl mx-auto px-4">
-    <div class="tab-nav flex overflow-x-auto"><button onclick="switchTab('products')" id="products-tab" class="tab-btn active whitespace-nowrap"> 📦 Productos </button> <button onclick="switchTab('categories')" id="categories-tab" class="tab-btn whitespace-nowrap"> 🏷️ Categorías </button> <button onclick="switchTab('bulk')" id="bulk-tab" class="tab-btn whitespace-nowrap"> 📊 Acciones Masivas </button> <button onclick="switchTab('analytics')" id="analytics-tab" class="tab-btn whitespace-nowrap"> 📈 Analíticas </button>
+    <div class="tab-nav flex overflow-x-auto"><button onclick="switchTab('products')" id="products-tab" class="tab-btn active whitespace-nowrap"> 📦 Productos </button> <button onclick="switchTab('categories')" id="categories-tab" class="tab-btn whitespace-nowrap"> 🏷️ Categorías </button> <button onclick="switchTab('promotions')" id="promotions-tab" class="tab-btn whitespace-nowrap"> 🎬 Promociones </button> <button onclick="switchTab('bulk')" id="bulk-tab" class="tab-btn whitespace-nowrap"> 📊 Acciones Masivas </button> <button onclick="switchTab('analytics')" id="analytics-tab" class="tab-btn whitespace-nowrap"> 📈 Analíticas </button>
     </div>
    </div>
   </section><!-- Products Tab -->
@@ -393,6 +457,45 @@
       </div>
       <h3 class="text-xl font-bold text-gray-700 mb-2">No hay categorías</h3>
       <p class="text-gray-500 mb-6">Las categorías aparecerán automáticamente cuando agregues productos</p>
+     </div>
+    </div>
+   </section>
+  </div><!-- Promotions Tab -->
+  <div id="promotions-content" class="tab-content">
+   <section class="py-8">
+    <div class="max-w-7xl mx-auto px-4"><!-- Promotions Header -->
+     <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 space-y-4 md:space-y-0">
+      <div>
+       <h2 class="text-2xl font-bold text-gray-800">Gestión de Promociones</h2>
+       <p class="text-gray-600 mt-2">Crea contenido promocional aesthetic para tu catálogo</p>
+      </div>
+      <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4"><button onclick="openPromotionModal()" class="btn-primary"> ➕ Nueva Promoción </button> <button onclick="refreshPromotions()" class="btn-secondary"> 🔄 Actualizar </button>
+      </div>
+     </div><!-- Current Active Promotion -->
+     <div id="current-promotion-section" class="mb-8 hidden">
+      <h3 class="text-xl font-bold text-gray-800 mb-4">🎯 Promoción Activa</h3>
+      <div class="admin-card p-6">
+       <div id="current-promotion-content"><!-- Current promotion will be displayed here -->
+       </div>
+      </div>
+     </div><!-- Promotions History -->
+     <div class="admin-card p-6">
+      <h3 class="text-xl font-bold text-gray-800 mb-6">📚 Historial de Promociones</h3>
+      <div id="promotions-loading" class="text-center py-8">
+       <div class="loading-spinner mx-auto mb-4"></div>
+       <p class="text-gray-600">Cargando promociones...</p>
+      </div>
+      <div id="promotions-list" class="hidden">
+       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="promotions-grid"><!-- Promotions will be loaded here -->
+       </div>
+      </div>
+      <div id="no-promotions" class="text-center py-12 hidden">
+       <div class="text-6xl mb-4">
+        🎬
+       </div>
+       <h3 class="text-xl font-bold text-gray-700 mb-2">No hay promociones</h3>
+       <p class="text-gray-500 mb-6">Crea tu primera promoción para destacar ofertas especiales</p><button onclick="openPromotionModal()" class="btn-primary"> ➕ Crear Primera Promoción </button>
+      </div>
      </div>
     </div>
    </section>
@@ -503,6 +606,56 @@ https://ejemplo.com/imagen3.jpg"></textarea>
      </form>
     </div>
    </div>
+  </div><!-- Promotion Modal -->
+  <div id="promotion-modal" class="modal fixed inset-0 z-50 hidden">
+   <div class="flex items-center justify-center min-h-screen p-4">
+    <div class="modal-content max-w-3xl w-full p-8">
+     <div class="flex justify-between items-center mb-6">
+      <h2 id="promotion-modal-title" class="text-2xl font-bold text-gray-800">Nueva Promoción</h2><button onclick="closePromotionModal()" class="text-gray-500 hover:text-gray-700 text-2xl font-bold">×</button>
+     </div>
+     <form id="promotion-form" class="space-y-6">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+       <div><label class="block text-sm font-medium text-gray-700 mb-2">Título de la Promoción *</label> <input type="text" id="promotion-title" class="form-input" required placeholder="ej: Oferta Especial, Nueva Colección...">
+       </div>
+       <div><label class="block text-sm font-medium text-gray-700 mb-2">Fecha de Expiración</label> <input type="datetime-local" id="promotion-expiry" class="form-input">
+        <p class="text-xs text-gray-500 mt-1">Opcional - deja vacío para promoción permanente</p>
+       </div>
+      </div>
+      <div><label class="block text-sm font-medium text-gray-700 mb-2">Descripción</label> <textarea id="promotion-description" class="form-input form-textarea" rows="3" placeholder="Describe la promoción, oferta o mensaje especial..."></textarea>
+      </div><!-- Upload Zone -->
+      <div><label class="block text-sm font-medium text-gray-700 mb-2">Imagen o Video *</label>
+       <div id="upload-zone" class="upload-zone" onclick="document.getElementById('media-file').click()">
+        <div id="upload-content">
+         <div class="text-4xl mb-4">
+          📁
+         </div>
+         <p class="text-lg font-semibold text-gray-700 mb-2">Arrastra tu archivo aquí</p>
+         <p class="text-sm text-gray-500 mb-4">o haz clic para seleccionar</p>
+         <div class="text-xs text-gray-400">
+          <p>Imágenes: JPG, PNG, WebP (máx 5MB)</p>
+          <p>Videos: MP4, WebM (máx 10MB)</p>
+          <p>Recomendado: 16:9 para mejor aesthetic</p>
+         </div>
+        </div><input type="file" id="media-file" class="hidden" accept="image/*,video/*" onchange="handleFileSelect(this)">
+       </div><!-- Upload Progress -->
+       <div id="upload-progress" class="mt-4 hidden">
+        <div class="flex justify-between text-sm text-gray-600 mb-2"><span>Subiendo archivo...</span> <span id="progress-percent">0%</span>
+        </div>
+        <div class="progress-bar">
+         <div id="progress-fill" class="progress-fill" style="width: 0%"></div>
+        </div>
+       </div><!-- Media Preview -->
+       <div id="media-preview" class="mt-4 hidden">
+        <p class="text-sm font-medium text-gray-700 mb-2">Vista previa:</p>
+        <div id="preview-container" class="border-2 border-gray-200 rounded-lg overflow-hidden"><!-- Preview will be inserted here -->
+        </div>
+       </div>
+      </div>
+      <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4 pt-6"><button type="submit" class="btn-primary flex-1" id="save-promotion-btn"> <span id="save-promotion-text">🎬 Crear Promoción</span> </button> <button type="button" onclick="closePromotionModal()" class="btn-secondary flex-1"> ❌ Cancelar </button>
+      </div>
+     </form>
+    </div>
+   </div>
   </div><!-- Delete Confirmation Modal -->
   <div id="delete-modal" class="modal fixed inset-0 z-50 hidden">
    <div class="flex items-center justify-center min-h-screen p-4">
@@ -531,8 +684,11 @@ https://ejemplo.com/imagen3.jpg"></textarea>
         let allProducts = [];
         let availableCategories = [];
         let filteredProducts = [];
+        let allPromotions = [];
         let editingProductId = null;
+        let editingPromotionId = null;
         let deleteCallback = null;
+        let currentMediaFile = null;
 
         // Initialize admin panel
         document.addEventListener('DOMContentLoaded', function() {
@@ -540,7 +696,9 @@ https://ejemplo.com/imagen3.jpg"></textarea>
             setInterval(updateTime, 1000);
             loadProducts();
             loadCategories();
+            loadPromotions();
             setupEventListeners();
+            setupDragAndDrop();
         });
 
         // Update time display
@@ -565,6 +723,9 @@ https://ejemplo.com/imagen3.jpg"></textarea>
             // Category form submission
             document.getElementById('category-form').addEventListener('submit', handleCategorySubmit);
             
+            // Promotion form submission
+            document.getElementById('promotion-form').addEventListener('submit', handlePromotionSubmit);
+            
             // Close modals when clicking outside
             document.getElementById('product-modal').addEventListener('click', function(e) {
                 if (e.target === this) closeProductModal();
@@ -574,8 +735,39 @@ https://ejemplo.com/imagen3.jpg"></textarea>
                 if (e.target === this) closeCategoryModal();
             });
             
+            document.getElementById('promotion-modal').addEventListener('click', function(e) {
+                if (e.target === this) closePromotionModal();
+            });
+            
             document.getElementById('delete-modal').addEventListener('click', function(e) {
                 if (e.target === this) closeDeleteModal();
+            });
+        }
+
+        // Setup drag and drop for file upload
+        function setupDragAndDrop() {
+            const uploadZone = document.getElementById('upload-zone');
+            
+            uploadZone.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                uploadZone.classList.add('dragover');
+            });
+            
+            uploadZone.addEventListener('dragleave', function(e) {
+                e.preventDefault();
+                uploadZone.classList.remove('dragover');
+            });
+            
+            uploadZone.addEventListener('drop', function(e) {
+                e.preventDefault();
+                uploadZone.classList.remove('dragover');
+                
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    const fileInput = document.getElementById('media-file');
+                    fileInput.files = files;
+                    handleFileSelect(fileInput);
+                }
             });
         }
 
@@ -619,6 +811,26 @@ https://ejemplo.com/imagen3.jpg"></textarea>
             } catch (error) {
                 console.error('Error loading categories:', error);
                 showToast('Error al cargar categorías: ' + error.message, 'error');
+            }
+        }
+
+        // Load promotions from database
+        async function loadPromotions() {
+            try {
+                const { data, error } = await supabase
+                    .from('promociones')
+                    .select('*')
+                    .order('fecha_creacion', { ascending: false });
+
+                if (error) throw error;
+
+                allPromotions = data || [];
+                displayPromotions();
+                updateStats();
+                
+            } catch (error) {
+                console.error('Error loading promotions:', error);
+                showToast('Error al cargar promociones: ' + error.message, 'error');
             }
         }
 
@@ -716,6 +928,93 @@ https://ejemplo.com/imagen3.jpg"></textarea>
             }).join('');
         }
 
+        // Display promotions
+        function displayPromotions() {
+            const loading = document.getElementById('promotions-loading');
+            const list = document.getElementById('promotions-list');
+            const noPromotions = document.getElementById('no-promotions');
+            const grid = document.getElementById('promotions-grid');
+            const currentSection = document.getElementById('current-promotion-section');
+            const currentContent = document.getElementById('current-promotion-content');
+            
+            loading.classList.add('hidden');
+            
+            if (allPromotions.length === 0) {
+                list.classList.add('hidden');
+                noPromotions.classList.remove('hidden');
+                currentSection.classList.add('hidden');
+                return;
+            }
+            
+            list.classList.remove('hidden');
+            noPromotions.classList.add('hidden');
+            
+            // Find active promotion
+            const activePromotion = allPromotions.find(p => p.activa);
+            
+            if (activePromotion) {
+                currentSection.classList.remove('hidden');
+                currentContent.innerHTML = createPromotionCard(activePromotion, true);
+            } else {
+                currentSection.classList.add('hidden');
+            }
+            
+            // Display all promotions
+            grid.innerHTML = allPromotions.map(promotion => createPromotionCard(promotion, false)).join('');
+        }
+
+        // Create promotion card HTML
+        function createPromotionCard(promotion, isCurrent = false) {
+            const isExpired = promotion.fecha_expiracion && new Date(promotion.fecha_expiracion) < new Date();
+            const mediaElement = promotion.tipo_media === 'video' ? 
+                `<video src="${promotion.url_media}" class="media-preview" controls muted></video>` :
+                `<img src="${promotion.url_media}" alt="${promotion.titulo}" class="media-preview">`;
+            
+            return `
+                <div class="promotion-card ${isCurrent ? 'border-2 border-amber-500' : ''}">
+                    ${mediaElement}
+                    <div class="p-4">
+                        <div class="flex justify-between items-start mb-2">
+                            <h4 class="font-bold text-gray-800">${promotion.titulo}</h4>
+                            <div class="flex space-x-1">
+                                <span class="status-badge ${promotion.activa && !isExpired ? 'status-available' : 'status-unavailable'}">
+                                    ${promotion.activa && !isExpired ? '🟢 Activa' : '🔴 Inactiva'}
+                                </span>
+                                ${isCurrent ? '<span class="status-badge bg-amber-100 text-amber-800 border-amber-200">⭐ Actual</span>' : ''}
+                            </div>
+                        </div>
+                        
+                        ${promotion.descripcion ? `<p class="text-sm text-gray-600 mb-3">${promotion.descripcion}</p>` : ''}
+                        
+                        <div class="text-xs text-gray-500 mb-3">
+                            <div>Creada: ${new Date(promotion.fecha_creacion).toLocaleDateString('es-PY')}</div>
+                            ${promotion.fecha_expiracion ? 
+                                `<div>Expira: ${new Date(promotion.fecha_expiracion).toLocaleDateString('es-PY')} ${isExpired ? '(Expirada)' : ''}</div>` : 
+                                '<div>Sin fecha de expiración</div>'
+                            }
+                        </div>
+                        
+                        <div class="flex space-x-2">
+                            ${!promotion.activa ? 
+                                `<button onclick="activatePromotion(${promotion.id})" class="btn-primary text-xs px-3 py-1 flex-1">
+                                    ✅ Activar
+                                </button>` : 
+                                `<button onclick="deactivatePromotion(${promotion.id})" class="btn-secondary text-xs px-3 py-1 flex-1">
+                                    ⏸️ Desactivar
+                                </button>`
+                            }
+                            <button onclick="editPromotion(${promotion.id})" class="btn-secondary text-xs px-3 py-1 flex-1">
+                                ✏️ Editar
+                            </button>
+                            <button onclick="deletePromotion(${promotion.id})" class="btn-danger text-xs px-3 py-1 flex-1">
+                                🗑️ Eliminar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
         // Get category icon
         function getCategoryIcon(category) {
             const icons = {
@@ -751,6 +1050,10 @@ https://ejemplo.com/imagen3.jpg"></textarea>
             const total = allProducts.length;
             const available = allProducts.filter(p => p.disponible).length;
             const categories = availableCategories.length;
+            const activePromotions = allPromotions.filter(p => {
+                const isExpired = p.fecha_expiracion && new Date(p.fecha_expiracion) < new Date();
+                return p.activa && !isExpired;
+            }).length;
             const lastUpdate = allProducts.length > 0 ? 
                 new Date(Math.max(...allProducts.map(p => new Date(p.fecha_creacion)))).toLocaleDateString('es-PY') : 
                 'Nunca';
@@ -758,6 +1061,7 @@ https://ejemplo.com/imagen3.jpg"></textarea>
             document.getElementById('total-products').textContent = total;
             document.getElementById('available-products').textContent = available;
             document.getElementById('total-categories').textContent = categories;
+            document.getElementById('active-promotions').textContent = activePromotions;
             document.getElementById('last-update').textContent = lastUpdate;
         }
 
@@ -1070,6 +1374,321 @@ https://ejemplo.com/imagen3.jpg"></textarea>
             );
         }
 
+        // Promotion management
+        function openPromotionModal(promotionId = null) {
+            editingPromotionId = promotionId;
+            const modal = document.getElementById('promotion-modal');
+            const title = document.getElementById('promotion-modal-title');
+            const form = document.getElementById('promotion-form');
+            
+            // Reset form and UI
+            form.reset();
+            resetUploadUI();
+            currentMediaFile = null;
+            
+            if (promotionId) {
+                const promotion = allPromotions.find(p => p.id === promotionId);
+                if (!promotion) return;
+                
+                title.textContent = 'Editar Promoción';
+                document.getElementById('promotion-title').value = promotion.titulo;
+                document.getElementById('promotion-description').value = promotion.descripcion || '';
+                
+                if (promotion.fecha_expiracion) {
+                    const date = new Date(promotion.fecha_expiracion);
+                    document.getElementById('promotion-expiry').value = date.toISOString().slice(0, 16);
+                }
+                
+                // Show current media preview
+                showMediaPreview(promotion.url_media, promotion.tipo_media);
+                document.getElementById('save-promotion-text').textContent = '🎬 Actualizar Promoción';
+            } else {
+                title.textContent = 'Nueva Promoción';
+                document.getElementById('save-promotion-text').textContent = '🎬 Crear Promoción';
+            }
+            
+            modal.classList.remove('hidden');
+        }
+
+        function closePromotionModal() {
+            document.getElementById('promotion-modal').classList.add('hidden');
+            document.getElementById('promotion-form').reset();
+            resetUploadUI();
+            editingPromotionId = null;
+            currentMediaFile = null;
+        }
+
+        // Handle file selection
+        function handleFileSelect(input) {
+            const file = input.files[0];
+            if (!file) return;
+            
+            // Validate file type
+            const isImage = file.type.startsWith('image/');
+            const isVideo = file.type.startsWith('video/');
+            
+            if (!isImage && !isVideo) {
+                showToast('Por favor selecciona una imagen o video válido', 'error');
+                return;
+            }
+            
+            // Validate file size
+            const maxSize = isImage ? 5 * 1024 * 1024 : 10 * 1024 * 1024; // 5MB for images, 10MB for videos
+            if (file.size > maxSize) {
+                const maxSizeMB = maxSize / (1024 * 1024);
+                showToast(`El archivo es muy grande. Máximo ${maxSizeMB}MB para ${isImage ? 'imágenes' : 'videos'}`, 'error');
+                return;
+            }
+            
+            currentMediaFile = file;
+            
+            // Show preview
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                showMediaPreview(e.target.result, isImage ? 'imagen' : 'video');
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // Show media preview
+        function showMediaPreview(src, type) {
+            const preview = document.getElementById('media-preview');
+            const container = document.getElementById('preview-container');
+            
+            const mediaElement = type === 'video' ? 
+                `<video src="${src}" class="media-preview" controls muted></video>` :
+                `<img src="${src}" alt="Preview" class="media-preview">`;
+            
+            container.innerHTML = mediaElement;
+            preview.classList.remove('hidden');
+        }
+
+        // Reset upload UI
+        function resetUploadUI() {
+            document.getElementById('upload-progress').classList.add('hidden');
+            document.getElementById('media-preview').classList.add('hidden');
+            document.getElementById('progress-fill').style.width = '0%';
+            document.getElementById('progress-percent').textContent = '0%';
+        }
+
+        // Handle promotion form submission
+        async function handlePromotionSubmit(e) {
+            e.preventDefault();
+            
+            const title = document.getElementById('promotion-title').value.trim();
+            const description = document.getElementById('promotion-description').value.trim();
+            const expiry = document.getElementById('promotion-expiry').value;
+            
+            if (!title) {
+                showToast('Por favor ingresa un título para la promoción', 'error');
+                return;
+            }
+            
+            if (!editingPromotionId && !currentMediaFile) {
+                showToast('Por favor selecciona una imagen o video', 'error');
+                return;
+            }
+            
+            try {
+                let mediaUrl = null;
+                let mediaType = null;
+                
+                // Upload new media file if provided
+                if (currentMediaFile) {
+                    mediaUrl = await uploadMediaFile(currentMediaFile);
+                    mediaType = currentMediaFile.type.startsWith('image/') ? 'imagen' : 'video';
+                    
+                    // If editing, delete old media file
+                    if (editingPromotionId) {
+                        const oldPromotion = allPromotions.find(p => p.id === editingPromotionId);
+                        if (oldPromotion && oldPromotion.url_media) {
+                            await deleteMediaFile(oldPromotion.url_media);
+                        }
+                    }
+                } else if (editingPromotionId) {
+                    // Keep existing media
+                    const existingPromotion = allPromotions.find(p => p.id === editingPromotionId);
+                    mediaUrl = existingPromotion.url_media;
+                    mediaType = existingPromotion.tipo_media;
+                }
+                
+                const promotionData = {
+                    titulo: title,
+                    descripcion: description || null,
+                    tipo_media: mediaType,
+                    url_media: mediaUrl,
+                    fecha_expiracion: expiry ? new Date(expiry).toISOString() : null,
+                    fecha_creacion: new Date().toISOString()
+                };
+                
+                let result;
+                
+                if (editingPromotionId) {
+                    // Update existing promotion
+                    result = await supabase
+                        .from('promociones')
+                        .update(promotionData)
+                        .eq('id', editingPromotionId);
+                } else {
+                    // Deactivate all other promotions first (only one active at a time)
+                    await supabase
+                        .from('promociones')
+                        .update({ activa: false })
+                        .neq('id', 0); // Update all
+                    
+                    // Create new promotion as active
+                    promotionData.activa = true;
+                    result = await supabase
+                        .from('promociones')
+                        .insert([promotionData]);
+                }
+                
+                if (result.error) throw result.error;
+                
+                showToast(editingPromotionId ? 'Promoción actualizada exitosamente' : 'Promoción creada exitosamente', 'success');
+                closePromotionModal();
+                loadPromotions();
+                
+            } catch (error) {
+                console.error('Error saving promotion:', error);
+                showToast('Error al guardar promoción: ' + error.message, 'error');
+            }
+        }
+
+        // Upload media file to Supabase Storage
+        async function uploadMediaFile(file) {
+            const fileExt = file.name.split('.').pop();
+            const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
+            
+            // Show upload progress
+            document.getElementById('upload-progress').classList.remove('hidden');
+            
+            try {
+                const { data, error } = await supabase.storage
+                    .from('promociones-media')
+                    .upload(fileName, file, {
+                        onUploadProgress: (progress) => {
+                            const percent = Math.round((progress.loaded / progress.total) * 100);
+                            document.getElementById('progress-fill').style.width = `${percent}%`;
+                            document.getElementById('progress-percent').textContent = `${percent}%`;
+                        }
+                    });
+                
+                if (error) throw error;
+                
+                // Get public URL
+                const { data: urlData } = supabase.storage
+                    .from('promociones-media')
+                    .getPublicUrl(fileName);
+                
+                return urlData.publicUrl;
+                
+            } catch (error) {
+                console.error('Error uploading file:', error);
+                throw new Error('Error al subir archivo: ' + error.message);
+            }
+        }
+
+        // Delete media file from Supabase Storage
+        async function deleteMediaFile(url) {
+            try {
+                // Extract filename from URL
+                const fileName = url.split('/').pop();
+                
+                const { error } = await supabase.storage
+                    .from('promociones-media')
+                    .remove([fileName]);
+                
+                if (error) {
+                    console.error('Error deleting file:', error);
+                }
+            } catch (error) {
+                console.error('Error deleting media file:', error);
+            }
+        }
+
+        // Activate promotion
+        async function activatePromotion(promotionId) {
+            try {
+                // Deactivate all other promotions
+                await supabase
+                    .from('promociones')
+                    .update({ activa: false })
+                    .neq('id', promotionId);
+                
+                // Activate selected promotion
+                const { error } = await supabase
+                    .from('promociones')
+                    .update({ activa: true })
+                    .eq('id', promotionId);
+                
+                if (error) throw error;
+                
+                showToast('Promoción activada exitosamente', 'success');
+                loadPromotions();
+                
+            } catch (error) {
+                console.error('Error activating promotion:', error);
+                showToast('Error al activar promoción: ' + error.message, 'error');
+            }
+        }
+
+        // Deactivate promotion
+        async function deactivatePromotion(promotionId) {
+            try {
+                const { error } = await supabase
+                    .from('promociones')
+                    .update({ activa: false })
+                    .eq('id', promotionId);
+                
+                if (error) throw error;
+                
+                showToast('Promoción desactivada exitosamente', 'success');
+                loadPromotions();
+                
+            } catch (error) {
+                console.error('Error deactivating promotion:', error);
+                showToast('Error al desactivar promoción: ' + error.message, 'error');
+            }
+        }
+
+        // Edit promotion
+        function editPromotion(promotionId) {
+            openPromotionModal(promotionId);
+        }
+
+        // Delete promotion
+        function deletePromotion(promotionId) {
+            const promotion = allPromotions.find(p => p.id === promotionId);
+            if (!promotion) return;
+            
+            showDeleteConfirmation(
+                `¿Estás seguro de que quieres eliminar la promoción "${promotion.titulo}"?`,
+                async () => {
+                    try {
+                        // Delete media file first
+                        if (promotion.url_media) {
+                            await deleteMediaFile(promotion.url_media);
+                        }
+                        
+                        // Delete promotion from database
+                        const { error } = await supabase
+                            .from('promociones')
+                            .delete()
+                            .eq('id', promotionId);
+                        
+                        if (error) throw error;
+                        
+                        showToast('Promoción eliminada exitosamente', 'success');
+                        loadPromotions();
+                    } catch (error) {
+                        console.error('Error deleting promotion:', error);
+                        showToast('Error al eliminar promoción: ' + error.message, 'error');
+                    }
+                }
+            );
+        }
+
         // Bulk operations
         async function bulkUpdateAvailability(available) {
             const category = document.getElementById('bulk-category').value;
@@ -1319,6 +1938,8 @@ https://ejemplo.com/imagen3.jpg"></textarea>
             // Load data for specific tabs
             if (tabName === 'categories') {
                 loadCategories();
+            } else if (tabName === 'promotions') {
+                loadPromotions();
             } else if (tabName === 'analytics') {
                 updateCategoryAnalytics();
             }
@@ -1348,6 +1969,11 @@ https://ejemplo.com/imagen3.jpg"></textarea>
         function refreshCategories() {
             loadCategories();
             showToast('Categorías actualizadas', 'success');
+        }
+
+        function refreshPromotions() {
+            loadPromotions();
+            showToast('Promociones actualizadas', 'success');
         }
 
         // Delete confirmation modal
@@ -1412,6 +2038,7 @@ https://ejemplo.com/imagen3.jpg"></textarea>
             if (e.key === 'Escape') {
                 closeProductModal();
                 closeCategoryModal();
+                closePromotionModal();
                 closeDeleteModal();
             }
             
@@ -1429,5 +2056,5 @@ https://ejemplo.com/imagen3.jpg"></textarea>
             }
         });
     </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'99184ca2c7c8116c',t:'MTc2MDk2MTA0NS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'991863ca061f116c',t:'MTc2MDk2MTk5My4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
