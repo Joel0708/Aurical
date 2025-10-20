@@ -490,6 +490,126 @@
     </div>
    </div>
   </header><!-- Hero Section -->
+<!-- 🔥 INICIO SECCIÓN PROMOCIÓN -->
+<section id="promotion-section" class="hidden">
+  <div id="promotion-content" class="promotion-banner fade-in"></div>
+</section>
+
+<style>
+  /* --- ESTILOS PROMOCIÓN SIMPLIFICADA --- */
+  .promotion-banner {
+    background: linear-gradient(135deg, #8B4513, #A0522D);
+    border-radius: 20px;
+    overflow: hidden;
+    position: relative;
+    margin: 1rem auto 2rem auto;
+    box-shadow: 0 12px 40px rgba(139, 69, 19, 0.3);
+    max-width: 1200px;
+  }
+
+  .promotion-media {
+    width: 100%;
+    height: 300px;
+    object-fit: cover;
+  }
+
+  .promotion-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
+    color: white;
+    padding: 2rem;
+  }
+
+  .promotion-title {
+    font-size: 2rem;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  }
+
+  .promotion-description {
+    font-size: 1.1rem;
+    opacity: 0.9;
+  }
+
+  @media (max-width: 768px) {
+    .promotion-title { font-size: 1.5rem; }
+    .promotion-description { font-size: 1rem; }
+    .promotion-media { height: 200px; }
+  }
+</style>
+
+<script>
+  // --- FUNCIÓN DE PROMOCIONES SIMPLIFICADA ---
+  let activePromotion = null;
+
+  document.addEventListener("DOMContentLoaded", () => {
+    loadActivePromotion();
+    setInterval(loadActivePromotion, 5 * 60 * 1000); // refresca cada 5 min
+  });
+
+  async function loadActivePromotion() {
+    try {
+      const { data, error } = await supabase
+        .from("promociones")
+        .select("*")
+        .eq("activa", true)
+        .single();
+
+      if (error && error.code !== "PGRST116") throw error;
+
+      if (data) {
+        const isExpired =
+          data.fecha_expiracion &&
+          new Date(data.fecha_expiracion) < new Date();
+
+        if (!isExpired) {
+          activePromotion = data;
+          displayPromotion();
+        } else {
+          hidePromotion();
+        }
+      } else {
+        hidePromotion();
+      }
+    } catch (error) {
+      console.error("Error cargando promoción:", error);
+    }
+  }
+
+  function displayPromotion() {
+    const section = document.getElementById("promotion-section");
+    const content = document.getElementById("promotion-content");
+
+    if (!activePromotion) return hidePromotion();
+
+    const isVideo = activePromotion.tipo_media === "video";
+    const mediaElement = isVideo
+      ? `<video src="${activePromotion.url_media}" class="promotion-media" autoplay muted loop></video>`
+      : `<img src="${activePromotion.url_media}" alt="${activePromotion.titulo}" class="promotion-media">`;
+
+    content.innerHTML = `
+      ${mediaElement}
+      <div class="promotion-overlay">
+        <h2 class="promotion-title">${activePromotion.titulo}</h2>
+        ${activePromotion.descripcion ? `<p class="promotion-description">${activePromotion.descripcion}</p>` : ""}
+      </div>
+    `;
+
+    section.classList.remove("hidden");
+  }
+
+  function hidePromotion() {
+    document.getElementById("promotion-section").classList.add("hidden");
+  }
+</script>
+<!-- 🔥 FIN SECCIÓN PROMOCIÓN -->
+
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9918bd61d2e701ac',t:'MTc2MDk2NTY2My4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
   <section class="hero-section">
    <div class="max-w-7xl mx-auto px-4 py-16">
     <div class="logo-container"><img src="https://aurical.org/images/PanuLogo.png" alt="Panu Logo" onerror="this.style.display='none';">
@@ -523,47 +643,7 @@
      </div>
     </div>
    </div>
-    </section>
-
-    <!-- 🎬 SECCIÓN PROMOCIÓN SIMPLE -->
-    <section id="promotion-section" class="hidden mb-8">
-        <div id="promotion-content" class="w-full"><!-- El contenido se genera dinámicamente --></div>
-    </section>
-
-    <script>
-        // Sección de promoción integrada: usar window.setActivePromotion({ tipo_media, url_media, titulo })
-        // para activar y mostrar una promoción desde otros scripts.
-        let activePromotion = null;
-
-        function displayPromotion() {
-            const section = document.getElementById('promotion-section');
-            const content = document.getElementById('promotion-content');
-
-            if (!activePromotion) return hidePromotion();
-
-            const isVideo = activePromotion.tipo_media === 'video';
-            const mediaElement = isVideo
-                ? `<video src="${activePromotion.url_media}" class="w-full h-64 md:h-80 object-cover rounded-lg shadow-lg" autoplay muted loop playsinline></video>`
-                : `<img src="${activePromotion.url_media}" alt="${(activePromotion.titulo || '')}" class="w-full h-64 md:h-80 object-cover rounded-lg shadow-lg">`;
-
-            content.innerHTML = mediaElement;
-            section.classList.remove('hidden');
-        }
-
-        function hidePromotion() {
-            const section = document.getElementById('promotion-section');
-            if (section) section.classList.add('hidden');
-        }
-
-        // Permite activar la promoción desde la consola o desde otros scripts
-        window.setActivePromotion = function(promo) {
-            activePromotion = promo;
-            displayPromotion();
-        };
-    </script>
-
-    <!-- 🎬 FIN SECCIÓN PROMOCIÓN -->
-        Tab Navigation -->
+  </section><!-- Tab Navigation -->
   <section class="bg-white shadow-sm">
    <div class="max-w-7xl mx-auto px-4">
     <div class="tab-nav flex"><button onclick="switchTab('catalog')" id="catalog-tab" class="tab-btn active flex-1 text-center font-medium"> 🛍️ Catálogo </button> <button onclick="switchTab('enterprise')" id="enterprise-tab" class="tab-btn flex-1 text-center font-medium"> 🏢 Empresarial </button>
@@ -1001,39 +1081,29 @@
         }
 
         // Filter products by category
-        function filterByCategory(category) {
+        // Accepts either (category) or (category, elementOrEvent)
+        function filterByCategory(category, elementOrEvent) {
             currentCategory = category;
-            
-            // Update active button
-            document.querySelectorAll('.category-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            event.target.classList.add('active');
-            
-            applyFilters();
-        }
 
-        // Apply all filters (category + search)
-        function applyFilters() {
-            let filtered = [...allProducts];
-            
-            // Apply category filter
-            if (currentCategory !== 'all') {
-                filtered = filtered.filter(product => product.categoria === currentCategory);
+            // Update active button
+            document.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active'));
+
+            // elementOrEvent may be an Event or an Element; try to extract the element
+            let el = null;
+            if (elementOrEvent) {
+                if (elementOrEvent.target) el = elementOrEvent.target;
+                else if (elementOrEvent instanceof Element) el = elementOrEvent;
             }
-            
-            // Apply search filter
-            if (currentSearchTerm) {
-                filtered = filtered.filter(product => 
-                    product.nombre.toLowerCase().includes(currentSearchTerm.toLowerCase()) ||
-                    product.descripcion.toLowerCase().includes(currentSearchTerm.toLowerCase()) ||
-                    product.categoria.toLowerCase().includes(currentSearchTerm.toLowerCase())
-                );
+
+            // If we couldn't get an element, try to find the button by its onclick attribute
+            if (!el) {
+                // match exact onclick string used in markup
+                el = document.querySelector(`.category-btn[onclick="filterByCategory('${category}')"]`) || document.querySelector(`.category-btn[onclick="filterByCategory(\\'${category}\\')"]`);
             }
-            
-            filteredProducts = filtered;
-            displayProducts(filteredProducts);
-            updateProductCount();
+
+            if (el && el.classList) el.classList.add('active');
+
+            applyFilters();
         }
 
         // Search functionality
@@ -1602,10 +1672,6 @@ ${productInterest}
         document.addEventListener('DOMContentLoaded', function() {
             setupSearch();
             loadProducts();
-            // Load active promotion from Supabase storage/table
-            if (typeof loadPromotionFromSupabase === 'function') {
-                loadPromotionFromSupabase();
-            }
             updateComparisonPanel();
             console.log('Panu catalog loaded successfully');
         });
@@ -1624,53 +1690,6 @@ ${productInterest}
                 closeComparisonModal();
             }
         });
-        
-        // Load active promotion from Supabase table 'promociones' and bucket 'media'
-        async function loadPromotionFromSupabase() {
-            try {
-                if (!supabase) return;
-
-                // Try to find an active promotion (assumptions: table 'promociones' with 'activo' boolean
-                // and a column with the file path like 'media_path' or 'file_name' or a direct 'url_media')
-                const { data, error } = await supabase
-                    .from('promociones')
-                    .select('*')
-                    .eq('activo', true)
-                    .order('fecha_inicio', { ascending: false })
-                    .limit(1);
-
-                if (error) throw error;
-                if (!data || data.length === 0) return;
-
-                const promo = data[0];
-
-                // Determine media URL: prefer explicit url_media, then try storage public URL using media_path or file_name
-                let mediaUrl = promo.url_media || null;
-                const possiblePath = promo.media_path || promo.file_name || promo.path || promo.media;
-
-                if (!mediaUrl && possiblePath) {
-                    // getPublicUrl in supabase-js v2 may return { data: { publicUrl } }
-                    const res = await supabase.storage.from('media').getPublicUrl(possiblePath);
-                    // Try different shapes
-                    mediaUrl = (res && (res.data && (res.data.publicUrl || res.data.publicURL))) || res?.publicURL || res?.publicUrl || null;
-
-                    // If still not available, try signed URL (valid for 60s)
-                    if (!mediaUrl && typeof supabase.storage.from === 'function') {
-                        const signed = await supabase.storage.from('media').createSignedUrl(possiblePath, 60);
-                        mediaUrl = (signed && signed.data && signed.data.signedUrl) || null;
-                    }
-                }
-
-                if (!mediaUrl) return;
-
-                const tipo_media = promo.tipo_media || (/(mp4|webm|ogg)$/i.test(mediaUrl) ? 'video' : 'imagen');
-
-                // Activate the promotion using the integrated API
-                window.setActivePromotion && window.setActivePromotion({ tipo_media, url_media: mediaUrl, titulo: promo.titulo || '' });
-            } catch (err) {
-                console.error('Error loading promotion from Supabase:', err);
-            }
-        }
     </script>
  <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'991838f98231116c',t:'MTc2MDk2MDIzOS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
