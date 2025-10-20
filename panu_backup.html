@@ -1602,6 +1602,10 @@ ${productInterest}
         document.addEventListener('DOMContentLoaded', function() {
             setupSearch();
             loadProducts();
+            // Load active promotion from Supabase storage/table
+            if (typeof loadPromotionFromSupabase === 'function') {
+                loadPromotionFromSupabase();
+            }
             updateComparisonPanel();
             console.log('Panu catalog loaded successfully');
         });
@@ -1620,6 +1624,53 @@ ${productInterest}
                 closeComparisonModal();
             }
         });
+        
+        // Load active promotion from Supabase table 'promociones' and bucket 'media'
+        async function loadPromotionFromSupabase() {
+            try {
+                if (!supabase) return;
+
+                // Try to find an active promotion (assumptions: table 'promociones' with 'activo' boolean
+                // and a column with the file path like 'media_path' or 'file_name' or a direct 'url_media')
+                const { data, error } = await supabase
+                    .from('promociones')
+                    .select('*')
+                    .eq('activo', true)
+                    .order('fecha_inicio', { ascending: false })
+                    .limit(1);
+
+                if (error) throw error;
+                if (!data || data.length === 0) return;
+
+                const promo = data[0];
+
+                // Determine media URL: prefer explicit url_media, then try storage public URL using media_path or file_name
+                let mediaUrl = promo.url_media || null;
+                const possiblePath = promo.media_path || promo.file_name || promo.path || promo.media;
+
+                if (!mediaUrl && possiblePath) {
+                    // getPublicUrl in supabase-js v2 may return { data: { publicUrl } }
+                    const res = await supabase.storage.from('media').getPublicUrl(possiblePath);
+                    // Try different shapes
+                    mediaUrl = (res && (res.data && (res.data.publicUrl || res.data.publicURL))) || res?.publicURL || res?.publicUrl || null;
+
+                    // If still not available, try signed URL (valid for 60s)
+                    if (!mediaUrl && typeof supabase.storage.from === 'function') {
+                        const signed = await supabase.storage.from('media').createSignedUrl(possiblePath, 60);
+                        mediaUrl = (signed && signed.data && signed.data.signedUrl) || null;
+                    }
+                }
+
+                if (!mediaUrl) return;
+
+                const tipo_media = promo.tipo_media || (/(mp4|webm|ogg)$/i.test(mediaUrl) ? 'video' : 'imagen');
+
+                // Activate the promotion using the integrated API
+                window.setActivePromotion && window.setActivePromotion({ tipo_media, url_media: mediaUrl, titulo: promo.titulo || '' });
+            } catch (err) {
+                console.error('Error loading promotion from Supabase:', err);
+            }
+        }
     </script>
  <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'991838f98231116c',t:'MTc2MDk2MDIzOS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
