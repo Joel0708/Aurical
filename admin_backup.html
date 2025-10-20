@@ -1,1094 +1,703 @@
-<!DOCTYPE html>
-<html lang="es" class="scroll-smooth">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel Admin - Panu Sublimaciones v1.090</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        'beige': '#F5F5DC',
-                        'gris-oscuro': '#4A4A4A',
-                        'marron': '#8B4513'
-                    }
-                }
-            }
-        }
-    </script>
-    <style>
+<!doctype html>
+<html lang="es">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panu Admin - Panel de Control</title>
+  <script src="/_sdk/element_sdk.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
         body {
             box-sizing: border-box;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
         }
         
-        .glass-effect {
+        .glass-card {
+            background: rgba(255, 255, 255, 0.9);
             backdrop-filter: blur(15px);
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-        
-        .text-gradient {
-            background: linear-gradient(45deg, #F5F5DC, #8B4513);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-        
-        .btn-primary {
-            background: linear-gradient(45deg, #F5F5DC, #8B4513);
+            border: 1px solid rgba(222, 184, 135, 0.3);
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
             transition: all 0.3s ease;
         }
         
-        .btn-primary:hover {
-            background: linear-gradient(45deg, #8B4513, #F5F5DC);
+        .glass-card:hover {
             transform: translateY(-2px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
         }
         
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
+        .btn-primary {
+            background: linear-gradient(135deg, #8B4513, #A0522D);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #A0522D, #CD853F);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 15px rgba(139, 69, 19, 0.3);
+        }
+        
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.8);
+            color: #8B4513;
+            border: 2px solid #8B4513;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .btn-secondary:hover {
+            background: #8B4513;
+            color: white;
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, #dc2626, #ef4444);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .btn-danger:hover {
+            background: linear-gradient(135deg, #b91c1c, #dc2626);
+            transform: translateY(-1px);
+        }
+        
+        .form-input {
+            background: rgba(255, 255, 255, 0.9);
+            border: 2px solid rgba(222, 184, 135, 0.3);
+            border-radius: 8px;
+            padding: 12px 16px;
             width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: #8B4513;
+            box-shadow: 0 0 0 3px rgba(139, 69, 19, 0.1);
+        }
+        
+        .form-select {
+            background: rgba(255, 255, 255, 0.9);
+            border: 2px solid rgba(222, 184, 135, 0.3);
+            border-radius: 8px;
+            padding: 12px 16px;
+            width: 100%;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .form-select:focus {
+            outline: none;
+            border-color: #8B4513;
+            box-shadow: 0 0 0 3px rgba(139, 69, 19, 0.1);
+        }
+        
+        .tab-button {
+            background: rgba(255, 255, 255, 0.6);
+            border: 2px solid transparent;
+            border-radius: 12px 12px 0 0;
+            padding: 12px 24px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            color: #6b7280;
+        }
+        
+        .tab-button.active {
+            background: rgba(255, 255, 255, 0.95);
+            border-color: rgba(222, 184, 135, 0.3);
+            border-bottom-color: transparent;
+            color: #8B4513;
+            transform: translateY(2px);
+        }
+        
+        .tab-button:hover:not(.active) {
+            background: rgba(255, 255, 255, 0.8);
+            color: #8B4513;
+        }
+        
+        .product-card {
+            background: rgba(255, 255, 255, 0.95);
+            border: 1px solid rgba(222, 184, 135, 0.2);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .product-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        .product-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+        
+        .status-available {
+            background: rgba(34, 197, 94, 0.1);
+            color: #16a34a;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            border: 1px solid rgba(34, 197, 94, 0.2);
+        }
+        
+        .status-unavailable {
+            background: rgba(239, 68, 68, 0.1);
+            color: #dc2626;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+        
+        .loading-spinner {
+            border: 3px solid #F5F5DC;
+            border-top: 3px solid #8B4513;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .modal-overlay {
+            background: rgba(0, 0, 0, 0.5);
             backdrop-filter: blur(5px);
         }
         
-        .modal.show {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .modal-content {
-            background: linear-gradient(135deg, #3d3426 0%, #2a2419 100%);
-            border-radius: 20px;
+        .file-drop-zone {
+            border: 2px dashed rgba(139, 69, 19, 0.3);
+            border-radius: 12px;
             padding: 2rem;
-            max-width: 600px;
-            width: 90%;
-            max-height: 90%;
-            overflow-y: auto;
-            position: relative;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
         }
         
-        .image-preview {
-            width: 100px;
-            height: 100px;
+        .file-drop-zone:hover {
+            border-color: #8B4513;
+            background: rgba(139, 69, 19, 0.05);
+        }
+        
+        .file-drop-zone.dragover {
+            border-color: #8B4513;
+            background: rgba(139, 69, 19, 0.1);
+        }
+        
+        /* Promotion Styles */
+        .promotion-card {
+            background: linear-gradient(135deg, rgba(139, 69, 19, 0.1), rgba(160, 82, 45, 0.1));
+            border: 2px solid rgba(139, 69, 19, 0.2);
+            border-radius: 16px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .promotion-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px rgba(139, 69, 19, 0.2);
+        }
+        
+        .promotion-media {
+            width: 100%;
+            height: 200px;
             object-fit: cover;
-            border-radius: 8px;
-            border: 2px solid rgba(245, 245, 220, 0.3);
         }
         
-        .connection-status {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 8px 16px;
+        .promotion-active {
+            background: rgba(34, 197, 94, 0.1);
+            color: #16a34a;
+            padding: 6px 12px;
             border-radius: 20px;
-            font-size: 12px;
-            font-weight: bold;
-            z-index: 100;
+            font-size: 0.8rem;
+            font-weight: 600;
+            border: 1px solid rgba(34, 197, 94, 0.3);
         }
         
-        .status-online {
-            background: #10B981;
-            color: white;
+        .promotion-inactive {
+            background: rgba(107, 114, 128, 0.1);
+            color: #6b7280;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            border: 1px solid rgba(107, 114, 128, 0.3);
         }
         
-        .status-offline {
-            background: #EF4444;
-            color: white;
-        }
-        
-        .status-caisy {
-            background: #8B5CF6;
-            color: white;
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .tab-button {
+                padding: 8px 16px;
+                font-size: 0.9rem;
+            }
+            
+            .product-image {
+                height: 150px;
+            }
+            
+            .promotion-media {
+                height: 150px;
+            }
         }
     </style>
-</head>
-<body class="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white font-sans">
-    <!-- Connection Status -->
-    <div id="connectionStatus" class="connection-status status-offline">
-        🔄 Conectando...
+  <style>@view-transition { navigation: auto; }</style>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+ </head>
+ <body><!-- Header -->
+  <header class="bg-gradient-to-r from-amber-900 to-amber-700 text-white shadow-lg">
+   <div class="max-w-7xl mx-auto px-4 py-4">
+    <div class="flex items-center justify-between">
+     <div class="flex items-center space-x-4"><img src="https://aurical.org/images/PanuLogo.png" alt="Panu Logo" class="w-12 h-12 rounded-full bg-white p-2" onerror="this.style.display='none';">
+      <div>
+       <h1 class="text-2xl md:text-3xl font-bold">Panu Admin</h1>
+       <p class="text-amber-100 text-sm md:text-base">Panel de Control Aesthetic</p>
+      </div>
+     </div>
+     <div class="flex items-center space-x-2 md:space-x-4"><a href="panu.html" target="_blank" class="btn-secondary bg-white bg-opacity-20 hover:bg-opacity-30 border-white text-white text-sm md:text-base"> 🌐 Ver Catálogo </a> <button onclick="showStats()" class="btn-primary text-sm md:text-base"> 📊 Estadísticas </button>
+     </div>
     </div>
-
-    <!-- Header -->
-    <header class="glass-effect border-b border-gray-700 sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-6 py-4">
-            <div class="flex justify-between items-center">
-                <div class="flex items-center space-x-4">
-                    <div class="text-3xl">🛠️</div>
-                    <div>
-                        <h1 class="text-2xl font-bold text-gradient">Panel Admin</h1>
-                        <p class="text-sm text-gray-300">Gestión de Productos Panu</p>
-                    </div>
-                </div>
-                <div class="flex items-center space-x-4">
-                    <span id="productCount" class="text-sm text-gray-400">0 productos</span>
-                    <button onclick="logout()" class="glass-effect px-4 py-2 rounded-lg hover:bg-white hover:bg-opacity-20 transition-all">
-                        🚪 Cerrar Sesión
-                    </button>
-                    <a href="index.html" class="glass-effect px-4 py-2 rounded-lg hover:bg-white hover:bg-opacity-20 transition-all">
-                        ← Volver al sitio
-                    </a>
-                </div>
-            </div>
+   </div>
+  </header><!-- Main Content -->
+  <main class="max-w-7xl mx-auto px-4 py-8"><!-- Tabs Navigation -->
+   <div class="flex flex-wrap gap-2 mb-6"><button onclick="showTab('products')" class="tab-button active" id="tab-products"> 📦 Productos </button> <button onclick="showTab('promotions')" class="tab-button" id="tab-promotions"> 🎯 Promociones </button> <button onclick="showTab('analytics')" class="tab-button" id="tab-analytics"> 📈 Analytics </button> <button onclick="showTab('settings')" class="tab-button" id="tab-settings"> ⚙️ Configuración </button>
+   </div><!-- Products Tab -->
+   <div id="products-tab" class="tab-content"><!-- Add Product Section -->
+    <section class="glass-card p-6 mb-8 fade-in">
+     <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">➕ Agregar Nuevo Producto</h2>
+     <form id="product-form" class="space-y-6">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+       <div><label for="product-name" class="block text-sm font-semibold text-gray-700 mb-2"> Nombre del Producto * </label> <input type="text" id="product-name" name="nombre" required class="form-input" placeholder="Ej: Taza Personalizada Premium">
+       </div>
+       <div><label for="product-category" class="block text-sm font-semibold text-gray-700 mb-2"> Categoría * </label> <select id="product-category" name="categoria" required class="form-select"> <option value="">Seleccionar categoría</option> <option value="tazas">☕ Tazas</option> <option value="remeras">👕 Remeras</option> <option value="gorras">🧢 Gorras</option> <option value="accesorios">🎁 Accesorios</option> <option value="bolsos">👜 Bolsos</option> <option value="termos">🍶 Termos</option> <option value="llaveros">🔑 Llaveros</option> <option value="mouse pads">🖱️ Mouse Pads</option> <option value="almohadas">🛏️ Almohadas</option> <option value="otros">📦 Otros</option> </select>
+       </div>
+      </div>
+      <div><label for="product-description" class="block text-sm font-semibold text-gray-700 mb-2"> Descripción </label> <textarea id="product-description" name="descripcion" rows="3" class="form-input" placeholder="Descripción detallada del producto..."></textarea>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+       <div><label for="product-price" class="block text-sm font-semibold text-gray-700 mb-2"> Precio (Gs.) * </label> <input type="number" id="product-price" name="precio" required min="0" class="form-input" placeholder="50000">
+       </div>
+       <div><label for="product-available" class="block text-sm font-semibold text-gray-700 mb-2"> Estado </label> <select id="product-available" name="disponible" class="form-select"> <option value="true">✅ Disponible</option> <option value="false">❌ No Disponible</option> </select>
+       </div>
+      </div><!-- Image Upload -->
+      <div><label class="block text-sm font-semibold text-gray-700 mb-2"> Imagen Principal </label>
+       <div class="file-drop-zone" onclick="document.getElementById('main-image').click()"><input type="file" id="main-image" accept="image/*" style="display: none;" onchange="handleImageUpload(this, 'main-preview')">
+        <div id="main-preview" class="text-center">
+         <div class="text-4xl mb-2">
+          📸
+         </div>
+         <p class="text-gray-600">Click para subir imagen principal</p>
+         <p class="text-sm text-gray-500 mt-1">JPG, PNG, WebP (máx. 5MB)</p>
         </div>
-    </header>
-
-    <!-- Main Content -->
-    <main class="max-w-7xl mx-auto px-6 py-8">
-        <!-- Actions Bar -->
-        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
-            <div>
-                <h2 class="text-3xl font-bold text-white mb-2">Gestión de Productos</h2>
-                <p class="text-gray-400">Administra el catálogo de productos de sublimación</p>
-            </div>
-            <div class="flex gap-3">
-                <button onclick="syncWithCaisy()" class="glass-effect px-4 py-2 rounded-lg hover:bg-white hover:bg-opacity-20 transition-all">
-                    🔄 Sincronizar
-                </button>
-                <button onclick="openProductModal()" class="btn-primary text-gris-oscuro px-6 py-3 rounded-lg font-bold">
-                    ➕ Nuevo Producto
-                </button>
-            </div>
+       </div>
+      </div><!-- Gallery Images -->
+      <div><label class="block text-sm font-semibold text-gray-700 mb-2"> Galería de Imágenes (Opcional) </label>
+       <div class="file-drop-zone" onclick="document.getElementById('gallery-images').click()"><input type="file" id="gallery-images" accept="image/*" multiple style="display: none;" onchange="handleGalleryUpload(this)">
+        <div id="gallery-preview" class="text-center">
+         <div class="text-4xl mb-2">
+          🖼️
+         </div>
+         <p class="text-gray-600">Click para subir imágenes adicionales</p>
+         <p class="text-sm text-gray-500 mt-1">Múltiples imágenes permitidas</p>
         </div>
-
-        <!-- Products Grid -->
-        <div id="productsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <!-- Products will be loaded here -->
-            <div class="col-span-full text-center py-16">
-                <div class="text-6xl mb-4">📦</div>
-                <h3 class="text-2xl font-bold text-gray-400 mb-2">Cargando productos...</h3>
-                <p class="text-gray-500">Un momento por favor</p>
-            </div>
+       </div>
+      </div>
+      <div class="flex justify-end space-x-4"><button type="button" onclick="resetProductForm()" class="btn-secondary"> 🗑️ Limpiar </button> <button type="submit" class="btn-primary"> 💾 Guardar Producto </button>
+      </div>
+     </form>
+    </section><!-- Products List -->
+    <section class="glass-card p-6">
+     <div class="flex items-center justify-between mb-6">
+      <h2 class="text-2xl font-bold text-gray-800 flex items-center">📋 Lista de Productos</h2><button onclick="loadProducts()" class="btn-secondary"> 🔄 Actualizar </button>
+     </div><!-- Loading State -->
+     <div id="products-loading" class="text-center py-8">
+      <div class="loading-spinner mx-auto mb-4"></div>
+      <p class="text-gray-600">Cargando productos...</p>
+     </div><!-- Products Grid -->
+     <div id="products-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 hidden"><!-- Products will be loaded here -->
+     </div><!-- Empty State -->
+     <div id="products-empty" class="text-center py-12 hidden">
+      <div class="text-6xl mb-4">
+       📦
+      </div>
+      <h3 class="text-xl font-bold text-gray-700 mb-2">No hay productos</h3>
+      <p class="text-gray-500">Agrega tu primer producto usando el formulario de arriba</p>
+     </div>
+    </section>
+   </div><!-- Promotions Tab -->
+   <div id="promotions-tab" class="tab-content hidden"><!-- Add Promotion Section -->
+    <section class="glass-card p-6 mb-8 fade-in">
+     <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">🎯 Crear Nueva Promoción</h2>
+     <form id="promotion-form" class="space-y-6">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+       <div><label for="promotion-title" class="block text-sm font-semibold text-gray-700 mb-2"> Título de la Promoción * </label> <input type="text" id="promotion-title" name="titulo" required class="form-input" placeholder="Ej: ¡50% OFF en Tazas!">
+       </div>
+       <div><label for="promotion-active" class="block text-sm font-semibold text-gray-700 mb-2"> Estado </label> <select id="promotion-active" name="activa" class="form-select"> <option value="true">🟢 Activa</option> <option value="false">🔴 Inactiva</option> </select>
+       </div>
+      </div>
+      <div><label for="promotion-description" class="block text-sm font-semibold text-gray-700 mb-2"> Descripción </label> <textarea id="promotion-description" name="descripcion" rows="3" class="form-input" placeholder="Descripción de la promoción..."></textarea>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+       <div><label for="promotion-start" class="block text-sm font-semibold text-gray-700 mb-2"> Fecha de Inicio </label> <input type="datetime-local" id="promotion-start" name="fecha_inicio" class="form-input">
+       </div>
+       <div><label for="promotion-end" class="block text-sm font-semibold text-gray-700 mb-2"> Fecha de Expiración </label> <input type="datetime-local" id="promotion-end" name="fecha_expiracion" class="form-input">
+       </div>
+      </div><!-- Media Upload -->
+      <div><label class="block text-sm font-semibold text-gray-700 mb-2"> Imagen o Video de la Promoción * </label>
+       <div class="file-drop-zone" onclick="document.getElementById('promotion-media').click()"><input type="file" id="promotion-media" accept="image/*,video/*" style="display: none;" onchange="handlePromotionMediaUpload(this)">
+        <div id="promotion-media-preview" class="text-center">
+         <div class="text-4xl mb-2">
+          🎬
+         </div>
+         <p class="text-gray-600">Click para subir imagen o video</p>
+         <p class="text-sm text-gray-500 mt-1">JPG, PNG, MP4, WebM (máx. 50MB)</p>
         </div>
-    </main>
-
-    <!-- Developer Footer -->
-    <footer class="mt-16 py-6 border-t border-gray-700">
-        <div class="max-w-7xl mx-auto px-6 text-center">
-            <p class="text-gray-400 text-sm">
-                🚀 <span class="text-beige font-semibold">Esteban Paez Building v1.092</span> - Desarrollado con pasión
-            </p>
+       </div>
+      </div>
+      <div class="flex justify-end space-x-4"><button type="button" onclick="resetPromotionForm()" class="btn-secondary"> 🗑️ Limpiar </button> <button type="submit" class="btn-primary"> 🚀 Crear Promoción </button>
+      </div>
+     </form>
+    </section><!-- Promotions List -->
+    <section class="glass-card p-6">
+     <div class="flex items-center justify-between mb-6">
+      <h2 class="text-2xl font-bold text-gray-800 flex items-center">🎯 Promociones Activas</h2><button onclick="loadPromotions()" class="btn-secondary"> 🔄 Actualizar </button>
+     </div><!-- Loading State -->
+     <div id="promotions-loading" class="text-center py-8">
+      <div class="loading-spinner mx-auto mb-4"></div>
+      <p class="text-gray-600">Cargando promociones...</p>
+     </div><!-- Promotions Grid -->
+     <div id="promotions-grid" class="grid grid-cols-1 md:grid-cols-2 gap-6 hidden"><!-- Promotions will be loaded here -->
+     </div><!-- Empty State -->
+     <div id="promotions-empty" class="text-center py-12 hidden">
+      <div class="text-6xl mb-4">
+       🎯
+      </div>
+      <h3 class="text-xl font-bold text-gray-700 mb-2">No hay promociones</h3>
+      <p class="text-gray-500">Crea tu primera promoción usando el formulario de arriba</p>
+     </div>
+    </section>
+   </div><!-- Analytics Tab -->
+   <div id="analytics-tab" class="tab-content hidden">
+    <section class="glass-card p-6">
+     <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">📈 Analytics Dashboard</h2>
+     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <div class="bg-gradient-to-r from-blue-500 to-blue-600 text-white p-6 rounded-lg">
+       <div class="flex items-center justify-between">
+        <div>
+         <p class="text-blue-100">Total Productos</p>
+         <p class="text-3xl font-bold" id="total-products">0</p>
         </div>
-    </footer>
-
-    <!-- Product Modal -->
-    <div id="productModal" class="modal">
-        <div class="modal-content glass-effect">
-            <button onclick="closeModal()" class="absolute top-4 right-4 text-2xl text-gray-400 hover:text-white transition-colors">
-                ×
-            </button>
-            
-            <h3 id="modalTitle" class="text-2xl font-bold text-gradient mb-6">Nuevo Producto</h3>
-            
-            <form id="productForm" class="space-y-6">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <label class="block text-beige font-bold mb-2">Nombre del Producto *</label>
-                        <input type="text" id="productName" required 
-                               class="w-full bg-gray-700 text-white p-3 rounded-lg border border-gray-600 focus:border-beige focus:outline-none">
-                    </div>
-                    
-                    <div>
-                        <label class="block text-beige font-bold mb-2">Precio *</label>
-                        <input type="number" id="productPrice" step="0.01" min="0" required 
-                               class="w-full bg-gray-700 text-white p-3 rounded-lg border border-gray-600 focus:border-beige focus:outline-none">
-                    </div>
-                </div>
-                
-                <div>
-                    <label class="block text-beige font-bold mb-2">Categoría *</label>
-                    <select id="productCategory" required 
-                            class="w-full bg-gray-700 text-white p-3 rounded-lg border border-gray-600 focus:border-beige focus:outline-none">
-                        <option value="">Seleccionar categoría...</option>
-                        <option value="Tazas">Tazas</option>
-                        <option value="Camisetas">Camisetas</option>
-                        <option value="Accesorios">Accesorios</option>
-                        <option value="Otros">Otros</option>
-                    </select>
-                </div>
-                
-                <div>
-                    <label class="block text-beige font-bold mb-2">Descripción</label>
-                    <textarea id="productDescription" rows="3" 
-                              class="w-full bg-gray-700 text-white p-3 rounded-lg border border-gray-600 focus:border-beige focus:outline-none resize-none"
-                              placeholder="Describe las características del producto..."></textarea>
-                </div>
-                
-                <div>
-                    <label class="block text-beige font-bold mb-2">Stock</label>
-                    <input type="number" id="productStock" min="0" value="10" 
-                           class="w-full bg-gray-700 text-white p-3 rounded-lg border border-gray-600 focus:border-beige focus:outline-none">
-                </div>
-                
-                <div>
-                    <label class="block text-beige font-bold mb-2">Imagen Principal</label>
-                    <input type="file" id="productImage" accept="image/*" 
-                           class="w-full bg-gray-700 text-white p-3 rounded-lg border border-gray-600 focus:border-beige focus:outline-none">
-                    <div id="imagePreview" class="mt-3 hidden">
-                        <img id="previewImg" class="image-preview">
-                    </div>
-                </div>
-                
-                <div class="flex justify-end space-x-4 pt-4">
-                    <button type="button" onclick="closeModal()" 
-                            class="px-6 py-3 glass-effect rounded-lg font-bold hover:bg-white hover:bg-opacity-20 transition-all">
-                        Cancelar
-                    </button>
-                    <button type="submit" 
-                            class="btn-primary text-gris-oscuro px-6 py-3 rounded-lg font-bold">
-                        💾 Guardar Producto
-                    </button>
-                </div>
-            </form>
+        <div class="text-4xl opacity-80">
+         📦
         </div>
+       </div>
+      </div>
+      <div class="bg-gradient-to-r from-green-500 to-green-600 text-white p-6 rounded-lg">
+       <div class="flex items-center justify-between">
+        <div>
+         <p class="text-green-100">Disponibles</p>
+         <p class="text-3xl font-bold" id="available-products">0</p>
+        </div>
+        <div class="text-4xl opacity-80">
+         ✅
+        </div>
+       </div>
+      </div>
+      <div class="bg-gradient-to-r from-purple-500 to-purple-600 text-white p-6 rounded-lg">
+       <div class="flex items-center justify-between">
+        <div>
+         <p class="text-purple-100">Categorías</p>
+         <p class="text-3xl font-bold" id="total-categories">0</p>
+        </div>
+        <div class="text-4xl opacity-80">
+         🏷️
+        </div>
+       </div>
+      </div>
+      <div class="bg-gradient-to-r from-orange-500 to-orange-600 text-white p-6 rounded-lg">
+       <div class="flex items-center justify-between">
+        <div>
+         <p class="text-orange-100">Promociones</p>
+         <p class="text-3xl font-bold" id="active-promotions">0</p>
+        </div>
+        <div class="text-4xl opacity-80">
+         🎯
+        </div>
+       </div>
+      </div>
+     </div>
+     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div class="bg-white p-6 rounded-lg border">
+       <h3 class="text-lg font-bold mb-4">📊 Productos por Categoría</h3>
+       <div id="category-chart" class="space-y-3"><!-- Category stats will be loaded here -->
+       </div>
+      </div>
+      <div class="bg-white p-6 rounded-lg border">
+       <h3 class="text-lg font-bold mb-4">💰 Rango de Precios</h3>
+       <div id="price-stats" class="space-y-3"><!-- Price stats will be loaded here -->
+       </div>
+      </div>
+     </div>
+    </section>
+   </div><!-- Settings Tab -->
+   <div id="settings-tab" class="tab-content hidden">
+    <section class="glass-card p-6">
+     <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">⚙️ Configuración del Sistema</h2>
+     <div class="space-y-8"><!-- Database Settings -->
+      <div class="border-b pb-6">
+       <h3 class="text-lg font-semibold mb-4">🗄️ Base de Datos</h3>
+       <div class="grid grid-cols-1 md:grid-cols-2 gap-4"><button onclick="exportData()" class="btn-secondary"> 📤 Exportar Datos </button> <button onclick="showImportModal()" class="btn-secondary"> 📥 Importar Datos </button>
+       </div>
+      </div><!-- Backup Settings -->
+      <div class="border-b pb-6">
+       <h3 class="text-lg font-semibold mb-4">💾 Respaldo</h3>
+       <div class="grid grid-cols-1 md:grid-cols-2 gap-4"><button onclick="createBackup()" class="btn-primary"> 🔄 Crear Respaldo </button> <button onclick="showRestoreModal()" class="btn-secondary"> 📋 Restaurar Respaldo </button>
+       </div>
+      </div><!-- System Info -->
+      <div>
+       <h3 class="text-lg font-semibold mb-4">ℹ️ Información del Sistema</h3>
+       <div class="bg-gray-50 p-4 rounded-lg space-y-2">
+        <p><strong>Versión:</strong> Panu Admin v2.0</p>
+        <p><strong>Base de Datos:</strong> Supabase</p>
+        <p><strong>Última Actualización:</strong> <span id="last-update">-</span></p>
+        <p><strong>Estado:</strong> <span class="text-green-600 font-semibold">🟢 Conectado</span></p>
+       </div>
+      </div>
+     </div>
+    </section>
+   </div>
+  </main><!-- Modals --> <!-- Edit Product Modal -->
+  <div id="edit-product-modal" class="fixed inset-0 modal-overlay z-50 hidden">
+   <div class="flex items-center justify-center min-h-screen p-4">
+    <div class="glass-card max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+     <div class="p-6">
+      <div class="flex items-center justify-between mb-6">
+       <h3 class="text-xl font-bold">✏️ Editar Producto</h3><button onclick="closeEditModal()" class="text-gray-500 hover:text-gray-700 text-2xl">×</button>
+      </div>
+      <form id="edit-product-form" class="space-y-4"><input type="hidden" id="edit-product-id">
+       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div><label class="block text-sm font-semibold text-gray-700 mb-2">Nombre *</label> <input type="text" id="edit-product-name" required class="form-input">
+        </div>
+        <div><label class="block text-sm font-semibold text-gray-700 mb-2">Categoría *</label> <select id="edit-product-category" required class="form-select"> <option value="tazas">☕ Tazas</option> <option value="remeras">👕 Remeras</option> <option value="gorras">🧢 Gorras</option> <option value="accesorios">🎁 Accesorios</option> <option value="bolsos">👜 Bolsos</option> <option value="termos">🍶 Termos</option> <option value="llaveros">🔑 Llaveros</option> <option value="mouse pads">🖱️ Mouse Pads</option> <option value="almohadas">🛏️ Almohadas</option> <option value="otros">📦 Otros</option> </select>
+        </div>
+       </div>
+       <div><label class="block text-sm font-semibold text-gray-700 mb-2">Descripción</label> <textarea id="edit-product-description" rows="3" class="form-input"></textarea>
+       </div>
+       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div><label class="block text-sm font-semibold text-gray-700 mb-2">Precio (Gs.) *</label> <input type="number" id="edit-product-price" required min="0" class="form-input">
+        </div>
+        <div><label class="block text-sm font-semibold text-gray-700 mb-2">Estado</label> <select id="edit-product-available" class="form-select"> <option value="true">✅ Disponible</option> <option value="false">❌ No Disponible</option> </select>
+        </div>
+       </div>
+       <div class="flex justify-end space-x-4 pt-4"><button type="button" onclick="closeEditModal()" class="btn-secondary"> ❌ Cancelar </button> <button type="submit" class="btn-primary"> 💾 Guardar Cambios </button>
+       </div>
+      </form>
+     </div>
     </div>
-
-    <script>
-        // Authentication check
-        async function checkAuthentication() {
-            try {
-                // First, try to verify with backend session
-                const response = await fetch('/admin/verify-session', {
-                    method: 'GET',
-                    credentials: 'include', // Include cookies for session
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                });
-
-                if (response.ok) {
-                    const data = await response.json();
-                    if (data.authenticated) {
-                        console.log('✅ Autenticado via backend session');
-                        return true;
-                    }
-                }
-            } catch (error) {
-                console.log('Backend session check failed, trying localStorage...');
-            }
-
-            // Fallback: Check localStorage for frontend auth
-            const authData = localStorage.getItem('panuAuth') || 
-                           localStorage.getItem('adminAuth') || 
-                           localStorage.getItem('isLoggedIn') ||
-                           localStorage.getItem('admin_logged_in');
-            
-            if (!authData) {
-                showNotification('Acceso denegado. Redirigiendo al login...', 'error');
-                setTimeout(() => {
-                    window.location.href = 'login.html';
-                }, 2000);
-                return false;
-            }
-
-            // Handle different auth formats
-            try {
-                // If it's just "true" string (simple format)
-                if (authData === 'true' || authData === 'yes') {
-                    console.log('✅ Autenticado via localStorage');
-                    return true;
-                }
-                
-                // If it's JSON format
-                const auth = JSON.parse(authData);
-                
-                // Check if it has timestamp for expiration
-                if (auth.timestamp) {
-                    const now = new Date().getTime();
-                    // Check if session expired (24 hours)
-                    if (now - auth.timestamp > 24 * 60 * 60 * 1000) {
-                        localStorage.removeItem('panuAuth');
-                        localStorage.removeItem('adminAuth');
-                        localStorage.removeItem('isLoggedIn');
-                        localStorage.removeItem('admin_logged_in');
-                        showNotification('Sesión expirada. Redirigiendo al login...', 'warning');
-                        setTimeout(() => {
-                            window.location.href = 'login.html';
-                        }, 2000);
-                        return false;
-                    }
-                }
-                
-                console.log('✅ Autenticado via localStorage JSON');
-                return true;
-            } catch (error) {
-                // If parsing fails, treat as simple boolean
-                const isAuth = authData === 'true' || authData === 'yes';
-                if (isAuth) {
-                    console.log('✅ Autenticado via localStorage simple');
-                }
-                return isAuth;
-            }
-        }
-
-        // Logout function
-        function logout() {
-            localStorage.removeItem('panuAuth');
-            showNotification('Sesión cerrada correctamente', 'success');
-            setTimeout(() => {
-                window.location.href = 'login.html';
-            }, 1500);
-        }
+   </div>
+  </div><!-- Success/Error Messages -->
+  <div id="message-container" class="fixed top-4 right-4 z-50 space-y-2"><!-- Messages will be inserted here -->
+  </div>
+  <script>
+        // Supabase configuration
+        const SUPABASE_URL = 'https://sxihojciyiypolxahoej.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN4aWhvamNpeWl5cG9seGFob2VqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA3Nzc3OTEsImV4cCI6MjA3NjM1Mzc5MX0.PGIGHwPmhTjpGCl-m61P2HXrSNwiR1ku8rgIshc-RUA';
+        
+        // Initialize Supabase client
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         // Global variables
-        let allProducts = [];
+        let currentProducts = [];
+        let currentPromotions = [];
         let editingProductId = null;
-        let caisyConnected = false;
-
-        // Helper function to extract text from Caisy rich text field
-        function extractTextFromDescription(descripcion) {
-            if (!descripcion) return '';
-            
-            // If it's already a string, return it
-            if (typeof descripcion === 'string') return descripcion;
-            
-            // If it has json field, try to extract text from it
-            if (descripcion.json) {
-                try {
-                    const jsonData = typeof descripcion.json === 'string' ? 
-                        JSON.parse(descripcion.json) : descripcion.json;
-                    
-                    // Extract text from Caisy's rich text JSON structure
-                    function extractTextFromNodes(nodes) {
-                        if (!nodes || !Array.isArray(nodes)) return '';
-                        
-                        return nodes.map(node => {
-                            if (node.type === 'text') return node.text || '';
-                            if (node.children) return extractTextFromNodes(node.children);
-                            return '';
-                        }).join(' ').trim();
-                    }
-                    
-                    if (jsonData.children) {
-                        return extractTextFromNodes(jsonData.children);
-                    }
-                    
-                    // Fallback: convert JSON to string
-                    return JSON.stringify(jsonData).replace(/[{}"\[\]]/g, ' ').trim();
-                } catch (error) {
-                    console.log('Error parsing description JSON:', error);
-                    return String(descripcion.json);
-                }
-            }
-            
-            // Fallback to string conversion
-            return String(descripcion);
-        }
-
-        // Caisy configuration
-        const CAISY_CONFIG = {
-            endpoint: 'https://cloud.caisy.io/api/v3/e/d5020874-9338-4ce1-9f01-872741713f01/graphql',
-            apiKey: 'DR4cQSjCXwdqZDs20vuKsPmGreNnSu4T'
-        };
 
         // Initialize admin panel
-        document.addEventListener('DOMContentLoaded', async function() {
-            const isAuthenticated = await checkAuthentication();
-            if (!isAuthenticated) return;
-            
-            initializeAdmin();
+        document.addEventListener('DOMContentLoaded', function() {
+            loadProducts();
+            loadPromotions();
+            updateAnalytics();
             setupFormHandlers();
+            
+            // Set default dates for promotion form
+            const now = new Date();
+            const tomorrow = new Date(now.getTime() + 24 * 60 * 60 * 1000);
+            
+            document.getElementById('promotion-start').value = now.toISOString().slice(0, 16);
+            document.getElementById('promotion-end').value = tomorrow.toISOString().slice(0, 16);
         });
 
-        // Initialize admin panel
-        async function initializeAdmin() {
-            updateConnectionStatus('connecting');
-            await loadProducts();
-            checkCaisyConnection();
+        // Tab Management
+        function showTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.add('hidden');
+            });
+            
+            // Remove active class from all buttons
+            document.querySelectorAll('.tab-button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Show selected tab
+            document.getElementById(`${tabName}-tab`).classList.remove('hidden');
+            document.getElementById(`tab-${tabName}`).classList.add('active');
+            
+            // Load data if needed
+            if (tabName === 'analytics') {
+                updateAnalytics();
+            }
         }
 
         // Setup form handlers
         function setupFormHandlers() {
-            // Product form submission
-            document.getElementById('productForm').addEventListener('submit', handleProductSubmit);
+            // Product form
+            document.getElementById('product-form').addEventListener('submit', handleProductSubmit);
             
-            // Image preview
-            document.getElementById('productImage').addEventListener('change', handleImagePreview);
+            // Promotion form
+            document.getElementById('promotion-form').addEventListener('submit', handlePromotionSubmit);
             
-            // Close modal on outside click
-            document.getElementById('productModal').addEventListener('click', function(e) {
-                if (e.target === this) closeModal();
-            });
-        }
-
-        // Check Caisy connection and discover blueprints
-        async function checkCaisyConnection() {
-            try {
-                // First, test basic connection
-                const testQuery = `query { __typename }`;
-                const response = await fetch(CAISY_CONFIG.endpoint, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'x-caisy-apikey': CAISY_CONFIG.apiKey
-                    },
-                    body: JSON.stringify({ query: testQuery })
-                });
-
-                if (response.ok) {
-                    caisyConnected = true;
-                    updateConnectionStatus('caisy');
-                    console.log('✅ Conectado a Caisy CMS');
-                    
-                    // Try to discover available blueprints
-                    await discoverCaisyBlueprints();
-                } else {
-                    throw new Error('Connection failed');
-                }
-            } catch (error) {
-                caisyConnected = false;
-                updateConnectionStatus('offline');
-                console.log('❌ Sin conexión a Caisy, modo offline');
-            }
-        }
-
-        // Discover available blueprints in Caisy
-        async function discoverCaisyBlueprints() {
-            try {
-                const introspectionQuery = `
-                    query IntrospectionQuery {
-                        __schema {
-                            queryType {
-                                fields {
-                                    name
-                                    type {
-                                        name
-                                    }
-                                }
-                            }
-                        }
-                    }
-                `;
-
-                const response = await fetch(CAISY_CONFIG.endpoint, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'x-caisy-apikey': CAISY_CONFIG.apiKey
-                    },
-                    body: JSON.stringify({ query: introspectionQuery })
-                });
-
-                if (response.ok) {
-                    const data = await response.json();
-                    const fields = data.data.__schema.queryType.fields;
-                    const productFields = fields.filter(field => 
-                        field.name.toLowerCase().includes('product') || 
-                        field.name.toLowerCase().includes('producto')
-                    );
-                    
-                    console.log('📋 Blueprints disponibles relacionados con productos:', productFields.map(f => f.name));
-                    
-                    if (productFields.length > 0) {
-                        showNotification(`✅ Encontrados ${productFields.length} blueprints de productos en Caisy`, 'success');
-                    } else {
-                        showNotification('⚠️ No se encontraron blueprints de productos en Caisy', 'warning');
-                    }
-                }
-            } catch (error) {
-                console.error('Error discovering blueprints:', error);
-            }
-        }
-
-        // Update connection status
-        function updateConnectionStatus(status) {
-            const statusEl = document.getElementById('connectionStatus');
-            
-            switch (status) {
-                case 'connecting':
-                    statusEl.className = 'connection-status status-offline';
-                    statusEl.textContent = '🔄 Conectando...';
-                    break;
-                case 'caisy':
-                    statusEl.className = 'connection-status status-caisy';
-                    statusEl.textContent = '☁️ Conectado a Caisy';
-                    break;
-                case 'offline':
-                    statusEl.className = 'connection-status status-offline';
-                    statusEl.textContent = '📱 Modo Local';
-                    break;
-            }
-        }
-
-        // Load products from Caisy and localStorage
-        async function loadProducts() {
-            try {
-                // Try to load from Caisy first
-                if (caisyConnected) {
-                    await loadFromCaisy();
-                } else {
-                    // Fallback to localStorage
-                    loadFromLocalStorage();
-                }
-            } catch (error) {
-                console.error('Error loading products:', error);
-                loadFromLocalStorage();
-            }
-        }
-
-        // Load products from Caisy with exact blueprint structure
-        async function loadFromCaisy() {
-            try {
-                console.log('🔍 Conectando con blueprint "Producto" en Caisy...');
-                
-                // Use the exact blueprint structure you provided
-                const query = `
-                    query {
-                        Producto {
-                            id
-                            nombre
-                            descripcion {
-                                json
-                            }
-                            precio
-                            categoria
-                            imagen_principal {
-                                src
-                            }
-                            imagenes_galeria {
-                                ... on Asset {
-                                    src
-                                }
-                            }
-                            disponible
-                            fecha_creacion
-                        }
-                    }
-                `;
-
-                console.log('📡 Ejecutando consulta GraphQL...');
-                
-                const response = await fetch(CAISY_CONFIG.endpoint, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'x-caisy-apikey': CAISY_CONFIG.apiKey
-                    },
-                    body: JSON.stringify({ query })
-                });
-
-                if (!response.ok) {
-                    throw new Error(`HTTP Error ${response.status}: ${response.statusText}`);
-                }
-
-                const data = await response.json();
-                
-                if (data.errors) {
-                    console.error('❌ GraphQL Errors:', data.errors);
-                    throw new Error(`GraphQL Error: ${data.errors[0]?.message || 'Unknown error'}`);
-                }
-
-                if (!data.data || !data.data.Producto) {
-                    console.log('⚠️ No se encontraron productos en Caisy');
-                    loadFromLocalStorage();
-                    return;
-                }
-
-                console.log('✅ Datos recibidos de Caisy:', data.data.Producto);
-
-                // Transform Caisy data to our format - handle both single item and array
-                const productos = Array.isArray(data.data.Producto) ? data.data.Producto : [data.data.Producto];
-                const caisyProducts = productos.map(producto => ({
-                    id: producto.id,
-                    name: producto.nombre,
-                    price: parseInt(producto.precio) || 0,
-                    description: extractTextFromDescription(producto.descripcion) || '',
-                    category: producto.categoria || 'Otros',
-                    stock: producto.disponible ? 10 : 0,
-                    images: [
-                        ...(producto.imagen_principal?.src ? [producto.imagen_principal.src] : []),
-                        ...(producto.imagenes_galeria?.map(img => img.src) || [])
-                    ],
-                    available: producto.disponible,
-                    createdAt: producto.fecha_creacion || new Date().toISOString(),
-                    source: 'caisy'
-                }));
-
-                // Merge with local products (keep local ones that aren't in Caisy)
-                const localProducts = JSON.parse(localStorage.getItem('panuProducts') || '[]');
-                const localOnlyProducts = localProducts.filter(local => 
-                    local.source === 'local' && !caisyProducts.find(caisy => caisy.id === local.id)
-                );
-
-                allProducts = [...caisyProducts, ...localOnlyProducts];
-
-                // Sync with localStorage
-                localStorage.setItem('panuProducts', JSON.stringify(allProducts));
-                
-                console.log('✅ Productos cargados desde Caisy:', caisyProducts.length);
-                console.log('📱 Productos locales mantenidos:', localOnlyProducts.length);
-                
-                showNotification(`✅ ${caisyProducts.length} productos desde Caisy + ${localOnlyProducts.length} locales`, 'success');
-                renderProducts();
-
-            } catch (error) {
-                console.error('Error loading from Caisy:', error);
-                showNotification('⚠️ Error conectando con Caisy, usando datos locales', 'warning');
-                
-                // Always fall back to localStorage instead of throwing
-                loadFromLocalStorage();
-            }
-        }
-
-        // Load products from localStorage
-        function loadFromLocalStorage() {
-            try {
-                const saved = localStorage.getItem('panuProducts');
-                if (saved) {
-                    allProducts = JSON.parse(saved);
-                    console.log('📦 Productos cargados desde localStorage:', allProducts.length);
-                } else {
-                    allProducts = [];
-                    console.log('📦 No hay productos guardados');
-                }
-                renderProducts();
-            } catch (error) {
-                console.error('Error loading from localStorage:', error);
-                allProducts = [];
-                renderProducts();
-            }
-        }
-
-        // Save product to Caisy (simplified for now)
-        async function saveProductToCaisy(productData) {
-            // For now, we'll skip Caisy saving until we confirm the blueprint structure
-            console.log('⚠️ Caisy saving disabled until blueprint is confirmed');
-            throw new Error('Caisy saving temporarily disabled');
-        }
-
-        // Delete product from Caisy (simplified for now)
-        async function deleteProductFromCaisy(productId) {
-            // For now, we'll skip Caisy deletion until we confirm the blueprint structure
-            console.log('⚠️ Caisy deletion disabled until blueprint is confirmed');
-            throw new Error('Caisy deletion temporarily disabled');
+            // Edit product form
+            document.getElementById('edit-product-form').addEventListener('submit', handleEditProductSubmit);
         }
 
         // Handle product form submission
         async function handleProductSubmit(e) {
             e.preventDefault();
             
-            const formData = {
-                name: document.getElementById('productName').value.trim(),
-                price: parseFloat(document.getElementById('productPrice').value),
-                category: document.getElementById('productCategory').value,
-                description: document.getElementById('productDescription').value.trim(),
-                stock: parseInt(document.getElementById('productStock').value) || 0,
-                images: []
-            };
-
-            // Validate required fields
-            if (!formData.name || !formData.price || !formData.category) {
-                showNotification('Por favor completa todos los campos requeridos', 'error');
-                return;
-            }
-
-            // Handle image
-            const imageFile = document.getElementById('productImage').files[0];
-            if (imageFile) {
-                formData.images = [await convertImageToBase64(imageFile)];
-            }
-
             try {
-                let savedProduct;
+                const formData = new FormData(e.target);
+                const mainImageFile = document.getElementById('main-image').files[0];
+                const galleryFiles = document.getElementById('gallery-images').files;
                 
-                if (editingProductId) {
-                    // Update existing product
-                    savedProduct = await updateProduct(editingProductId, formData);
-                    showNotification('Producto actualizado correctamente', 'success');
-                } else {
-                    // Create new product
-                    savedProduct = await createProduct(formData);
-                    showNotification('Producto creado correctamente', 'success');
+                // Upload main image if provided
+                let imagenPrincipal = null;
+                if (mainImageFile) {
+                    imagenPrincipal = await uploadImage(mainImageFile);
                 }
-
-                closeModal();
-                await loadProducts();
-
+                
+                // Upload gallery images if provided
+                let imagenGaleria = [];
+                if (galleryFiles.length > 0) {
+                    for (let file of galleryFiles) {
+                        const url = await uploadImage(file);
+                        imagenGaleria.push(url);
+                    }
+                }
+                
+                const productData = {
+                    nombre: formData.get('nombre'),
+                    categoria: formData.get('categoria'),
+                    descripcion: formData.get('descripcion') || null,
+                    precio: parseInt(formData.get('precio')),
+                    disponible: formData.get('disponible') === 'true',
+                    imagen_principal: imagenPrincipal,
+                    imagen_galeria: imagenGaleria.length > 0 ? imagenGaleria : null,
+                    fecha_creacion: new Date().toISOString()
+                };
+                
+                const { data, error } = await supabase
+                    .from('producto')
+                    .insert([productData])
+                    .select();
+                
+                if (error) throw error;
+                
+                showMessage('✅ Producto agregado exitosamente', 'success');
+                resetProductForm();
+                loadProducts();
+                updateAnalytics();
+                
             } catch (error) {
                 console.error('Error saving product:', error);
-                showNotification('Producto guardado localmente', 'success');
-                
-                // Fallback: save locally
-                if (editingProductId) {
-                    updateProductLocally(editingProductId, formData);
-                } else {
-                    createProductLocally(formData);
-                }
-                
-                closeModal();
-                renderProducts();
+                showMessage(`❌ Error al guardar producto: ${error.message}`, 'error');
             }
         }
 
-        // Create new product
-// ✅ Versión final, compatible con Caisy actual
-async function saveProductToCaisy(productData) {
-    const mutation = `
-      mutation CreateProducto($input: Producto_CreateInput!) {
-        createProducto(input: $input) {
-          id
-          nombre
-        }
-      }
-    `;
-
-    const variables = {
-        input: {
-            nombre: productData.name || "",
-            descripcion: productData.description || "",
-            precio: Number(productData.price) || 0,
-            categoria: productData.category || "Otros",
-            imagen_principal: productData.images && productData.images[0]
-                ? { src: productData.images[0] }
-                : null,
-            imagenes_galeria: (productData.images && productData.images.length > 1)
-                ? productData.images.slice(1).map(src => ({ src }))
-                : [],
-            disponible: !!productData.available || (productData.stock > 0),
-            fecha_creacion: productData.createdAt || new Date().toISOString()
-        }
-    };
-
-    try {
-        const res = await fetch(CAISY_CONFIG.endpoint, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'x-caisy-apikey': CAISY_CONFIG.apiKey
-            },
-            body: JSON.stringify({ query: mutation, variables })
-        });
-
-        const json = await res.json();
-        if (json.errors) {
-            console.error("Caisy GraphQL errors:", json.errors);
-            throw new Error(json.errors.map(e => e.message).join("; "));
-        }
-
-        const created = json.data?.createProducto;
-        if (!created || !created.id) {
-            throw new Error("No se recibió ID del nuevo producto desde Caisy.");
-        }
-
-        console.log("🟢 Producto creado en Caisy:", created);
-        return { id: created.id, title: created.nombre };
-    } catch (err) {
-        console.error("Error guardando en Caisy:", err);
-        throw err;
-    }
-}
-
-
-
-// Reemplaza createProduct por esta versión que intenta crear primero en Caisy
-async function createProduct(productData) {
-    // Primero, intentamos crear en Caisy
-    try {
-        if (!caisyConnected) {
-            // Intentar conectar ahora mismo antes de crear
-            await checkCaisyConnection();
-        }
-
-        if (caisyConnected) {
-            // Intentamos crear en Caisy
-            const result = await saveProductToCaisy({
-                ...productData,
-                createdAt: new Date().toISOString()
-            });
-
-            // Si salió bien, usamos el id de Caisy
-            const newProduct = {
-                id: result.id, // id del documento en Caisy
-                ...productData,
-                available: productData.stock > 0,
-                createdAt: productData.createdAt || new Date().toISOString(),
-                source: 'caisy'
-            };
-
-            // Guardamos en local también (para cachear y renderizar rápido)
-            allProducts.push(newProduct);
-            localStorage.setItem('panuProducts', JSON.stringify(allProducts));
-
-            return newProduct;
-        } else {
-            // Si no estamos conectados a Caisy, caerá al catch y guardará local
-            throw new Error('No conectado a Caisy');
-        }
-    } catch (error) {
-        // Si falló la creación remota, avisamos y guardamos local como fallback
-        console.warn('No se pudo crear en Caisy, guardando localmente:', error);
-        showNotification('⚠️ No se pudo crear en Caisy, producto guardado localmente', 'warning');
-
-        // Guardado local (igual que antes)
-        const newProduct = {
-            id: generateId(),
-            ...productData,
-            available: productData.stock > 0,
-            createdAt: new Date().toISOString(),
-            source: 'local'
-        };
-
-        allProducts.push(newProduct);
-        localStorage.setItem('panuProducts', JSON.stringify(allProducts));
-
-        return newProduct;
-    }
-}
-
-
-        // Update existing product
-        async function updateProduct(productId, productData) {
-            const productIndex = allProducts.findIndex(p => p.id === productId);
-            if (productIndex === -1) throw new Error('Product not found');
-
-            const updatedProduct = {
-                ...allProducts[productIndex],
-                ...productData,
-                available: productData.stock > 0
-            };
-
-            allProducts[productIndex] = updatedProduct;
-            localStorage.setItem('panuProducts', JSON.stringify(allProducts));
-            
-            return updatedProduct;
-        }
-
-        // Create product locally
-        function createProductLocally(productData) {
-            const newProduct = {
-                id: generateId(),
-                ...productData,
-                available: productData.stock > 0,
-                createdAt: new Date().toISOString(),
-                source: 'local'
-            };
-
-            allProducts.push(newProduct);
-            localStorage.setItem('panuProducts', JSON.stringify(allProducts));
-        }
-
-        // Update product locally
-        function updateProductLocally(productId, productData) {
-            const productIndex = allProducts.findIndex(p => p.id === productId);
-            if (productIndex !== -1) {
-                allProducts[productIndex] = {
-                    ...allProducts[productIndex],
-                    ...productData,
-                    available: productData.stock > 0
-                };
-                localStorage.setItem('panuProducts', JSON.stringify(allProducts));
-            }
-        }
-
-        // Delete product
-        async function deleteProduct(productId) {
-            // Custom confirmation modal instead of browser confirm
-            const confirmDelete = await showConfirmModal('¿Estás seguro de que quieres eliminar este producto?');
-            if (!confirmDelete) return;
-
-            // Always remove from local storage
-            allProducts = allProducts.filter(p => p.id !== productId);
-            localStorage.setItem('panuProducts', JSON.stringify(allProducts));
-            
-            showNotification('Producto eliminado correctamente', 'success');
-            renderProducts();
-        }
-
-        // Custom confirmation modal
-        function showConfirmModal(message) {
-            return new Promise((resolve) => {
-                const modal = document.createElement('div');
-                modal.className = 'modal show';
-                modal.innerHTML = `
-                    <div class="modal-content glass-effect max-w-md">
-                        <h3 class="text-xl font-bold text-white mb-4">Confirmar Acción</h3>
-                        <p class="text-gray-300 mb-6">${message}</p>
-                        <div class="flex gap-3 justify-end">
-                            <button onclick="this.closest('.modal').remove(); window.confirmResolve(false)" 
-                                    class="px-4 py-2 glass-effect rounded-lg hover:bg-white hover:bg-opacity-20 transition-all">
-                                Cancelar
-                            </button>
-                            <button onclick="this.closest('.modal').remove(); window.confirmResolve(true)" 
-                                    class="px-4 py-2 bg-red-600 hover:bg-red-700 rounded-lg transition-all">
-                                Eliminar
-                            </button>
-                        </div>
-                    </div>
-                `;
-                
-                window.confirmResolve = resolve;
-                document.body.appendChild(modal);
-            });
-        }
-
-        // Sync with Caisy
-        async function syncWithCaisy() {
-            showNotification('🔄 Sincronizando con Caisy...', 'info');
+        // Handle promotion form submission
+        async function handlePromotionSubmit(e) {
+            e.preventDefault();
             
             try {
-                await checkCaisyConnection();
-                if (caisyConnected) {
-                    await loadFromCaisy();
-                    showNotification('✅ Sincronización completada', 'success');
-                } else {
-                    showNotification('❌ No se pudo conectar con Caisy', 'error');
+                const formData = new FormData(e.target);
+                const mediaFile = document.getElementById('promotion-media').files[0];
+                
+                if (!mediaFile) {
+                    throw new Error('Debe seleccionar una imagen o video para la promoción');
                 }
+                
+                // Upload media file
+                const mediaUrl = await uploadMediaFile(mediaFile);
+                const mediaType = mediaFile.type.startsWith('video/') ? 'video' : 'image';
+                
+                const promotionData = {
+                    titulo: formData.get('titulo'),
+                    descripcion: formData.get('descripcion') || null,
+                    url_media: mediaUrl,
+                    tipo_media: mediaType,
+                    activa: formData.get('activa') === 'true',
+                    fecha_inicio: formData.get('fecha_inicio') ? new Date(formData.get('fecha_inicio')).toISOString() : null,
+                    fecha_expiracion: formData.get('fecha_expiracion') ? new Date(formData.get('fecha_expiracion')).toISOString() : null,
+                    fecha_creacion: new Date().toISOString()
+                };
+                
+                const { data, error } = await supabase
+                    .from('promociones')
+                    .insert([promotionData])
+                    .select();
+                
+                if (error) throw error;
+                
+                showMessage('🎯 Promoción creada exitosamente', 'success');
+                resetPromotionForm();
+                loadPromotions();
+                updateAnalytics();
+                
             } catch (error) {
-                console.error('Sync error:', error);
-                showNotification('❌ Error en la sincronización - usando datos locales', 'warning');
+                console.error('Error saving promotion:', error);
+                showMessage(`❌ Error al crear promoción: ${error.message}`, 'error');
             }
         }
 
-        // Render products in admin grid
-        function renderProducts() {
-            const grid = document.getElementById('productsGrid');
-            const productCount = document.getElementById('productCount');
-            
-            productCount.textContent = `${allProducts.length} productos`;
-            
-            if (allProducts.length === 0) {
-                grid.innerHTML = `
-                    <div class="col-span-full text-center py-16">
-                        <div class="text-6xl mb-4">📦</div>
-                        <h3 class="text-2xl font-bold text-gray-400 mb-2">No hay productos</h3>
-                        <p class="text-gray-500 mb-4">Comienza agregando tu primer producto</p>
-                        <button onclick="openProductModal()" class="btn-primary text-gris-oscuro px-6 py-3 rounded-lg font-bold">
-                            ➕ Crear Primer Producto
-                        </button>
-                    </div>
-                `;
-                return;
-            }
-
-            grid.innerHTML = allProducts.map(product => `
-                <div class="glass-effect rounded-xl overflow-hidden">
-                    <div class="relative">
-                        ${product.images && product.images.length > 0 ? `
-                            <img src="${product.images[0]}" alt="${product.name}" class="w-full h-48 object-cover">
-                        ` : `
-                            <div class="w-full h-48 bg-gradient-to-br from-beige to-marron flex items-center justify-center">
-                                <div class="text-4xl text-gris-oscuro">💎</div>
-                            </div>
-                        `}
-                        <div class="absolute top-2 right-2 flex gap-2">
-                            <span class="bg-${product.source === 'caisy' ? 'purple' : 'blue'}-500 text-white px-2 py-1 rounded text-xs">
-                                ${product.source === 'caisy' ? '☁️ Caisy' : '📱 Local'}
-                            </span>
-                            <span class="bg-beige text-gris-oscuro px-2 py-1 rounded text-xs font-bold">
-                                ${product.category}
-                            </span>
-                        </div>
-                        ${product.stock <= 5 ? `
-                            <div class="absolute top-2 left-2 bg-red-500 text-white px-2 py-1 rounded text-xs font-bold">
-                                ${product.stock <= 0 ? 'Agotado' : `Stock: ${product.stock}`}
-                            </div>
-                        ` : ''}
-                    </div>
-                    <div class="p-4">
-                        <h3 class="text-lg font-bold text-white mb-2">${product.name}</h3>
-                        <p class="text-gray-300 text-sm mb-3 line-clamp-2">${product.description || 'Sin descripción'}</p>
-                        <div class="flex justify-between items-center mb-4">
-                            <span class="text-xl font-bold text-marron">$${product.price.toFixed(2)}</span>
-                            <span class="text-sm text-gray-400">Stock: ${product.stock}</span>
-                        </div>
-                        <div class="flex gap-2">
-                            <button onclick="editProduct('${product.id}')" 
-                                    class="flex-1 glass-effect px-3 py-2 rounded-lg text-sm font-medium hover:bg-white hover:bg-opacity-20 transition-all">
-                                ✏️ Editar
-                            </button>
-                            <button onclick="deleteProduct('${product.id}')" 
-                                    class="px-3 py-2 bg-red-600 hover:bg-red-700 rounded-lg text-sm font-medium transition-all">
-                                🗑️
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        // Open product modal
-        function openProductModal(productId = null) {
-            const modal = document.getElementById('productModal');
-            const modalTitle = document.getElementById('modalTitle');
-            const form = document.getElementById('productForm');
-            
-            editingProductId = productId;
-            
-            if (productId) {
-                const product = allProducts.find(p => p.id === productId);
-                if (product) {
-                    modalTitle.textContent = 'Editar Producto';
-                    fillForm(product);
-                }
-            } else {
-                modalTitle.textContent = 'Nuevo Producto';
-                form.reset();
-                hideImagePreview();
-            }
-            
-            modal.classList.add('show');
-        }
-
-        // Edit product
-        function editProduct(productId) {
-            openProductModal(productId);
-        }
-
-        // Fill form with product data
-        function fillForm(product) {
-            document.getElementById('productName').value = product.name;
-            document.getElementById('productPrice').value = product.price;
-            document.getElementById('productCategory').value = product.category;
-            document.getElementById('productDescription').value = product.description || '';
-            document.getElementById('productStock').value = product.stock;
-            
-            if (product.images && product.images.length > 0) {
-                showImagePreview(product.images[0]);
-            } else {
-                hideImagePreview();
-            }
-        }
-
-        // Close modal
-        function closeModal() {
-            document.getElementById('productModal').classList.remove('show');
-            editingProductId = null;
-        }
-
-        // Handle image preview
-        function handleImagePreview(e) {
-            const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = (e) => showImagePreview(e.target.result);
-                reader.readAsDataURL(file);
-            } else {
-                hideImagePreview();
-            }
-        }
-
-        // Show image preview
-        function showImagePreview(src) {
-            const preview = document.getElementById('imagePreview');
-            const img = document.getElementById('previewImg');
-            img.src = src;
-            preview.classList.remove('hidden');
-        }
-
-        // Hide image preview
-        function hideImagePreview() {
-            document.getElementById('imagePreview').classList.add('hidden');
-        }
-
-        // Convert image to base64
-        function convertImageToBase64(file) {
+        // Create data URL as fallback when storage is not available
+        async function createDataUrl(file) {
             return new Promise((resolve, reject) => {
                 const reader = new FileReader();
                 reader.onload = () => resolve(reader.result);
@@ -1097,27 +706,570 @@ async function createProduct(productData) {
             });
         }
 
-        // Generate unique ID
-        function generateId() {
-            return 'prod_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+        // Upload media file - now uses Data URLs directly
+        async function uploadMediaFile(file) {
+            try {
+                // Always use Data URL as primary method (works without bucket setup)
+                console.log('Using Data URL for media storage (no bucket required)');
+                const dataUrl = await createDataUrl(file);
+                
+                // Show info message about storage method
+                if (file.size > 5 * 1024 * 1024) { // 5MB
+                    showMessage('ℹ️ Archivo grande detectado. Para mejor rendimiento, configura el bucket "media" en Supabase Storage.', 'info');
+                }
+                
+                return dataUrl;
+            } catch (error) {
+                console.error('Error processing file:', error);
+                throw new Error(`Error al procesar archivo: ${error.message}`);
+            }
         }
 
-        // Show notification
-        function showNotification(message, type = 'info') {
-            const notification = document.createElement('div');
-            notification.className = `fixed top-20 right-4 z-50 px-6 py-3 rounded-lg text-white font-medium max-w-sm ${
-                type === 'success' ? 'bg-green-600' : 
-                type === 'error' ? 'bg-red-600' : 
-                type === 'warning' ? 'bg-yellow-600' : 'bg-blue-600'
-            }`;
-            notification.textContent = message;
+        // Upload image (for products)
+        async function uploadImage(file) {
+            // For now, convert to data URL as fallback
+            // In production, you would upload to Supabase Storage
+            return await createDataUrl(file);
+        }
+
+        // Load products from database
+        async function loadProducts() {
+            try {
+                showProductsLoading(true);
+                
+                const { data, error } = await supabase
+                    .from('producto')
+                    .select('*')
+                    .order('fecha_creacion', { ascending: false });
+
+                if (error) throw error;
+
+                currentProducts = data || [];
+                displayProducts();
+                showProductsLoading(false);
+                
+            } catch (error) {
+                console.error('Error loading products:', error);
+                showMessage('❌ Error al cargar productos', 'error');
+                showProductsLoading(false);
+            }
+        }
+
+        // Load promotions from database
+        async function loadPromotions() {
+            try {
+                showPromotionsLoading(true);
+                
+                const { data, error } = await supabase
+                    .from('promociones')
+                    .select('*')
+                    .order('fecha_creacion', { ascending: false });
+
+                if (error) throw error;
+
+                currentPromotions = data || [];
+                displayPromotions();
+                showPromotionsLoading(false);
+                
+            } catch (error) {
+                console.error('Error loading promotions:', error);
+                showMessage('❌ Error al cargar promociones', 'error');
+                showPromotionsLoading(false);
+            }
+        }
+
+        // Display products
+        function displayProducts() {
+            const grid = document.getElementById('products-grid');
+            const empty = document.getElementById('products-empty');
             
-            document.body.appendChild(notification);
+            if (currentProducts.length === 0) {
+                grid.classList.add('hidden');
+                empty.classList.remove('hidden');
+                return;
+            }
+            
+            grid.classList.remove('hidden');
+            empty.classList.add('hidden');
+            
+            grid.innerHTML = currentProducts.map(product => `
+                <div class="product-card fade-in">
+                    <div class="relative">
+                        <img src="${product.imagen_principal || getPlaceholderImage()}" 
+                             alt="${product.nombre}" class="product-image">
+                        <div class="absolute top-3 right-3">
+                            ${product.disponible ? 
+                                '<span class="status-available">✅ Disponible</span>' : 
+                                '<span class="status-unavailable">❌ No Disponible</span>'
+                            }
+                        </div>
+                    </div>
+                    
+                    <div class="p-4">
+                        <div class="flex items-start justify-between mb-2">
+                            <h3 class="font-bold text-gray-800 text-lg">${product.nombre}</h3>
+                            <span class="text-xs bg-gray-100 px-2 py-1 rounded">${getCategoryIcon(product.categoria)} ${product.categoria}</span>
+                        </div>
+                        
+                        ${product.descripcion ? `
+                            <p class="text-gray-600 text-sm mb-3">${product.descripcion}</p>
+                        ` : ''}
+                        
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="text-xl font-bold text-amber-700">Gs. ${product.precio.toLocaleString()}</span>
+                        </div>
+                        
+                        <div class="flex space-x-2">
+                            <button onclick="editProduct(${product.id})" class="btn-secondary flex-1 text-sm">
+                                ✏️ Editar
+                            </button>
+                            <button onclick="deleteProduct(${product.id})" class="btn-danger flex-1 text-sm">
+                                🗑️ Eliminar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Display promotions
+        function displayPromotions() {
+            const grid = document.getElementById('promotions-grid');
+            const empty = document.getElementById('promotions-empty');
+            
+            if (currentPromotions.length === 0) {
+                grid.classList.add('hidden');
+                empty.classList.remove('hidden');
+                return;
+            }
+            
+            grid.classList.remove('hidden');
+            empty.classList.add('hidden');
+            
+            grid.innerHTML = currentPromotions.map(promotion => `
+                <div class="promotion-card fade-in">
+                    <div class="relative">
+                        ${promotion.tipo_media === 'video' ? 
+                            `<video src="${promotion.url_media}" class="promotion-media" controls></video>` :
+                            `<img src="${promotion.url_media}" alt="${promotion.titulo}" class="promotion-media">`
+                        }
+                        <div class="absolute top-3 right-3">
+                            ${promotion.activa ? 
+                                '<span class="promotion-active">🟢 Activa</span>' : 
+                                '<span class="promotion-inactive">🔴 Inactiva</span>'
+                            }
+                        </div>
+                    </div>
+                    
+                    <div class="p-4">
+                        <h3 class="font-bold text-gray-800 text-lg mb-2">${promotion.titulo}</h3>
+                        
+                        ${promotion.descripcion ? `
+                            <p class="text-gray-600 text-sm mb-3">${promotion.descripcion}</p>
+                        ` : ''}
+                        
+                        <div class="text-sm text-gray-500 mb-4">
+                            ${promotion.fecha_inicio ? `
+                                <p>📅 Inicio: ${new Date(promotion.fecha_inicio).toLocaleDateString()}</p>
+                            ` : ''}
+                            ${promotion.fecha_expiracion ? `
+                                <p>⏰ Expira: ${new Date(promotion.fecha_expiracion).toLocaleDateString()}</p>
+                            ` : ''}
+                        </div>
+                        
+                        <div class="flex space-x-2">
+                            <button onclick="togglePromotionStatus(${promotion.id}, ${!promotion.activa})" 
+                                    class="btn-secondary flex-1 text-sm">
+                                ${promotion.activa ? '⏸️ Desactivar' : '▶️ Activar'}
+                            </button>
+                            <button onclick="deletePromotion(${promotion.id})" class="btn-danger flex-1 text-sm">
+                                🗑️ Eliminar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Get category icon
+        function getCategoryIcon(category) {
+            const icons = {
+                'tazas': '☕',
+                'remeras': '👕',
+                'accesorios': '🎁',
+                'otros': '📦',
+                'gorras': '🧢',
+                'bolsos': '👜',
+                'termos': '🍶',
+                'llaveros': '🔑',
+                'mouse pads': '🖱️',
+                'almohadas': '🛏️'
+            };
+            return icons[category.toLowerCase()] || '📦';
+        }
+
+        // Get placeholder image
+        function getPlaceholderImage() {
+            return 'data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'300\' height=\'200\' viewBox=\'0 0 300 200\'%3E%3Crect width=\'300\' height=\'200\' fill=\'%23f3f4f6\'/%3E%3Ctext x=\'150\' y=\'100\' text-anchor=\'middle\' font-size=\'16\' fill=\'%236b7280\'%3EPanu Sublimaciones%3C/text%3E%3Ctext x=\'150\' y=\'120\' text-anchor=\'middle\' font-size=\'12\' fill=\'%239ca3af\'%3EImagen próximamente%3C/text%3E%3C/svg%3E';
+        }
+
+        // Edit product
+        function editProduct(productId) {
+            const product = currentProducts.find(p => p.id === productId);
+            if (!product) return;
+            
+            editingProductId = productId;
+            
+            // Fill form with product data
+            document.getElementById('edit-product-id').value = product.id;
+            document.getElementById('edit-product-name').value = product.nombre;
+            document.getElementById('edit-product-category').value = product.categoria;
+            document.getElementById('edit-product-description').value = product.descripcion || '';
+            document.getElementById('edit-product-price').value = product.precio;
+            document.getElementById('edit-product-available').value = product.disponible.toString();
+            
+            // Show modal
+            document.getElementById('edit-product-modal').classList.remove('hidden');
+        }
+
+        // Handle edit product form submission
+        async function handleEditProductSubmit(e) {
+            e.preventDefault();
+            
+            try {
+                const formData = new FormData(e.target);
+                
+                const updateData = {
+                    nombre: formData.get('nombre') || document.getElementById('edit-product-name').value,
+                    categoria: formData.get('categoria') || document.getElementById('edit-product-category').value,
+                    descripcion: formData.get('descripcion') || document.getElementById('edit-product-description').value || null,
+                    precio: parseInt(formData.get('precio') || document.getElementById('edit-product-price').value),
+                    disponible: (formData.get('disponible') || document.getElementById('edit-product-available').value) === 'true'
+                };
+                
+                const { data, error } = await supabase
+                    .from('producto')
+                    .update(updateData)
+                    .eq('id', editingProductId)
+                    .select();
+                
+                if (error) throw error;
+                
+                showMessage('✅ Producto actualizado exitosamente', 'success');
+                closeEditModal();
+                loadProducts();
+                updateAnalytics();
+                
+            } catch (error) {
+                console.error('Error updating product:', error);
+                showMessage(`❌ Error al actualizar producto: ${error.message}`, 'error');
+            }
+        }
+
+        // Delete product
+        async function deleteProduct(productId) {
+            if (!confirm('¿Estás seguro de que quieres eliminar este producto?')) return;
+            
+            try {
+                const { error } = await supabase
+                    .from('producto')
+                    .delete()
+                    .eq('id', productId);
+                
+                if (error) throw error;
+                
+                showMessage('🗑️ Producto eliminado exitosamente', 'success');
+                loadProducts();
+                updateAnalytics();
+                
+            } catch (error) {
+                console.error('Error deleting product:', error);
+                showMessage(`❌ Error al eliminar producto: ${error.message}`, 'error');
+            }
+        }
+
+        // Toggle promotion status
+        async function togglePromotionStatus(promotionId, newStatus) {
+            try {
+                const { error } = await supabase
+                    .from('promociones')
+                    .update({ activa: newStatus })
+                    .eq('id', promotionId);
+                
+                if (error) throw error;
+                
+                showMessage(`🎯 Promoción ${newStatus ? 'activada' : 'desactivada'} exitosamente`, 'success');
+                loadPromotions();
+                updateAnalytics();
+                
+            } catch (error) {
+                console.error('Error updating promotion:', error);
+                showMessage(`❌ Error al actualizar promoción: ${error.message}`, 'error');
+            }
+        }
+
+        // Delete promotion
+        async function deletePromotion(promotionId) {
+            if (!confirm('¿Estás seguro de que quieres eliminar esta promoción?')) return;
+            
+            try {
+                const { error } = await supabase
+                    .from('promociones')
+                    .delete()
+                    .eq('id', promotionId);
+                
+                if (error) throw error;
+                
+                showMessage('🗑️ Promoción eliminada exitosamente', 'success');
+                loadPromotions();
+                updateAnalytics();
+                
+            } catch (error) {
+                console.error('Error deleting promotion:', error);
+                showMessage(`❌ Error al eliminar promoción: ${error.message}`, 'error');
+            }
+        }
+
+        // Update analytics
+        function updateAnalytics() {
+            const totalProducts = currentProducts.length;
+            const availableProducts = currentProducts.filter(p => p.disponible).length;
+            const categories = [...new Set(currentProducts.map(p => p.categoria))];
+            const activePromotions = currentPromotions.filter(p => p.activa).length;
+            
+            document.getElementById('total-products').textContent = totalProducts;
+            document.getElementById('available-products').textContent = availableProducts;
+            document.getElementById('total-categories').textContent = categories.length;
+            document.getElementById('active-promotions').textContent = activePromotions;
+            
+            // Category chart
+            const categoryChart = document.getElementById('category-chart');
+            const categoryCounts = {};
+            currentProducts.forEach(product => {
+                categoryCounts[product.categoria] = (categoryCounts[product.categoria] || 0) + 1;
+            });
+            
+            categoryChart.innerHTML = Object.entries(categoryCounts).map(([category, count]) => `
+                <div class="flex items-center justify-between p-2 bg-gray-50 rounded">
+                    <span>${getCategoryIcon(category)} ${category}</span>
+                    <span class="font-bold">${count}</span>
+                </div>
+            `).join('') || '<p class="text-gray-500">No hay datos disponibles</p>';
+            
+            // Price stats
+            const priceStats = document.getElementById('price-stats');
+            if (currentProducts.length > 0) {
+                const prices = currentProducts.map(p => p.precio);
+                const minPrice = Math.min(...prices);
+                const maxPrice = Math.max(...prices);
+                const avgPrice = prices.reduce((a, b) => a + b, 0) / prices.length;
+                
+                priceStats.innerHTML = `
+                    <div class="flex items-center justify-between p-2 bg-gray-50 rounded">
+                        <span>💰 Precio Mínimo</span>
+                        <span class="font-bold">Gs. ${minPrice.toLocaleString()}</span>
+                    </div>
+                    <div class="flex items-center justify-between p-2 bg-gray-50 rounded">
+                        <span>💎 Precio Máximo</span>
+                        <span class="font-bold">Gs. ${maxPrice.toLocaleString()}</span>
+                    </div>
+                    <div class="flex items-center justify-between p-2 bg-gray-50 rounded">
+                        <span>📊 Precio Promedio</span>
+                        <span class="font-bold">Gs. ${Math.round(avgPrice).toLocaleString()}</span>
+                    </div>
+                `;
+            } else {
+                priceStats.innerHTML = '<p class="text-gray-500">No hay datos disponibles</p>';
+            }
+            
+            // Update last update time
+            document.getElementById('last-update').textContent = new Date().toLocaleString();
+        }
+
+        // Image upload handlers
+        function handleImageUpload(input, previewId) {
+            const file = input.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById(previewId).innerHTML = `
+                    <img src="${e.target.result}" alt="Preview" class="max-w-full h-32 object-cover rounded">
+                    <p class="text-sm text-gray-600 mt-2">${file.name}</p>
+                `;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function handleGalleryUpload(input) {
+            const files = input.files;
+            if (files.length === 0) return;
+            
+            const preview = document.getElementById('gallery-preview');
+            preview.innerHTML = `
+                <div class="text-2xl mb-2">🖼️</div>
+                <p class="text-gray-600">${files.length} imagen(es) seleccionada(s)</p>
+                <div class="flex flex-wrap gap-2 mt-2 justify-center">
+                    ${Array.from(files).slice(0, 4).map(file => `
+                        <div class="w-16 h-16 bg-gray-200 rounded flex items-center justify-center text-xs">
+                            ${file.name.substring(0, 8)}...
+                        </div>
+                    `).join('')}
+                    ${files.length > 4 ? `<div class="w-16 h-16 bg-gray-200 rounded flex items-center justify-center text-xs">+${files.length - 4}</div>` : ''}
+                </div>
+            `;
+        }
+
+        function handlePromotionMediaUpload(input) {
+            const file = input.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const isVideo = file.type.startsWith('video/');
+                document.getElementById('promotion-media-preview').innerHTML = `
+                    ${isVideo ? 
+                        `<video src="${e.target.result}" class="max-w-full h-32 object-cover rounded" controls></video>` :
+                        `<img src="${e.target.result}" alt="Preview" class="max-w-full h-32 object-cover rounded">`
+                    }
+                    <p class="text-sm text-gray-600 mt-2">${file.name}</p>
+                `;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // Form reset functions
+        function resetProductForm() {
+            document.getElementById('product-form').reset();
+            document.getElementById('main-preview').innerHTML = `
+                <div class="text-4xl mb-2">📸</div>
+                <p class="text-gray-600">Click para subir imagen principal</p>
+                <p class="text-sm text-gray-500 mt-1">JPG, PNG, WebP (máx. 5MB)</p>
+            `;
+            document.getElementById('gallery-preview').innerHTML = `
+                <div class="text-4xl mb-2">🖼️</div>
+                <p class="text-gray-600">Click para subir imágenes adicionales</p>
+                <p class="text-sm text-gray-500 mt-1">Múltiples imágenes permitidas</p>
+            `;
+        }
+
+        function resetPromotionForm() {
+            document.getElementById('promotion-form').reset();
+            document.getElementById('promotion-media-preview').innerHTML = `
+                <div class="text-4xl mb-2">🎬</div>
+                <p class="text-gray-600">Click para subir imagen o video</p>
+                <p class="text-sm text-gray-500 mt-1">JPG, PNG, MP4, WebM (máx. 50MB)</p>
+            `;
+            
+            // Reset dates
+            const now = new Date();
+            const tomorrow = new Date(now.getTime() + 24 * 60 * 60 * 1000);
+            
+            document.getElementById('promotion-start').value = now.toISOString().slice(0, 16);
+            document.getElementById('promotion-end').value = tomorrow.toISOString().slice(0, 16);
+        }
+
+        // Modal functions
+        function closeEditModal() {
+            document.getElementById('edit-product-modal').classList.add('hidden');
+            editingProductId = null;
+        }
+
+        // Loading states
+        function showProductsLoading(show) {
+            const loading = document.getElementById('products-loading');
+            const grid = document.getElementById('products-grid');
+            const empty = document.getElementById('products-empty');
+            
+            if (show) {
+                loading.classList.remove('hidden');
+                grid.classList.add('hidden');
+                empty.classList.add('hidden');
+            } else {
+                loading.classList.add('hidden');
+            }
+        }
+
+        function showPromotionsLoading(show) {
+            const loading = document.getElementById('promotions-loading');
+            const grid = document.getElementById('promotions-grid');
+            const empty = document.getElementById('promotions-empty');
+            
+            if (show) {
+                loading.classList.remove('hidden');
+                grid.classList.add('hidden');
+                empty.classList.add('hidden');
+            } else {
+                loading.classList.add('hidden');
+            }
+        }
+
+        // Message system
+        function showMessage(message, type = 'info') {
+            const container = document.getElementById('message-container');
+            const messageEl = document.createElement('div');
+            
+            const bgColor = type === 'success' ? 'bg-green-500' : 
+                           type === 'error' ? 'bg-red-500' : 'bg-blue-500';
+            
+            messageEl.className = `${bgColor} text-white px-6 py-3 rounded-lg shadow-lg fade-in`;
+            messageEl.textContent = message;
+            
+            container.appendChild(messageEl);
             
             setTimeout(() => {
-                notification.remove();
+                messageEl.remove();
             }, 5000);
         }
+
+        // Settings functions
+        function showStats() {
+            showTab('analytics');
+        }
+
+        function exportData() {
+            const data = {
+                products: currentProducts,
+                promotions: currentPromotions,
+                exportDate: new Date().toISOString()
+            };
+            
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `panu-backup-${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+            
+            showMessage('📤 Datos exportados exitosamente', 'success');
+        }
+
+        function showImportModal() {
+            showMessage('📥 Función de importación próximamente disponible', 'info');
+        }
+
+        function createBackup() {
+            exportData();
+        }
+
+        function showRestoreModal() {
+            showMessage('📋 Función de restauración próximamente disponible', 'info');
+        }
+
+        // Close modals when clicking outside
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('modal-overlay')) {
+                closeEditModal();
+            }
+        });
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeEditModal();
+            }
+        });
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98f301e80698f1bb',t:'MTc2MDU3MDAxMS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9918eda9903e01ac',t:'MTc2MDk2NzY0MC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
