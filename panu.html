@@ -10,18 +10,27 @@
   <style>
         body {
             box-sizing: border-box;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
         }
         
         .gradient-bg {
-            background: linear-gradient(135deg, #8B4513 0%, #A0522D 100%);
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
         }
         
         .product-card {
-            background: linear-gradient(145deg, #FAF0E6, #F5F5DC);
-            border: 1px solid rgba(139, 69, 19, 0.1);
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(222, 184, 135, 0.3);
             transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
+        }
+        
+        .product-card:hover {
+            background: rgba(255, 255, 255, 0.9);
+            border-color: rgba(222, 184, 135, 0.5);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
         }
         
         .product-card:active {
@@ -29,9 +38,17 @@
         }
         
         .btn-primary {
-            background: linear-gradient(135deg, #8B4513, #A0522D);
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(222, 184, 135, 0.4);
+            color: white;
             transition: all 0.3s ease;
-            min-height: 44px; /* iOS touch target */
+            min-height: 44px;
+        }
+        
+        .btn-primary:hover {
+            background: rgba(222, 184, 135, 0.9);
+            color: #1a1a1a;
         }
         
         .btn-primary:active {
@@ -39,15 +56,24 @@
         }
         
         .category-btn {
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(222, 184, 135, 0.3);
+            color: #2d2d2d;
             transition: all 0.3s ease;
-            border: 2px solid transparent;
             min-height: 44px;
             min-width: 44px;
         }
         
         .category-btn.active {
-            background: linear-gradient(135deg, #8B4513, #A0522D);
-            color: white;
+            background: rgba(222, 184, 135, 0.9);
+            color: #1a1a1a;
+            border-color: rgba(222, 184, 135, 0.6);
+        }
+        
+        .category-btn:hover {
+            background: rgba(255, 255, 255, 0.8);
+            border-color: rgba(222, 184, 135, 0.5);
         }
         
         .category-btn:active {
@@ -83,8 +109,9 @@
         }
         
         .modal-content {
-            background: linear-gradient(145deg, #FAF0E6, #F5F5DC);
-            border: 1px solid rgba(139, 69, 19, 0.2);
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(222, 184, 135, 0.3);
             margin: 1rem;
             max-height: calc(100vh - 2rem);
         }
@@ -113,7 +140,9 @@
         }
         
         .price-tag {
-            background: linear-gradient(135deg, #10b981, #059669);
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(222, 184, 135, 0.4);
             color: white;
             padding: 6px 12px;
             border-radius: 20px;
@@ -137,15 +166,18 @@
         
         .search-input {
             padding-left: 3rem;
-            border: 2px solid #e5e7eb;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(222, 184, 135, 0.3);
             border-radius: 25px;
             transition: all 0.3s ease;
             min-height: 44px;
         }
         
         .search-input:focus {
-            border-color: #8B4513;
-            box-shadow: 0 0 0 3px rgba(139, 69, 19, 0.1);
+            background: rgba(255, 255, 255, 0.95);
+            border-color: rgba(222, 184, 135, 0.6);
+            box-shadow: 0 0 0 3px rgba(222, 184, 135, 0.1);
         }
         
         .search-icon {
@@ -157,16 +189,16 @@
         }
         
         .hero-section {
-            background: linear-gradient(135deg, #8B4513 0%, #A0522D 100%);
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
             color: white;
             padding: 2rem 0;
             text-align: center;
         }
         
         .stats-card {
-            background: rgba(245, 245, 220, 0.15);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(245, 245, 220, 0.3);
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(222, 184, 135, 0.3);
             border-radius: 16px;
             padding: 1.5rem;
             text-align: center;
@@ -196,19 +228,29 @@
         }
         
         .view-btn {
-            color: #6b7280;
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(222, 184, 135, 0.3);
+            color: #2d2d2d;
             min-height: 44px;
         }
         
         .view-btn.active {
-            background: linear-gradient(135deg, #8B4513, #A0522D);
+            background: rgba(0, 0, 0, 0.8);
             color: white;
+            border-color: rgba(222, 184, 135, 0.4);
         }
         
         .product-list-item {
-            background: linear-gradient(145deg, #FAF0E6, #F5F5DC);
-            border: 1px solid rgba(139, 69, 19, 0.1);
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(222, 184, 135, 0.3);
             transition: all 0.3s ease;
+        }
+        
+        .product-list-item:hover {
+            background: rgba(255, 255, 255, 0.9);
+            border-color: rgba(222, 184, 135, 0.5);
         }
         
         .product-list-item:active {
@@ -226,9 +268,9 @@
         }
         
         .comparison-panel {
-            background: linear-gradient(145deg, #FAF0E6, #F5F5DC);
-            border: 2px solid rgba(139, 69, 19, 0.2);
-            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(222, 184, 135, 0.4);
         }
         
         .floating-tools {
@@ -248,6 +290,9 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(222, 184, 135, 0.4);
             color: white;
             font-size: 1.2rem;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
@@ -342,14 +387,14 @@
 
         /* Enterprise section styles */
         .enterprise-section {
-            background: linear-gradient(135deg, #1f2937 0%, #374151 100%);
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
             color: white;
         }
         
         .enterprise-card {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(245, 245, 220, 0.2);
             border-radius: 16px;
             padding: 2rem;
             text-align: center;
@@ -486,7 +531,7 @@
    </div>
   </section><!-- Catalog Tab Content -->
   <div id="catalog-content" class="tab-content active"><!-- Advanced Filters -->
-   <section class="py-6 bg-white shadow-sm">
+   <section class="py-6 bg-white bg-opacity-60 backdrop-filter backdrop-blur-lg shadow-sm border-b border-gray-200 border-opacity-30">
     <div class="max-w-7xl mx-auto px-4">
      <div class="flex flex-col lg:flex-row gap-4 items-center justify-between mb-6">
       <h3 class="text-xl font-bold text-gray-800">Filtros y Herramientas</h3><!-- View Toggle -->
@@ -496,14 +541,14 @@
       </div>
      </div><!-- Filter Controls -->
      <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-6"><!-- Categories -->
-      <div><label class="block text-sm font-medium text-gray-700 mb-2">Categoría</label> <select id="category-select" onchange="filterByCategory(this.value)" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"> <option value="all">Todas las categorías</option> <option value="tazas">☕ Tazas</option> <option value="remeras">👕 Remeras</option> <option value="accesorios">🎁 Accesorios</option> <option value="otros">📦 Otros</option> </select>
+      <div><label class="block text-sm font-medium text-gray-700 mb-2">Categoría</label> <select id="category-select" onchange="filterByCategory(this.value)" class="w-full px-3 py-2 bg-white bg-opacity-80 backdrop-filter backdrop-blur-lg border border-gray-300 border-opacity-50 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"> <option value="all">Todas las categorías</option> <option value="tazas">☕ Tazas</option> <option value="remeras">👕 Remeras</option> <option value="accesorios">🎁 Accesorios</option> <option value="otros">📦 Otros</option> </select>
       </div><!-- Price Range -->
-      <div><label class="block text-sm font-medium text-gray-700 mb-2">Rango de Precio</label> <select id="price-range" onchange="filterByPrice()" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"> <option value="all">Todos los precios</option> <option value="0-50000">Hasta Gs. 50.000</option> <option value="50000-100000">Gs. 50.000 - 100.000</option> <option value="100000-200000">Gs. 100.000 - 200.000</option> <option value="200000-999999999">Más de Gs. 200.000</option> </select>
+      <div><label class="block text-sm font-medium text-gray-700 mb-2">Rango de Precio</label> <select id="price-range" onchange="filterByPrice()" class="w-full px-3 py-2 bg-white bg-opacity-80 backdrop-filter backdrop-blur-lg border border-gray-300 border-opacity-50 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"> <option value="all">Todos los precios</option> <option value="0-50000">Hasta Gs. 50.000</option> <option value="50000-100000">Gs. 50.000 - 100.000</option> <option value="100000-200000">Gs. 100.000 - 200.000</option> <option value="200000-999999999">Más de Gs. 200.000</option> </select>
       </div><!-- Sort Options -->
-      <div><label class="block text-sm font-medium text-gray-700 mb-2">Ordenar por</label> <select id="sort-select" onchange="sortProducts()" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"> <option value="newest">Más recientes</option> <option value="name-asc">Nombre A-Z</option> <option value="name-desc">Nombre Z-A</option> <option value="price-asc">Precio menor a mayor</option> <option value="price-desc">Precio mayor a menor</option> </select>
+      <div><label class="block text-sm font-medium text-gray-700 mb-2">Ordenar por</label> <select id="sort-select" onchange="sortProducts()" class="w-full px-3 py-2 bg-white bg-opacity-80 backdrop-filter backdrop-blur-lg border border-gray-300 border-opacity-50 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"> <option value="newest">Más recientes</option> <option value="name-asc">Nombre A-Z</option> <option value="name-desc">Nombre Z-A</option> <option value="price-asc">Precio menor a mayor</option> <option value="price-desc">Precio mayor a menor</option> </select>
       </div><!-- Quick Actions -->
       <div><label class="block text-sm font-medium text-gray-700 mb-2">Acciones</label>
-       <div class="flex space-x-2"><button onclick="clearAllFilters()" class="flex-1 px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg text-sm font-medium transition-all"> 🔄 Limpiar </button> <button onclick="toggleFavorites()" id="favorites-btn" class="flex-1 px-3 py-2 bg-red-100 hover:bg-red-200 text-red-700 rounded-lg text-sm font-medium transition-all"> ❤️ Favoritos </button>
+       <div class="flex space-x-2"><button onclick="clearAllFilters()" class="flex-1 px-3 py-2 bg-white bg-opacity-60 backdrop-filter backdrop-blur-lg border border-gray-300 border-opacity-50 hover:bg-opacity-80 text-gray-700 rounded-lg text-sm font-medium transition-all"> 🔄 Limpiar </button> <button onclick="toggleFavorites()" id="favorites-btn" class="flex-1 px-3 py-2 bg-red-100 bg-opacity-60 backdrop-filter backdrop-blur-lg border border-red-300 border-opacity-50 hover:bg-opacity-80 text-red-700 rounded-lg text-sm font-medium transition-all"> ❤️ Favoritos </button>
        </div>
       </div>
      </div><!-- Quick Category Buttons -->
@@ -645,7 +690,7 @@
     </div>
    </div>
   </div><!-- Floating Tools -->
-  <div class="floating-tools"><button onclick="scrollToTop()" class="tool-btn gradient-bg" title="Ir arriba"> ⬆️ </button> <button onclick="toggleComparison()" id="compare-btn" class="tool-btn bg-blue-600 hover:bg-blue-700" title="Comparar productos"> ⚖️ </button> <button onclick="exportCatalog()" class="tool-btn bg-green-600 hover:bg-green-700" title="Exportar catálogo"> 📄 </button> <button onclick="shareApp()" class="tool-btn bg-purple-600 hover:bg-purple-700" title="Compartir catálogo"> 📤 </button>
+  <div class="floating-tools"><a href="editor.html" class="tool-btn" title="Editor de Productos" style="background: rgba(222, 184, 135, 0.9); color: #1a1a1a; border-color: rgba(222, 184, 135, 0.6);"> ✏️ </a> <button onclick="scrollToTop()" class="tool-btn" title="Ir arriba"> ⬆️ </button> <button onclick="toggleComparison()" id="compare-btn" class="tool-btn" title="Comparar productos"> ⚖️ </button> <button onclick="exportCatalog()" class="tool-btn" title="Exportar catálogo"> 📄 </button> <button onclick="shareApp()" class="tool-btn" title="Compartir catálogo"> 📤 </button>
   </div><!-- WhatsApp Floating Button --> <a href="https://wa.me/595985501874?text=Hola! Me interesa consultar sobre sus productos de sublimación" target="_blank" class="whatsapp-btn" title="Contactar por WhatsApp"> 📱 </a> <!-- Comparison Panel -->
   <div id="comparison-panel" class="comparison-panel fixed bottom-0 left-0 right-0 p-4 hidden z-30">
    <div class="max-w-7xl mx-auto">
@@ -699,7 +744,7 @@
     </div>
     <div class="border-t border-white border-opacity-20 mt-8 pt-8 text-center opacity-75">
      <p>© 2024 Panu - Sublimaciones Premium. Todos los derechos reservados.</p>
-     <p class="text-sm mt-2 opacity-60">v1.038 - Construido por Joel Páez y Ren_q (Alexa Ferreira)</p>
+     <p class="text-sm mt-2 opacity-60">v1.032 - Construido por Joel Páez y Ren_q (Alexa Ferreira)</p>
     </div>
    </div>
   </footer>
@@ -1536,5 +1581,5 @@ ${productInterest}
             }
         });
     </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9918294cf195116c',t:'MTc2MDk1OTU5Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'991838f98231116c',t:'MTc2MDk2MDIzOS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
