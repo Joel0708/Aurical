@@ -1,1583 +1,1585 @@
-<!DOCTYPE html>
-<html lang="es" class="scroll-smooth">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panu Sublimaciones - Productos Únicos</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        'beige': '#F5E6D3',
-                        'beige-dark': '#E8D5B7',
-                        'brown': '#8B7355',
-                        'brown-dark': '#6B5B47',
-                        'cream': '#FFF8F0',
-                        'cream-dark': '#F5F0E8',
-                        'black': '#1C1C1C',
-                        'black-light': '#2D2D2D',
-                        'white': '#FFFFFF',
-                        'accent': '#D4AF37'
-                    }
-                }
-            }
-        }
-    </script>
-    <style>
+<!doctype html>
+<html lang="es">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panu - Sublimaciones Premium</title>
+  <script src="/_sdk/element_sdk.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
         body {
             box-sizing: border-box;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
         }
         
-        .glass-effect {
-            backdrop-filter: blur(15px);
-            background: rgba(248, 248, 255, 0.1);
-            border: 1px solid rgba(255, 215, 0, 0.3);
-        }
-        
-        .glass-black {
-            backdrop-filter: blur(15px);
-            background: rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(255, 215, 0, 0.4);
-        }
-        
-        .text-gradient {
-            background: linear-gradient(45deg, #FFD700, #F5F5DC);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-        
-        .btn-primary {
-            background: linear-gradient(45deg, #FFD700, #000000);
-            transition: all 0.3s ease;
-        }
-        
-        .btn-primary:hover {
-            background: linear-gradient(45deg, #DAA520, #1a1a1a);
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(255, 215, 0, 0.4);
+        .gradient-bg {
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
         }
         
         .product-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(222, 184, 135, 0.3);
             transition: all 0.3s ease;
-            transform: translateY(0);
+            position: relative;
+            overflow: hidden;
         }
         
         .product-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 20px 40px rgba(30, 58, 138, 0.2);
+            background: rgba(255, 255, 255, 0.9);
+            border-color: rgba(222, 184, 135, 0.5);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
         }
         
-        .hero-bg {
-            background: linear-gradient(135deg, #000000 0%, #1a1a1a 30%, #FFD700 70%, #F5F5DC 100%);
+        .product-card:active {
+            transform: scale(0.98);
         }
         
-        .connection-status {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: bold;
-            z-index: 100;
-        }
-        
-        .status-caisy {
-            background: #8B5CF6;
+        .btn-primary {
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(222, 184, 135, 0.4);
             color: white;
+            transition: all 0.3s ease;
+            min-height: 44px;
         }
         
-        .status-offline {
-            background: #EF4444;
-            color: white;
+        .btn-primary:hover {
+            background: rgba(222, 184, 135, 0.9);
+            color: #1a1a1a;
+        }
+        
+        .btn-primary:active {
+            transform: scale(0.95);
+        }
+        
+        .category-btn {
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(222, 184, 135, 0.3);
+            color: #2d2d2d;
+            transition: all 0.3s ease;
+            min-height: 44px;
+            min-width: 44px;
+        }
+        
+        .category-btn.active {
+            background: rgba(222, 184, 135, 0.9);
+            color: #1a1a1a;
+            border-color: rgba(222, 184, 135, 0.6);
+        }
+        
+        .category-btn:hover {
+            background: rgba(255, 255, 255, 0.8);
+            border-color: rgba(222, 184, 135, 0.5);
+        }
+        
+        .category-btn:active {
+            transform: scale(0.95);
+        }
+        
+        .product-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 12px 12px 0 0;
+        }
+        
+        .gallery-image {
+            width: 50px;
+            height: 50px;
+            object-fit: cover;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            min-width: 44px;
+            min-height: 44px;
+        }
+        
+        .gallery-image.active {
+            border-color: #8B4513;
         }
         
         .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            z-index: 1000;
-            backdrop-filter: blur(5px);
-        }
-        
-        .modal.show {
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            backdrop-filter: blur(10px);
+            background: rgba(0, 0, 0, 0.7);
         }
         
         .modal-content {
-            background: linear-gradient(135deg, #F8F8FF 0%, #FFFFFF 50%, #F5F5DC 100%);
-            border: 2px solid #E6D7B8;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(222, 184, 135, 0.3);
+            margin: 1rem;
+            max-height: calc(100vh - 2rem);
+        }
+        
+        .loading-spinner {
+            border: 3px solid #F5F5DC;
+            border-top: 3px solid #8B4513;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .price-tag {
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(222, 184, 135, 0.4);
+            color: white;
+            padding: 6px 12px;
             border-radius: 20px;
-            padding: 2rem;
-            max-width: 800px;
-            width: 90%;
-            max-height: 90%;
-            overflow-y: auto;
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+        
+        .unavailable-overlay {
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            border-radius: 12px 12px 0 0;
+        }
+        
+        .search-container {
             position: relative;
         }
+        
+        .search-input {
+            padding-left: 3rem;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(222, 184, 135, 0.3);
+            border-radius: 25px;
+            transition: all 0.3s ease;
+            min-height: 44px;
+        }
+        
+        .search-input:focus {
+            background: rgba(255, 255, 255, 0.95);
+            border-color: rgba(222, 184, 135, 0.6);
+            box-shadow: 0 0 0 3px rgba(222, 184, 135, 0.1);
+        }
+        
+        .search-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #8B4513;
+        }
+        
+        .hero-section {
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            color: white;
+            padding: 2rem 0;
+            text-align: center;
+        }
+        
+        .stats-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(222, 184, 135, 0.3);
+            border-radius: 16px;
+            padding: 1.5rem;
+            text-align: center;
+            color: white;
+        }
+        
+        .whatsapp-btn {
+            background: linear-gradient(135deg, #25d366, #128c7e);
+            position: fixed;
+            bottom: 1rem;
+            right: 1rem;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            box-shadow: 0 6px 20px rgba(37, 211, 102, 0.3);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+        
+        .whatsapp-btn:active {
+            transform: scale(0.9);
+        }
+        
+        .view-btn {
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(222, 184, 135, 0.3);
+            color: #2d2d2d;
+            min-height: 44px;
+        }
+        
+        .view-btn.active {
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            border-color: rgba(222, 184, 135, 0.4);
+        }
+        
+        .product-list-item {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(222, 184, 135, 0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .product-list-item:hover {
+            background: rgba(255, 255, 255, 0.9);
+            border-color: rgba(222, 184, 135, 0.5);
+        }
+        
+        .product-list-item:active {
+            transform: scale(0.98);
+        }
+        
+        .favorite-btn {
+            transition: all 0.3s ease;
+            min-width: 44px;
+            min-height: 44px;
+        }
+        
+        .favorite-btn.active {
+            color: #dc2626;
+        }
+        
+        .comparison-panel {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(222, 184, 135, 0.4);
+        }
+        
+        .floating-tools {
+            position: fixed;
+            bottom: 80px;
+            right: 1rem;
+            z-index: 40;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        .tool-btn {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(222, 184, 135, 0.4);
+            color: white;
+            font-size: 1.2rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .tool-btn:active {
+            transform: scale(0.9);
+        }
+
+        .logo-container {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            margin: 0 auto 15px auto;
+        }
+
+        .logo-container img {
+            width: 45px;
+            height: 45px;
+            object-fit: contain;
+        }
+
+        .header-logo {
+            width: 40px;
+            height: 40px;
+            object-fit: contain;
+            background: white;
+            border-radius: 50%;
+            padding: 6px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Mobile-first responsive design */
+        @media (max-width: 640px) {
+            .hero-section {
+                padding: 1.5rem 0;
+            }
+            
+            .hero-section h2 {
+                font-size: 2rem !important;
+            }
+            
+            .hero-section p {
+                font-size: 1.1rem !important;
+            }
+            
+            .stats-card {
+                padding: 1rem;
+            }
+            
+            .product-card {
+                margin-bottom: 1rem;
+            }
+            
+            .modal-content {
+                margin: 0.5rem;
+                max-height: calc(100vh - 1rem);
+                border-radius: 12px;
+            }
+            
+            .price-tag {
+                font-size: 0.8em;
+                padding: 4px 8px;
+            }
+            
+            .floating-tools {
+                bottom: 70px;
+                right: 0.5rem;
+            }
+            
+            .tool-btn {
+                width: 44px;
+                height: 44px;
+                font-size: 1rem;
+            }
+            
+            .comparison-panel {
+                padding: 0.75rem;
+            }
+            
+            .gallery-image {
+                width: 44px;
+                height: 44px;
+            }
+        }
+
+        /* Enterprise section styles */
+        .enterprise-section {
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            color: white;
+        }
+        
+        .enterprise-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(245, 245, 220, 0.2);
+            border-radius: 16px;
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .enterprise-card:active {
+            transform: scale(0.98);
+        }
+
+        /* Tab navigation */
+        .tab-nav {
+            border-bottom: 2px solid #e5e7eb;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        .tab-btn {
+            min-width: 120px;
+            padding: 1rem;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            min-height: 44px;
+        }
+        
+        .tab-btn.active {
+            border-bottom-color: #8B4513;
+            background: rgba(139, 69, 19, 0.1);
+            color: #8B4513;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Improved touch targets */
+        button, .btn, .category-btn, .tool-btn, .favorite-btn {
+            min-height: 44px;
+            min-width: 44px;
+        }
+        
+        /* Better text readability on mobile */
+        @media (max-width: 640px) {
+            body {
+                font-size: 16px;
+                line-height: 1.5;
+            }
+            
+            h1 { font-size: 1.75rem; }
+            h2 { font-size: 1.5rem; }
+            h3 { font-size: 1.25rem; }
+            
+            .text-xs { font-size: 0.875rem; }
+            .text-sm { font-size: 0.9375rem; }
+        }
     </style>
-</head>
-<body class="bg-beige text-black font-sans">
-    <!-- Connection Status -->
-    <div id="connectionStatus" class="connection-status status-offline">
-        🔄 Conectando...
+  <style>@view-transition { navigation: auto; }</style>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+ </head>
+ <body class="bg-stone-50"><!-- Header -->
+  <header class="gradient-bg text-white shadow-lg sticky top-0 z-50">
+   <div class="max-w-7xl mx-auto px-4 py-4">
+    <div class="flex items-center justify-between">
+     <div class="flex items-center space-x-4"><img src="https://aurical.org/images/PanuLogo.png" alt="Panu Logo" class="header-logo" onerror="this.style.display='none';">
+      <div>
+       <h1 class="text-3xl font-bold">Panu</h1>
+       <p class="text-sm opacity-90">Sublimaciones Premium</p>
+      </div>
+     </div><!-- Search Bar -->
+     <div class="search-container hidden md:block">
+      <div class="search-icon">
+       <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+       </svg>
+      </div><input type="text" id="search-input" placeholder="Buscar productos..." class="search-input w-80 py-3 pr-4 text-gray-800 focus:outline-none">
+     </div>
+     <div class="flex items-center space-x-4"><button onclick="toggleSearch()" class="md:hidden p-2 rounded-lg bg-white bg-opacity-20 hover:bg-opacity-30 transition-all">
+       <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+       </svg></button> <span id="product-count" class="text-sm opacity-90">0 productos</span>
+     </div>
+    </div><!-- Mobile Search -->
+    <div id="mobile-search" class="mt-4 hidden md:hidden">
+     <div class="search-container">
+      <div class="search-icon">
+       <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+       </svg>
+      </div><input type="text" id="mobile-search-input" placeholder="Buscar productos..." class="search-input w-full py-3 pr-4 text-gray-800 focus:outline-none">
+     </div>
     </div>
-
-    <!-- Header -->
-    <header class="bg-cream bg-opacity-95 backdrop-blur-md border-b border-brown sticky top-0 z-50 shadow-lg">
-        <div class="max-w-7xl mx-auto px-6 py-4">
-            <div class="flex justify-between items-center">
-                <div class="flex items-center space-x-4">
-                    <img src="https://aurical.org/images/Aurical.svg" alt="Aurical Logo" class="w-12 h-12 object-contain" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                    <div class="w-10 h-10 bg-gradient-to-br from-accent to-brown rounded-lg items-center justify-center hidden">
-                        <span class="text-cream font-bold text-lg">P</span>
-                    </div>
-                    <div>
-                        <h1 class="text-2xl font-bold text-black">Panu Sublimaciones</h1>
-                        <p class="text-sm text-brown">Productos únicos y personalizados</p>
-                    </div>
-                </div>
-                <div class="flex items-center space-x-4">
-                    <span id="productCount" class="text-sm text-brown">0 productos</span>
-                    <button onclick="openEditor()" class="bg-brown hover:bg-brown-dark text-cream px-4 py-2 rounded-lg transition-all font-medium">
-                        🎨 Editor
-                    </button>
-                    <a href="admin.html" class="bg-black hover:bg-black-light text-white px-4 py-2 rounded-lg transition-all font-medium">
-                        🛠️ Admin
-                    </a>
-                </div>
-            </div>
-        </div>
-    </header>
-
-    <!-- Hero Section -->
-    <section class="bg-gradient-to-br from-cream via-beige to-brown-dark py-20">
-        <div class="max-w-7xl mx-auto px-6 text-center">
-            <h2 class="text-5xl font-bold text-black mb-6">
-                Sublimación de <span class="text-accent">Alta Calidad</span>
-            </h2>
-            <p class="text-xl text-brown mb-8 max-w-2xl mx-auto">
-                Transforma tus ideas en productos únicos con nuestra tecnología de sublimación profesional
-            </p>
-            <button onclick="scrollToProducts()" class="bg-black hover:bg-black-light text-cream px-8 py-4 rounded-lg font-bold text-lg transition-all shadow-lg">
-                🛍️ Ver Productos
-            </button>
-        </div>
-    </section>
-
-    <!-- Products Section -->
-    <main class="max-w-7xl mx-auto px-6 py-16">
-        <!-- Section Header -->
-        <div class="text-center mb-12">
-            <h3 class="text-4xl font-bold text-black mb-4">Nuestros Productos</h3>
-            <p class="text-brown text-lg max-w-2xl mx-auto">
-                Descubre nuestra colección de productos personalizables con la mejor calidad de sublimación
-            </p>
-        </div>
-
-        <!-- Filters -->
-        <div class="flex flex-wrap justify-center gap-4 mb-12">
-            <button onclick="filterProducts('all')" class="filter-btn active bg-brown text-cream border border-brown-dark px-6 py-3 rounded-lg font-medium transition-all hover:bg-brown-dark">
-                Todos
-            </button>
-            <button onclick="filterProducts('Tazas')" class="filter-btn bg-cream border border-brown px-6 py-3 rounded-lg font-medium transition-all hover:bg-brown hover:text-cream text-black">
-                Tazas
-            </button>
-            <button onclick="filterProducts('Camisetas')" class="filter-btn bg-cream border border-brown px-6 py-3 rounded-lg font-medium transition-all hover:bg-brown hover:text-cream text-black">
-                Camisetas
-            </button>
-            <button onclick="filterProducts('Accesorios')" class="filter-btn bg-cream border border-brown px-6 py-3 rounded-lg font-medium transition-all hover:bg-brown hover:text-cream text-black">
-                Accesorios
-            </button>
-        </div>
-
-        <!-- Products Grid -->
-        <div id="productsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-            <!-- Loading State -->
-            <div class="col-span-full text-center py-16">
-                <div class="text-6xl mb-4">🔄</div>
-                <h3 class="text-2xl font-bold text-gold mb-2">Cargando productos...</h3>
-                <p class="text-beige">Conectando con Caisy CMS...</p>
-            </div>
-        </div>
-    </main>
-
-    <!-- Footer -->
-    <footer class="bg-black border-t border-brown mt-20 py-12">
-        <div class="max-w-7xl mx-auto px-6">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <div>
-                    <h4 class="text-xl font-bold text-cream mb-4">Panu Sublimaciones</h4>
-                    <p class="text-beige">
-                        Especialistas en sublimación de alta calidad. Transformamos tus ideas en productos únicos.
-                    </p>
-                </div>
-                <div>
-                    <h4 class="text-xl font-bold text-cream mb-4">Contacto</h4>
-                    <div class="space-y-2 text-beige">
-                        <p>📧 panu@aurical.org</p>
-                        <p>📱 +1 234 567 8900</p>
-                        <p>📍 Tu Ciudad, País</p>
-                    </div>
-                </div>
-                <div>
-                    <h4 class="text-xl font-bold text-cream mb-4">Síguenos</h4>
-                    <div class="flex space-x-4">
-                        <a href="#" class="bg-brown p-3 rounded-lg hover:bg-brown-dark transition-all">📘</a>
-                        <a href="#" class="bg-brown p-3 rounded-lg hover:bg-brown-dark transition-all">📷</a>
-                        <a href="#" class="bg-brown p-3 rounded-lg hover:bg-brown-dark transition-all">🐦</a>
-                    </div>
-                </div>
-            </div>
-            <div class="border-t border-brown mt-8 pt-8 text-center">
-                <p class="text-beige">
-                    © 2024 Panu Sublimaciones. Todos los derechos reservados. 
-                    <span class="text-accent">Desarrollado por Esteban Paez Building</span>
-                </p>
-            </div>
-        </div>
-    </footer>
-
-    <!-- Product Detail Modal -->
-    <div id="productModal" class="modal">
-        <div class="modal-content">
-            <button onclick="closeModal()" class="absolute top-4 right-4 text-2xl text-black hover:text-beige-dark transition-colors">
-                ×
-            </button>
-            
-            <div id="modalContent">
-                <!-- Product details will be loaded here -->
-            </div>
-        </div>
+   </div>
+  </header><!-- Hero Section -->
+  <section class="hero-section">
+   <div class="max-w-7xl mx-auto px-4 py-16">
+    <div class="logo-container"><img src="https://aurical.org/images/PanuLogo.png" alt="Panu Logo" onerror="this.style.display='none';">
     </div>
-
-    <!-- Editor Modal -->
-    <div id="editorModal" class="modal">
-        <div class="modal-content glass-navy" style="max-width: 1200px; max-height: 95%;">
-            <button onclick="closeEditor()" class="absolute top-4 right-4 text-2xl text-beige hover:text-white transition-colors z-10">
-                ×
-            </button>
-            
-            <div class="mb-6">
-                <h3 class="text-2xl font-bold text-gradient mb-2">🎨 Editor de Sublimación</h3>
-                <p class="text-navy-light">Diseña tu producto personalizado</p>
-            </div>
-            
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 h-full">
-                <!-- Canvas Area -->
-                <div class="lg:col-span-2">
-                    <div class="glass-effect rounded-lg p-4 h-full">
-                        <div class="flex justify-between items-center mb-4">
-                            <h4 class="text-beige font-bold">Área de Diseño</h4>
-                            <div class="flex gap-2">
-                                <button onclick="clearCanvas()" class="glass-effect px-3 py-1 rounded text-sm hover:bg-beige hover:bg-opacity-20 transition-all">
-                                    🗑️ Limpiar
-                                </button>
-                                <button onclick="downloadDesign()" class="btn-primary text-navy px-3 py-1 rounded text-sm">
-                                    💾 Descargar
-                                </button>
-                            </div>
-                        </div>
-                        <div class="relative bg-white rounded-lg" style="height: 400px;">
-                            <canvas id="designCanvas" width="600" height="400" class="w-full h-full border-2 border-beige border-opacity-30 rounded-lg cursor-crosshair"></canvas>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Tools Panel -->
-                <div class="space-y-4">
-                    <!-- Product Selection -->
-                    <div class="glass-effect rounded-lg p-4">
-                        <h4 class="text-beige font-bold mb-3">Producto Base</h4>
-                        <select id="productSelect" class="w-full bg-navy text-beige p-2 rounded border border-beige border-opacity-30">
-                            <option value="taza">Taza Blanca</option>
-                            <option value="camiseta">Camiseta</option>
-                            <option value="mouse-pad">Mouse Pad</option>
-                        </select>
-                    </div>
-                    
-                    <!-- Drawing Tools -->
-                    <div class="glass-effect rounded-lg p-4">
-                        <h4 class="text-beige font-bold mb-3">Herramientas</h4>
-                        <div class="grid grid-cols-2 gap-2 mb-3">
-                            <button onclick="setTool('brush')" class="tool-btn active glass-effect p-2 rounded text-sm hover:bg-beige hover:bg-opacity-20 transition-all">
-                                🖌️ Pincel
-                            </button>
-                            <button onclick="setTool('eraser')" class="tool-btn glass-effect p-2 rounded text-sm hover:bg-beige hover:bg-opacity-20 transition-all">
-                                🧽 Borrador
-                            </button>
-                            <button onclick="setTool('text')" class="tool-btn glass-effect p-2 rounded text-sm hover:bg-beige hover:bg-opacity-20 transition-all">
-                                📝 Texto
-                            </button>
-                            <button onclick="setTool('shape')" class="tool-btn glass-effect p-2 rounded text-sm hover:bg-beige hover:bg-opacity-20 transition-all">
-                                🔷 Formas
-                            </button>
-                        </div>
-                        
-                        <!-- Color Picker -->
-                        <div class="mb-3">
-                            <label class="block text-beige text-sm mb-1">Color:</label>
-                            <input type="color" id="colorPicker" value="#000000" class="w-full h-8 rounded border border-beige border-opacity-30">
-                        </div>
-                        
-                        <!-- Brush Size -->
-                        <div class="mb-3">
-                            <label class="block text-beige text-sm mb-1">Tamaño: <span id="brushSizeValue">5</span>px</label>
-                            <input type="range" id="brushSize" min="1" max="50" value="5" class="w-full">
-                        </div>
-                    </div>
-                    
-                    <!-- Text Tools -->
-                    <div id="textTools" class="glass-effect rounded-lg p-4 hidden">
-                        <h4 class="text-beige font-bold mb-3">Opciones de Texto</h4>
-                        <input type="text" id="textInput" placeholder="Escribe tu texto..." class="w-full bg-navy text-beige p-2 rounded border border-beige border-opacity-30 mb-2">
-                        <select id="fontSelect" class="w-full bg-navy text-beige p-2 rounded border border-beige border-opacity-30 mb-2">
-                            <option value="Arial">Arial</option>
-                            <option value="Times New Roman">Times New Roman</option>
-                            <option value="Helvetica">Helvetica</option>
-                            <option value="Georgia">Georgia</option>
-                        </select>
-                        <input type="range" id="fontSize" min="12" max="72" value="24" class="w-full">
-                        <label class="block text-beige text-sm">Tamaño: <span id="fontSizeValue">24</span>px</label>
-                    </div>
-                    
-                    <!-- Image Upload -->
-                    <div class="glass-effect rounded-lg p-4">
-                        <h4 class="text-beige font-bold mb-3">Subir Imagen</h4>
-                        <input type="file" id="imageUpload" accept="image/*" class="w-full bg-navy text-beige p-2 rounded border border-beige border-opacity-30 text-sm">
-                    </div>
-                    
-                    <!-- Actions -->
-                    <div class="glass-effect rounded-lg p-4">
-                        <h4 class="text-beige font-bold mb-3">Acciones</h4>
-                        <div class="space-y-2">
-                            <button onclick="saveDesign()" class="w-full btn-primary text-navy py-2 rounded font-medium">
-                                💾 Guardar Diseño
-                            </button>
-                            <button onclick="requestQuote()" class="w-full glass-effect py-2 rounded font-medium hover:bg-beige hover:bg-opacity-20 transition-all">
-                                💰 Solicitar Cotización
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+    <h2 class="text-6xl font-bold mb-4">Sublimaciones Premium</h2>
+    <p class="text-2xl opacity-90 mb-8">Calidad excepcional en cada producto</p><!-- Stats -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+     <div class="stats-card">
+      <div class="text-3xl font-bold mb-2" id="total-products-stat">
+       0
+      </div>
+      <div class="text-sm opacity-90">
+       Productos Disponibles
+      </div>
+     </div>
+     <div class="stats-card">
+      <div class="text-3xl font-bold mb-2" id="categories-stat">
+       0
+      </div>
+      <div class="text-sm opacity-90">
+       Categorías
+      </div>
+     </div>
+     <div class="stats-card">
+      <div class="text-3xl font-bold mb-2">
+       ⭐
+      </div>
+      <div class="text-sm opacity-90">
+       Calidad Premium
+      </div>
+     </div>
     </div>
+   </div>
+  </section><!-- Tab Navigation -->
+  <section class="bg-white shadow-sm">
+   <div class="max-w-7xl mx-auto px-4">
+    <div class="tab-nav flex"><button onclick="switchTab('catalog')" id="catalog-tab" class="tab-btn active flex-1 text-center font-medium"> 🛍️ Catálogo </button> <button onclick="switchTab('enterprise')" id="enterprise-tab" class="tab-btn flex-1 text-center font-medium"> 🏢 Empresarial </button>
+    </div>
+   </div>
+  </section><!-- Catalog Tab Content -->
+  <div id="catalog-content" class="tab-content active"><!-- Advanced Filters -->
+   <section class="py-6 bg-white bg-opacity-60 backdrop-filter backdrop-blur-lg shadow-sm border-b border-gray-200 border-opacity-30">
+    <div class="max-w-7xl mx-auto px-4">
+     <div class="flex flex-col lg:flex-row gap-4 items-center justify-between mb-6">
+      <h3 class="text-xl font-bold text-gray-800">Filtros y Herramientas</h3><!-- View Toggle -->
+      <div class="flex items-center space-x-4"><span class="text-sm text-gray-600">Vista:</span>
+       <div class="flex bg-stone-100 rounded-lg p-1"><button onclick="changeView('grid')" id="grid-view-btn" class="view-btn active px-3 py-2 rounded-md text-sm font-medium transition-all"> 📱 Tarjetas </button> <button onclick="changeView('list')" id="list-view-btn" class="view-btn px-3 py-2 rounded-md text-sm font-medium transition-all"> 📋 Lista </button>
+       </div>
+      </div>
+     </div><!-- Filter Controls -->
+     <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-6"><!-- Categories -->
+      <div><label class="block text-sm font-medium text-gray-700 mb-2">Categoría</label> <select id="category-select" onchange="filterByCategory(this.value)" class="w-full px-3 py-2 bg-white bg-opacity-80 backdrop-filter backdrop-blur-lg border border-gray-300 border-opacity-50 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"> <option value="all">Todas las categorías</option> <option value="tazas">☕ Tazas</option> <option value="remeras">👕 Remeras</option> <option value="accesorios">🎁 Accesorios</option> <option value="otros">📦 Otros</option> </select>
+      </div><!-- Price Range -->
+      <div><label class="block text-sm font-medium text-gray-700 mb-2">Rango de Precio</label> <select id="price-range" onchange="filterByPrice()" class="w-full px-3 py-2 bg-white bg-opacity-80 backdrop-filter backdrop-blur-lg border border-gray-300 border-opacity-50 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"> <option value="all">Todos los precios</option> <option value="0-50000">Hasta Gs. 50.000</option> <option value="50000-100000">Gs. 50.000 - 100.000</option> <option value="100000-200000">Gs. 100.000 - 200.000</option> <option value="200000-999999999">Más de Gs. 200.000</option> </select>
+      </div><!-- Sort Options -->
+      <div><label class="block text-sm font-medium text-gray-700 mb-2">Ordenar por</label> <select id="sort-select" onchange="sortProducts()" class="w-full px-3 py-2 bg-white bg-opacity-80 backdrop-filter backdrop-blur-lg border border-gray-300 border-opacity-50 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"> <option value="newest">Más recientes</option> <option value="name-asc">Nombre A-Z</option> <option value="name-desc">Nombre Z-A</option> <option value="price-asc">Precio menor a mayor</option> <option value="price-desc">Precio mayor a menor</option> </select>
+      </div><!-- Quick Actions -->
+      <div><label class="block text-sm font-medium text-gray-700 mb-2">Acciones</label>
+       <div class="flex space-x-2"><button onclick="clearAllFilters()" class="flex-1 px-3 py-2 bg-white bg-opacity-60 backdrop-filter backdrop-blur-lg border border-gray-300 border-opacity-50 hover:bg-opacity-80 text-gray-700 rounded-lg text-sm font-medium transition-all"> 🔄 Limpiar </button> <button onclick="toggleFavorites()" id="favorites-btn" class="flex-1 px-3 py-2 bg-red-100 bg-opacity-60 backdrop-filter backdrop-blur-lg border border-red-300 border-opacity-50 hover:bg-opacity-80 text-red-700 rounded-lg text-sm font-medium transition-all"> ❤️ Favoritos </button>
+       </div>
+      </div>
+     </div><!-- Quick Category Buttons -->
+     <div class="flex flex-wrap justify-center gap-3" id="category-filters"><button onclick="filterByCategory('all')" class="category-btn active px-4 py-2 rounded-full font-medium bg-stone-100 text-stone-800 text-sm"> Todos </button> <button onclick="filterByCategory('tazas')" class="category-btn px-4 py-2 rounded-full font-medium bg-stone-100 text-stone-800 text-sm"> ☕ Tazas </button> <button onclick="filterByCategory('remeras')" class="category-btn px-4 py-2 rounded-full font-medium bg-stone-100 text-stone-800 text-sm"> 👕 Remeras </button> <button onclick="filterByCategory('accesorios')" class="category-btn px-4 py-2 rounded-full font-medium bg-stone-100 text-stone-800 text-sm"> 🎁 Accesorios </button> <button onclick="filterByCategory('otros')" class="category-btn px-4 py-2 rounded-full font-medium bg-stone-100 text-stone-800 text-sm"> 📦 Otros </button>
+     </div>
+    </div>
+   </section><!-- Products Section -->
+   <section class="py-12">
+    <div class="max-w-7xl mx-auto px-4"><!-- Loading State -->
+     <div id="loading-products" class="flex justify-center items-center py-20">
+      <div class="text-center">
+       <div class="loading-spinner mx-auto mb-4"></div>
+       <p class="text-stone-600 text-lg">Cargando productos...</p>
+      </div>
+     </div><!-- No Products State -->
+     <div id="no-products" class="text-center py-20 hidden">
+      <div class="text-8xl mb-6">
+       📦
+      </div>
+      <h3 class="text-2xl font-bold text-stone-700 mb-4">No hay productos disponibles</h3>
+      <p class="text-stone-500 text-lg">Vuelve pronto para ver nuestros nuevos productos</p>
+     </div><!-- No Search Results -->
+     <div id="no-search-results" class="text-center py-20 hidden">
+      <div class="text-8xl mb-6">
+       🔍
+      </div>
+      <h3 class="text-2xl font-bold text-stone-700 mb-4">No se encontraron productos</h3>
+      <p class="text-stone-500 text-lg">Intenta con otros términos de búsqueda</p><button onclick="clearSearch()" class="btn-primary text-white px-6 py-3 rounded-lg mt-4"> Ver todos los productos </button>
+     </div><!-- Products Grid -->
+     <div id="products-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8"><!-- Products will be loaded here -->
+     </div>
+    </div>
+   </section>
+  </div><!-- Enterprise Tab Content -->
+  <div id="enterprise-content" class="tab-content">
+   <section class="enterprise-section py-12">
+    <div class="max-w-7xl mx-auto px-4">
+     <div class="text-center mb-12">
+      <h2 class="text-4xl font-bold mb-4">🏢 Compras Empresariales</h2>
+      <p class="text-xl opacity-90 mb-8">Soluciones especiales para empresas y pedidos en cantidad</p>
+     </div>
+     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+      <div class="enterprise-card">
+       <div class="text-4xl mb-4">
+        📦
+       </div>
+       <h3 class="text-xl font-bold mb-3">Pedidos al Por Mayor</h3>
+       <p class="opacity-90 mb-4">Descuentos especiales para pedidos de 50+ unidades</p>
+       <ul class="text-sm opacity-80 space-y-1">
+        <li>• 50-99 unidades: 10% descuento</li>
+        <li>• 100-199 unidades: 15% descuento</li>
+        <li>• 200+ unidades: 20% descuento</li>
+       </ul>
+      </div>
+      <div class="enterprise-card">
+       <div class="text-4xl mb-4">
+        🎨
+       </div>
+       <h3 class="text-xl font-bold mb-3">Diseños Personalizados</h3>
+       <p class="opacity-90 mb-4">Creamos diseños únicos para tu empresa</p>
+       <ul class="text-sm opacity-80 space-y-1">
+        <li>• Logos corporativos</li>
+        <li>• Diseños exclusivos</li>
+        <li>• Múltiples formatos</li>
+       </ul>
+      </div>
+      <div class="enterprise-card">
+       <div class="text-4xl mb-4">
+        🚚
+       </div>
+       <h3 class="text-xl font-bold mb-3">Entrega Programada</h3>
+       <p class="opacity-90 mb-4">Entregas coordinadas según tus necesidades</p>
+       <ul class="text-sm opacity-80 space-y-1">
+        <li>• Entregas programadas</li>
+        <li>• Múltiples ubicaciones</li>
+        <li>• Seguimiento en tiempo real</li>
+       </ul>
+      </div>
+     </div>
+     <div class="bg-white bg-opacity-10 rounded-2xl p-8 mb-8">
+      <h3 class="text-2xl font-bold mb-6 text-center">📋 Solicitar Cotización Empresarial</h3>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+       <div><label class="block text-sm font-medium mb-2">Empresa</label> <input type="text" id="company-name" placeholder="Nombre de la empresa" class="w-full px-4 py-3 rounded-lg bg-white bg-opacity-20 border border-white border-opacity-30 text-white placeholder-white placeholder-opacity-70 focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50">
+       </div>
+       <div><label class="block text-sm font-medium mb-2">Contacto</label> <input type="text" id="contact-name" placeholder="Nombre del contacto" class="w-full px-4 py-3 rounded-lg bg-white bg-opacity-20 border border-white border-opacity-30 text-white placeholder-white placeholder-opacity-70 focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50">
+       </div>
+       <div><label class="block text-sm font-medium mb-2">Teléfono</label> <input type="tel" id="contact-phone" placeholder="+595 xxx xxx xxx" class="w-full px-4 py-3 rounded-lg bg-white bg-opacity-20 border border-white border-opacity-30 text-white placeholder-white placeholder-opacity-70 focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50">
+       </div>
+       <div><label class="block text-sm font-medium mb-2">Cantidad Estimada</label> <select id="quantity-range" class="w-full px-4 py-3 rounded-lg bg-white bg-opacity-20 border border-white border-opacity-30 text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50"> <option value="">Seleccionar cantidad</option> <option value="50-99">50-99 unidades</option> <option value="100-199">100-199 unidades</option> <option value="200-499">200-499 unidades</option> <option value="500+">500+ unidades</option> </select>
+       </div>
+       <div class="md:col-span-2"><label class="block text-sm font-medium mb-2">Productos de Interés</label> <textarea id="product-interest" rows="3" placeholder="Describe los productos que te interesan..." class="w-full px-4 py-3 rounded-lg bg-white bg-opacity-20 border border-white border-opacity-30 text-white placeholder-white placeholder-opacity-70 focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50 resize-none"></textarea>
+       </div>
+      </div>
+      <div class="text-center mt-6"><button onclick="sendEnterpriseQuote()" class="bg-white text-gray-800 px-8 py-4 rounded-xl font-bold text-lg hover:bg-opacity-90 transition-all"> 📱 Enviar Cotización por WhatsApp </button>
+      </div>
+     </div>
+     <div class="text-center">
+      <h3 class="text-xl font-bold mb-4">¿Necesitas más información?</h3>
+      <p class="opacity-90 mb-6">Nuestro equipo empresarial está listo para ayudarte</p>
+      <div class="flex flex-col sm:flex-row gap-4 justify-center"><a href="https://wa.me/595985501874?text=Hola! Me interesa información sobre compras empresariales" target="_blank" class="bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-lg font-medium transition-all"> 📱 WhatsApp Empresarial </a> <a href="mailto:aurical@panu.org?subject=Consulta Empresarial" target="_blank" class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg font-medium transition-all"> 📧 Email Directo </a>
+      </div>
+     </div>
+    </div>
+   </section>
+  </div><!-- Product Detail Modal -->
+  <div id="product-modal" class="modal fixed inset-0 z-50 hidden">
+   <div class="flex items-center justify-center min-h-screen p-4">
+    <div class="modal-content rounded-2xl shadow-2xl max-w-4xl w-full max-h-screen overflow-y-auto">
+     <div class="p-8">
+      <div class="flex justify-between items-start mb-6">
+       <h2 id="modal-product-name" class="text-3xl font-bold text-stone-800"></h2><button onclick="closeProductModal()" class="text-stone-500 hover:text-stone-700 text-3xl font-bold">×</button>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8"><!-- Image Gallery -->
+       <div>
+        <div class="mb-4"><img id="modal-main-image" src="" alt="" class="w-full h-96 object-cover rounded-xl">
+        </div>
+        <div id="modal-gallery" class="flex space-x-2 overflow-x-auto pb-2"><!-- Gallery images will be loaded here -->
+        </div>
+       </div><!-- Product Info -->
+       <div>
+        <div class="mb-6"><span id="modal-category" class="inline-block px-3 py-1 bg-amber-100 text-amber-800 rounded-full text-sm font-medium mb-4"></span>
+         <div id="modal-price" class="price-tag inline-block mb-4"></div>
+         <div id="modal-availability" class="mb-4"></div>
+        </div>
+        <div class="mb-8">
+         <h3 class="text-xl font-bold text-stone-800 mb-3">Descripción</h3>
+         <p id="modal-description" class="text-stone-600 leading-relaxed"></p>
+        </div>
+        <div class="space-y-4"><button id="modal-whatsapp-btn" onclick="contactWhatsApp()" class="w-full bg-green-500 hover:bg-green-600 text-white py-4 px-6 rounded-xl font-bold text-lg flex items-center justify-center space-x-3 transition-all"> <span>📱</span> <span>Consultar por WhatsApp</span> </button>
+         <div class="text-center text-sm text-stone-500 space-y-1">
+          <p>💬 Respuesta inmediata</p>
+          <p>🚚 Consulta sobre envíos</p>
+          <p>💳 Métodos de pago disponibles</p>
+         </div>
+        </div>
+       </div>
+      </div>
+     </div>
+    </div>
+   </div>
+  </div><!-- Floating Tools -->
+  <div class="floating-tools"><a href="editor.html" class="tool-btn" title="Editor de Productos" style="background: rgba(222, 184, 135, 0.9); color: #1a1a1a; border-color: rgba(222, 184, 135, 0.6);"> ✏️ </a> <button onclick="scrollToTop()" class="tool-btn" title="Ir arriba"> ⬆️ </button> <button onclick="toggleComparison()" id="compare-btn" class="tool-btn" title="Comparar productos"> ⚖️ </button> <button onclick="exportCatalog()" class="tool-btn" title="Exportar catálogo"> 📄 </button> <button onclick="shareApp()" class="tool-btn" title="Compartir catálogo"> 📤 </button>
+  </div><!-- WhatsApp Floating Button --> <a href="https://wa.me/595985501874?text=Hola! Me interesa consultar sobre sus productos de sublimación" target="_blank" class="whatsapp-btn" title="Contactar por WhatsApp"> 📱 </a> <!-- Comparison Panel -->
+  <div id="comparison-panel" class="comparison-panel fixed bottom-0 left-0 right-0 p-4 hidden z-30">
+   <div class="max-w-7xl mx-auto">
+    <div class="flex items-center justify-between mb-4">
+     <h3 class="text-lg font-bold text-stone-800">Comparar Productos (<span id="compare-count">0</span>/3)</h3>
+     <div class="flex space-x-2"><button onclick="compareProducts()" class="btn-primary text-white px-4 py-2 rounded-lg text-sm font-medium"> Ver Comparación </button> <button onclick="clearComparison()" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg text-sm font-medium"> Limpiar </button> <button onclick="toggleComparison()" class="text-stone-500 hover:text-stone-700 text-xl font-bold">×</button>
+     </div>
+    </div>
+    <div id="comparison-items" class="flex space-x-4 overflow-x-auto pb-2"><!-- Comparison items will appear here -->
+    </div>
+   </div>
+  </div><!-- Comparison Modal -->
+  <div id="comparison-modal" class="modal fixed inset-0 z-50 hidden">
+   <div class="flex items-center justify-center min-h-screen p-4">
+    <div class="modal-content rounded-2xl shadow-2xl max-w-6xl w-full max-h-screen overflow-y-auto">
+     <div class="p-8">
+      <div class="flex justify-between items-center mb-6">
+       <h2 class="text-3xl font-bold text-stone-800">Comparación de Productos</h2><button onclick="closeComparisonModal()" class="text-stone-500 hover:text-stone-700 text-3xl font-bold">×</button>
+      </div>
+      <div id="comparison-table" class="overflow-x-auto"><!-- Comparison table will be generated here -->
+      </div>
+     </div>
+    </div>
+   </div>
+  </div><!-- Footer -->
+  <footer class="gradient-bg text-white py-12">
+   <div class="max-w-7xl mx-auto px-4">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+     <div class="text-center md:text-left">
+      <div class="flex items-center justify-center md:justify-start space-x-3 mb-4"><img src="https://aurical.org/images/PanuLogo.png" alt="Panu Logo" class="w-12 h-12 rounded-full bg-white p-2" onerror="this.style.display='none';">
+       <h3 class="text-2xl font-bold">Panu</h3>
+      </div>
+      <p class="opacity-90">Sublimaciones premium con la mejor calidad y atención personalizada.</p>
+     </div>
+     <div class="text-center md:text-left">
+      <h4 class="text-lg font-bold mb-4">Contacto</h4>
+      <div class="space-y-2 opacity-90">
+       <p>📱 WhatsApp: +595 985 501 874</p>
+       <p>📧 Email: aurical@panu.org</p>
+       <p>📍 Ñemby, Paraguay</p>
+      </div>
+     </div>
+     <div class="text-center md:text-left">
+      <h4 class="text-lg font-bold mb-4">Horarios</h4>
+      <div class="space-y-2 opacity-90">
+       <p>🕒 Lunes a Viernes: 8:00 - 18:00</p>
+       <p>🕒 Sábados: 8:00 - 12:00</p>
+       <p>🕒 Domingos: Cerrado</p>
+      </div>
+     </div>
+    </div>
+    <div class="border-t border-white border-opacity-20 mt-8 pt-8 text-center opacity-75">
+     <p>© 2024 Panu - Sublimaciones Premium. Todos los derechos reservados.</p>
+     <p class="text-sm mt-2 opacity-60">v1.040 - Construido por Joel Páez y Ren_q (Alexa Ferreira)</p>
+    </div>
+   </div>
+  </footer>
+  <script>
+        // Supabase configuration
+        const SUPABASE_URL = 'https://sxihojciyiypolxahoej.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN4aWhvamNpeWl5cG9seGFob2VqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA3Nzc3OTEsImV4cCI6MjA3NjM1Mzc5MX0.PGIGHwPmhTjpGCl-m61P2HXrSNwiR1ku8rgIshc-RUA';
+        
+        // Initialize Supabase client
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    <script>
-        // Global variables
         let allProducts = [];
         let filteredProducts = [];
-        let currentFilter = 'all';
-        let caisyConnected = false;
+        let currentCategory = 'all';
+        let currentSearchTerm = '';
+        let currentPriceRange = 'all';
+        let currentSort = 'newest';
+        let currentView = 'grid';
+        let selectedProduct = null;
+        let favorites = JSON.parse(localStorage.getItem('panu-favorites') || '[]');
+        let comparisonList = [];
+        let showFavoritesOnly = false;
 
-        // Helper function to extract text from Caisy rich text field (same as admin.html)
-        function extractTextFromDescription(descripcion) {
-            if (!descripcion) return '';
-            
-            // If it's already a string, return it
-            if (typeof descripcion === 'string') return descripcion;
-            
-            // If it has json field, try to extract text from it
-            if (descripcion.json) {
-                try {
-                    const jsonData = typeof descripcion.json === 'string' ? 
-                        JSON.parse(descripcion.json) : descripcion.json;
-                    
-                    // Extract text from Caisy's rich text JSON structure
-                    function extractTextFromNodes(nodes) {
-                        if (!nodes || !Array.isArray(nodes)) return '';
-                        
-                        return nodes.map(node => {
-                            if (node.type === 'text') return node.text || '';
-                            if (node.children) return extractTextFromNodes(node.children);
-                            return '';
-                        }).join(' ').trim();
-                    }
-                    
-                    if (jsonData.children) {
-                        return extractTextFromNodes(jsonData.children);
-                    }
-                    
-                    // Fallback: convert JSON to string
-                    return JSON.stringify(jsonData).replace(/[{}"\[\]]/g, ' ').trim();
-                } catch (error) {
-                    console.log('Error parsing description JSON:', error);
-                    return String(descripcion.json);
-                }
-            }
-            
-            // Fallback to string conversion
-            return String(descripcion);
-        }
-
-        // Caisy configuration (same as admin.html)
-        const CAISY_CONFIG = {
-            endpoint: 'https://cloud.caisy.io/api/v3/e/d5020874-9338-4ce1-9f01-872741713f01/graphql',
-            apiKey: 'DR4cQSjCXwdqZDs20vuKsPmGreNnSu4T'
-        };
-
-        // Initialize the page
-        document.addEventListener('DOMContentLoaded', function() {
-            initializePage();
-        });
-
-        // Initialize page
-        async function initializePage() {
-            console.log('🚀 Iniciando aplicación Panu Sublimaciones...');
-            updateConnectionStatus('connecting');
-            
-            // Test connection first
-            const connected = await checkCaisyConnection();
-            console.log('🔗 Estado de conexión:', connected ? 'CONECTADO' : 'DESCONECTADO');
-            
-            // Load products
-            await loadProducts();
-            
-            console.log('✅ Aplicación inicializada correctamente');
-        }
-
-        // Check Caisy connection
-        async function checkCaisyConnection() {
-            try {
-                console.log('🔍 Verificando conexión a Caisy...');
-                console.log('🔗 Endpoint:', CAISY_CONFIG.endpoint);
-                console.log('🔑 API Key presente:', !!CAISY_CONFIG.apiKey);
-                
-                const testQuery = `query { __typename }`;
-                const response = await fetch(CAISY_CONFIG.endpoint, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'x-caisy-apikey': CAISY_CONFIG.apiKey
-                    },
-                    body: JSON.stringify({ query: testQuery })
-                });
-
-                console.log('📡 Respuesta HTTP:', response.status, response.statusText);
-
-                if (response.ok) {
-                    const data = await response.json();
-                    console.log('📥 Datos de respuesta:', data);
-                    
-                    if (data && !data.errors) {
-                        caisyConnected = true;
-                        updateConnectionStatus('caisy');
-                        console.log('✅ Conectado exitosamente a Caisy CMS');
-                        return true;
-                    } else {
-                        console.log('⚠️ Respuesta con errores:', data.errors);
-                        throw new Error('Response contains errors');
-                    }
-                } else {
-                    const errorText = await response.text();
-                    console.log('❌ Error HTTP:', errorText);
-                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-                }
-            } catch (error) {
-                console.error('❌ Error de conexión:', error);
-                caisyConnected = false;
-                updateConnectionStatus('offline');
-                console.log('❌ Sin conexión a Caisy, modo offline');
-                return false;
-            }
-        }
-
-        // Update connection status
-        function updateConnectionStatus(status) {
-            const statusEl = document.getElementById('connectionStatus');
-            
-            switch (status) {
-                case 'connecting':
-                    statusEl.className = 'connection-status status-offline';
-                    statusEl.textContent = '🔄 Conectando...';
-                    break;
-                case 'caisy':
-                    statusEl.className = 'connection-status status-caisy';
-                    statusEl.textContent = '☁️ Conectado a Caisy';
-                    break;
-                case 'offline':
-                    statusEl.className = 'connection-status status-offline';
-                    statusEl.textContent = '📱 Modo Local';
-                    break;
-            }
-        }
-
-        // Load products from Caisy and localStorage
+        // Load products from database
         async function loadProducts() {
+            const loadingDiv = document.getElementById('loading-products');
+            const productsGrid = document.getElementById('products-grid');
+            const noProductsDiv = document.getElementById('no-products');
+            
             try {
-                // Always try to load from Caisy first if connected
-                if (caisyConnected) {
-                    console.log('🔄 Intentando cargar productos desde Caisy...');
-                    await loadFromCaisy();
+                loadingDiv.classList.remove('hidden');
+                productsGrid.innerHTML = '';
+                noProductsDiv.classList.add('hidden');
+
+                const { data, error } = await supabase
+                    .from('producto')
+                    .select('*')
+                    .eq('disponible', true)
+                    .order('fecha_creacion', { ascending: false });
+
+                if (error) throw error;
+
+                allProducts = data || [];
+                filteredProducts = [...allProducts];
+                
+                loadingDiv.classList.add('hidden');
+
+                if (allProducts.length === 0) {
+                    noProductsDiv.classList.remove('hidden');
                 } else {
-                    console.log('📱 Caisy no conectado, cargando desde localStorage...');
-                    // Fallback to localStorage
-                    loadFromLocalStorage();
+                    displayProducts(filteredProducts);
                 }
+
+                updateStats();
+                updateProductCount();
             } catch (error) {
-                console.error('❌ Error loading products:', error);
-                console.log('🔄 Fallback a localStorage por error...');
-                loadFromLocalStorage();
+                console.error('Error loading products:', error);
+                loadingDiv.classList.add('hidden');
+                noProductsDiv.classList.remove('hidden');
             }
         }
 
-        // Load products from Caisy with comprehensive debugging
-        async function loadFromCaisy() {
-            try {
-                console.log('🔍 Iniciando conexión con Caisy CMS...');
-                console.log('🔗 Endpoint:', CAISY_CONFIG.endpoint);
-                console.log('🔑 API Key configurada:', CAISY_CONFIG.apiKey ? 'Sí' : 'No');
-                
-                // Step 1: Test basic connection
-                console.log('\n--- PASO 1: Verificando conexión básica ---');
-                const basicQuery = `query { __typename }`;
-                const basicResponse = await fetch(CAISY_CONFIG.endpoint, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'x-caisy-apikey': CAISY_CONFIG.apiKey
-                    },
-                    body: JSON.stringify({ query: basicQuery })
-                });
-
-                console.log('📡 Status de respuesta:', basicResponse.status);
-                console.log('📡 Headers de respuesta:', Object.fromEntries(basicResponse.headers.entries()));
-
-                if (!basicResponse.ok) {
-                    throw new Error(`HTTP ${basicResponse.status}: ${basicResponse.statusText}`);
-                }
-
-                const basicData = await basicResponse.json();
-                console.log('✅ Conexión básica exitosa:', basicData);
-
-                // Step 2: Get schema information
-                console.log('\n--- PASO 2: Obteniendo esquema de Caisy ---');
-                const schemaQuery = `
-                    query {
-                        __schema {
-                            queryType {
-                                fields {
-                                    name
-                                    description
-                                    type {
-                                        name
-                                        kind
-                                        ofType {
-                                            name
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                `;
-
-                const schemaResponse = await fetch(CAISY_CONFIG.endpoint, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'x-caisy-apikey': CAISY_CONFIG.apiKey
-                    },
-                    body: JSON.stringify({ query: schemaQuery })
-                });
-
-                const schemaData = await schemaResponse.json();
-                const availableFields = schemaData.data?.__schema?.queryType?.fields || [];
-                
-                console.log('📋 Campos disponibles en el esquema:');
-                availableFields.forEach(field => {
-                    console.log(`  - ${field.name} (${field.type?.name || field.type?.kind})`);
-                });
-
-                // Step 3: Find product-related queries
-                console.log('\n--- PASO 3: Buscando consultas de productos ---');
-                const productQueries = availableFields.filter(field => 
-                    field.name.toLowerCase().includes('product') || 
-                    field.name.toLowerCase().includes('producto')
-                );
-
-                console.log('🔍 Consultas relacionadas con productos encontradas:');
-                productQueries.forEach(query => {
-                    console.log(`  - ${query.name}: ${query.description || 'Sin descripción'}`);
-                });
-
-                if (productQueries.length === 0) {
-                    console.log('❌ No se encontraron consultas de productos en el esquema');
-                    console.log('📝 Campos disponibles que podrían ser útiles:');
-                    availableFields.slice(0, 10).forEach(field => {
-                        console.log(`  - ${field.name}`);
-                    });
-                    throw new Error('No se encontraron consultas de productos en Caisy');
-                }
-
-                // Step 4: Try each product query
-                console.log('\n--- PASO 4: Probando consultas de productos ---');
-                let productos = [];
-                let successfulQuery = null;
-
-                for (const queryField of productQueries) {
-                    try {
-                        console.log(`\n🔍 Probando consulta: ${queryField.name}`);
-                        
-                        // Try a simple query first to see the structure
-                        const simpleQuery = `
-                            query {
-                                ${queryField.name} {
-                                    __typename
-                                }
-                            }
-                        `;
-
-                        console.log('📤 Enviando consulta simple:', simpleQuery);
-                        const simpleResponse = await fetch(CAISY_CONFIG.endpoint, {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'x-caisy-apikey': CAISY_CONFIG.apiKey
-                            },
-                            body: JSON.stringify({ query: simpleQuery })
-                        });
-
-                        const simpleData = await simpleResponse.json();
-                        console.log('📥 Respuesta simple:', simpleData);
-
-                        if (simpleData.errors) {
-                            console.log(`❌ Error en consulta simple: ${simpleData.errors[0]?.message}`);
-                            continue;
-                        }
-
-                        if (!simpleData.data || !simpleData.data[queryField.name]) {
-                            console.log(`⚠️ ${queryField.name} no devolvió datos`);
-                            continue;
-                        }
-
-                        // Now try the full query with Spanish field names
-                        console.log('✅ Consulta simple exitosa, probando consulta completa...');
-                        
-                        const fullQuery = `
-                            query {
-                                ${queryField.name} {
-                                    id
-                                    nombre
-                                    descripcion {
-                                        json
-                                    }
-                                    precio
-                                    categoria
-                                    imagen_principal {
-                                        src
-                                        title
-                                        description
-                                        width
-                                        height
-                                    }
-                                    imagenes_galeria {
-                                        ... on Asset {
-                                            src
-                                            title
-                                            description
-                                            width
-                                            height
-                                        }
-                                    }
-                                    disponible
-                                    _meta {
-                                        createdAt
-                                        updatedAt
-                                    }
-                                }
-                            }
-                        `;
-
-                        console.log('📤 Enviando consulta completa...');
-                        const fullResponse = await fetch(CAISY_CONFIG.endpoint, {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'x-caisy-apikey': CAISY_CONFIG.apiKey
-                            },
-                            body: JSON.stringify({ query: fullQuery })
-                        });
-
-                        const fullData = await fullResponse.json();
-                        console.log('📥 Respuesta completa:', fullData);
-
-                        if (fullData.errors) {
-                            console.log(`❌ Error en consulta completa: ${fullData.errors[0]?.message}`);
-                            
-                            // Try a more basic query with Spanish fields
-                            const basicProductQuery = `
-                                query {
-                                    ${queryField.name} {
-                                        id
-                                        nombre
-                                        precio
-                                        categoria
-                                        descripcion {
-                                            json
-                                        }
-                                        imagen_principal {
-                                            src
-                                        }
-                                        disponible
-                                    }
-                                }
-                            `;
-                            
-                            console.log('🔄 Probando consulta básica...');
-                            const basicProductResponse = await fetch(CAISY_CONFIG.endpoint, {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                    'x-caisy-apikey': CAISY_CONFIG.apiKey
-                                },
-                                body: JSON.stringify({ query: basicProductQuery })
-                            });
-
-                            const basicProductData = await basicProductResponse.json();
-                            console.log('📥 Respuesta básica:', basicProductData);
-                            
-                            if (!basicProductData.errors && basicProductData.data?.[queryField.name]) {
-                                productos = Array.isArray(basicProductData.data[queryField.name]) ? 
-                                    basicProductData.data[queryField.name] : [basicProductData.data[queryField.name]];
-                                successfulQuery = queryField.name;
-                                console.log(`✅ Consulta básica exitosa con ${productos.length} productos`);
-                                break;
-                            }
-                            continue;
-                        }
-
-                        if (fullData.data && fullData.data[queryField.name]) {
-                            productos = Array.isArray(fullData.data[queryField.name]) ? 
-                                fullData.data[queryField.name] : [fullData.data[queryField.name]];
-                            successfulQuery = queryField.name;
-                            console.log(`✅ Consulta completa exitosa con ${productos.length} productos`);
-                            break;
-                        }
-
-                    } catch (queryError) {
-                        console.log(`❌ Error ejecutando ${queryField.name}:`, queryError.message);
-                    }
-                }
-
-                // Step 5: Process results
-                console.log('\n--- PASO 5: Procesando resultados ---');
-                
-                if (!successfulQuery || productos.length === 0) {
-                    console.log('❌ No se pudieron obtener productos desde Caisy');
-                    console.log('📋 Consultas disponibles encontradas:', productQueries.map(q => q.name));
-                    console.log('🔍 Intentando consultas alternativas...');
-                    
-                    // Try alternative queries
-                    const alternativeQueries = ['allProduct', 'products', 'allProducts', 'Product', 'Producto'];
-                    
-                    for (const queryName of alternativeQueries) {
-                        try {
-                            console.log(`🔍 Probando consulta alternativa: ${queryName}`);
-                            const altQuery = `
-                                query {
-                                    ${queryName} {
-                                        id
-                                        nombre
-                                        name
-                                        title
-                                    }
-                                }
-                            `;
-                            
-                            const altResponse = await fetch(CAISY_CONFIG.endpoint, {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                    'x-caisy-apikey': CAISY_CONFIG.apiKey
-                                },
-                                body: JSON.stringify({ query: altQuery })
-                            });
-
-                            const altData = await altResponse.json();
-                            console.log(`📥 Respuesta de ${queryName}:`, altData);
-                            
-                            if (!altData.errors && altData.data?.[queryName]) {
-                                productos = Array.isArray(altData.data[queryName]) ? 
-                                    altData.data[queryName] : [altData.data[queryName]];
-                                successfulQuery = queryName;
-                                console.log(`✅ ¡Productos encontrados con ${queryName}!`, productos.length);
-                                break;
-                            }
-                        } catch (altError) {
-                            console.log(`❌ Error con ${queryName}:`, altError.message);
-                        }
-                    }
-                    
-                    if (!successfulQuery || productos.length === 0) {
-                        console.log('❌ Todas las consultas fallaron');
-                        console.log('🔄 Creando productos de demostración...');
-                        updateConnectionStatus('offline');
-                        showNotification('❌ No se encontraron productos en Caisy. Verifica que tengas productos creados en tu CMS.', 'warning');
-                        createDemoProducts();
-                        return;
-                    }
-                }
-
-                console.log(`✅ Productos obtenidos exitosamente desde: ${successfulQuery}`);
-                console.log('📦 Productos raw:', productos);
-
-                // Transform products
-                const caisyProducts = productos.map((producto, index) => {
-                    console.log(`🔄 Transformando producto ${index + 1}:`, producto);
-                    console.log(`📋 Campos disponibles en producto:`, Object.keys(producto));
-                    console.log(`🏷️ Nombre raw:`, producto.nombre);
-                    console.log(`💰 Precio raw:`, producto.precio);
-                    console.log(`🖼️ Imagen principal raw:`, producto.imagen_principal);
-                    console.log(`📝 Descripción raw:`, producto.descripcion);
-                    
-                    // Extract name (try different fields)
-                    const name = producto.nombre || producto.name || producto.title || `Producto ${index + 1}`;
-                    
-                    // Extract price (try different fields and handle different formats)
-                    let price = 0;
-                    if (producto.precio !== undefined && producto.precio !== null) {
-                        price = parseFloat(producto.precio);
-                    } else if (producto.price !== undefined && producto.price !== null) {
-                        price = parseFloat(producto.price);
-                    }
-                    
-                    // If price is still 0 or NaN, set a default
-                    if (isNaN(price) || price <= 0) {
-                        price = 25.99; // Default price for demo
-                    }
-                    
-                    console.log(`💰 Precio extraído para ${name}: ${price} (original: ${producto.precio})`);
-                    
-                    // Extract description
-                    const descripcion = producto.descripcion || producto.description;
-                    const description = extractTextFromDescription(descripcion) || 'Producto de sublimación personalizable';
-                    
-                    // Extract category
-                    const category = producto.categoria || producto.category || 'Otros';
-                    
-                    // Extract images
-                    const images = [];
-                    
-                    // Try different image field formats
-                    if (producto.imagen_principal?.src) {
-                        images.push(producto.imagen_principal.src);
-                    }
-                    if (producto.imagen_principal?.url) {
-                        images.push(producto.imagen_principal.url);
-                    }
-                    if (producto.image?.src) {
-                        images.push(producto.image.src);
-                    }
-                    if (producto.image?.url) {
-                        images.push(producto.image.url);
-                    }
-                    
-                    // Gallery images
-                    if (producto.imagenes_galeria && Array.isArray(producto.imagenes_galeria)) {
-                        producto.imagenes_galeria.forEach(img => {
-                            if (img?.src) images.push(img.src);
-                            if (img?.url) images.push(img.url);
-                        });
-                    }
-                    
-                    if (producto.images && Array.isArray(producto.images)) {
-                        producto.images.forEach(img => {
-                            if (img?.src) images.push(img.src);
-                            if (img?.url) images.push(img.url);
-                        });
-                    }
-                    
-                    console.log(`🖼️ Imágenes encontradas para ${name}:`, images);
-                    
-                    // Extract availability
-                    const available = producto.disponible !== false && producto.available !== false;
-                    
-                    // Extract creation date
-                    const createdAt = producto.fecha_creacion || producto.createdAt || producto._meta?.createdAt || new Date().toISOString();
-                    
-                    const transformedProduct = {
-                        id: producto.id || `caisy_${index}`,
-                        name: name,
-                        price: price,
-                        description: description,
-                        category: category,
-                        stock: available ? 10 : 0,
-                        images: [...new Set(images)], // Remove duplicates
-                        available: available,
-                        createdAt: createdAt,
-                        source: 'caisy',
-                        rawData: producto // Keep original for debugging
-                    };
-                    
-                    console.log(`✅ Producto transformado:`, transformedProduct);
-                    return transformedProduct;
-                });
-
-                console.log('\n--- RESULTADO FINAL ---');
-                console.log(`✅ ${caisyProducts.length} productos procesados exitosamente`);
-                
-                // Save to localStorage
-                localStorage.setItem('panuProducts', JSON.stringify(caisyProducts));
-                localStorage.setItem('panuProductsLastSync', new Date().toISOString());
-                localStorage.setItem('panuProductsSource', 'caisy');
-                localStorage.setItem('panuProductsQuery', successfulQuery);
-
-                allProducts = caisyProducts;
-                
-                showNotification(`✅ ${caisyProducts.length} productos sincronizados desde Caisy`, 'success');
-                applyFilter();
-
-            } catch (error) {
-                console.error('\n❌ ERROR COMPLETO:', error);
-                console.error('Stack trace:', error.stack);
-                
-                updateConnectionStatus('offline');
-                showNotification(`❌ Error conectando con Caisy: ${error.message}`, 'error');
-                
-                // Fallback to demo products
-                createDemoProducts();
-            }
-        }
-
-        // Create demo products when Caisy is not available
-        function createDemoProducts() {
-            const demoProducts = [
-                {
-                    id: 'demo_1',
-                    name: 'Taza Personalizada Premium',
-                    price: 15.99,
-                    description: 'Taza de cerámica blanca de alta calidad, perfecta para sublimación. Resistente al microondas y lavavajillas.',
-                    category: 'Tazas',
-                    stock: 25,
-                    images: [],
-                    available: true,
-                    createdAt: new Date().toISOString(),
-                    source: 'demo'
-                },
-                {
-                    id: 'demo_2',
-                    name: 'Camiseta Algodón 100%',
-                    price: 22.50,
-                    description: 'Camiseta de algodón 100% en color blanco, ideal para diseños personalizados con sublimación.',
-                    category: 'Camisetas',
-                    stock: 15,
-                    images: [],
-                    available: true,
-                    createdAt: new Date().toISOString(),
-                    source: 'demo'
-                },
-                {
-                    id: 'demo_3',
-                    name: 'Mouse Pad Ergonómico',
-                    price: 12.99,
-                    description: 'Mouse pad con base antideslizante y superficie lisa perfecta para impresión por sublimación.',
-                    category: 'Accesorios',
-                    stock: 30,
-                    images: [],
-                    available: true,
-                    createdAt: new Date().toISOString(),
-                    source: 'demo'
-                },
-                {
-                    id: 'demo_4',
-                    name: 'Taza Mágica Térmica',
-                    price: 24.99,
-                    description: 'Taza que cambia de color con el calor. Perfecta para diseños sorpresa y regalos únicos.',
-                    category: 'Tazas',
-                    stock: 8,
-                    images: [],
-                    available: true,
-                    createdAt: new Date().toISOString(),
-                    source: 'demo'
-                },
-                {
-                    id: 'demo_5',
-                    name: 'Camiseta Deportiva Dri-Fit',
-                    price: 28.99,
-                    description: 'Camiseta deportiva con tecnología que absorbe la humedad, ideal para diseños deportivos.',
-                    category: 'Camisetas',
-                    stock: 12,
-                    images: [],
-                    available: true,
-                    createdAt: new Date().toISOString(),
-                    source: 'demo'
-                },
-                {
-                    id: 'demo_6',
-                    name: 'Llavero Acrílico Personalizable',
-                    price: 8.99,
-                    description: 'Llavero de acrílico transparente con forma rectangular, perfecto para fotos y diseños pequeños.',
-                    category: 'Accesorios',
-                    stock: 50,
-                    images: [],
-                    available: true,
-                    createdAt: new Date().toISOString(),
-                    source: 'demo'
-                }
-            ];
-
-            // Save demo products to localStorage
-            localStorage.setItem('panuProducts', JSON.stringify(demoProducts));
-            localStorage.setItem('panuProductsLastSync', new Date().toISOString());
-            localStorage.setItem('panuProductsSource', 'demo');
-
-            allProducts = demoProducts;
-            console.log('✅ Productos de demostración creados:', allProducts.length);
-            showNotification('📦 Productos de demostración cargados', 'info');
-            applyFilter();
-        }
-
-        // Load products from localStorage
-        function loadFromLocalStorage() {
-            try {
-                const saved = localStorage.getItem('panuProducts');
-                if (saved) {
-                    allProducts = JSON.parse(saved);
-                    console.log('📦 Productos cargados desde localStorage:', allProducts.length);
-                    
-                    // Check if we have products
-                    if (allProducts.length > 0) {
-                        const lastSync = localStorage.getItem('panuProductsLastSync');
-                        const source = localStorage.getItem('panuProductsSource') || 'unknown';
-                        
-                        console.log('📅 Última sincronización:', lastSync);
-                        console.log('📍 Fuente de datos:', source);
-                        
-                        showNotification(`📦 ${allProducts.length} productos cargados (${source})`, 'info');
-                        applyFilter();
-                        return;
-                    }
-                }
-                
-                // If no products found, create demo products
-                console.log('📦 No hay productos guardados, creando productos de demostración');
-                createDemoProducts();
-                
-            } catch (error) {
-                console.error('Error loading from localStorage:', error);
-                console.log('📦 Error en localStorage, creando productos de demostración');
-                createDemoProducts();
-            }
-        }
-
-        // Filter products
-        function filterProducts(category) {
-            currentFilter = category;
+        // Display products in grid or list
+        function displayProducts(products) {
+            const productsGrid = document.getElementById('products-grid');
+            const noSearchResults = document.getElementById('no-search-results');
             
-            // Update filter buttons
-            document.querySelectorAll('.filter-btn').forEach(btn => {
-                btn.classList.remove('active', 'bg-brown', 'text-cream');
-                btn.classList.add('bg-cream', 'text-black', 'hover:bg-brown', 'hover:text-cream');
-            });
-            
-            event.target.classList.remove('bg-cream', 'text-black', 'hover:bg-brown', 'hover:text-cream');
-            event.target.classList.add('active', 'bg-brown', 'text-cream');
-            
-            applyFilter();
-        }
-
-        // Apply current filter
-        function applyFilter() {
-            if (currentFilter === 'all') {
-                filteredProducts = allProducts;
-            } else {
-                filteredProducts = allProducts.filter(product => product.category === currentFilter);
-            }
-            
-            renderProducts();
-        }
-
-        // Render products
-        function renderProducts() {
-            const grid = document.getElementById('productsGrid');
-            const productCount = document.getElementById('productCount');
-            
-            productCount.textContent = `${filteredProducts.length} productos`;
-            
-            if (filteredProducts.length === 0) {
-                grid.innerHTML = `
-                    <div class="col-span-full text-center py-16">
-                        <div class="text-6xl mb-4">📦</div>
-                        <h3 class="text-2xl font-bold text-beige mb-2">No hay productos disponibles</h3>
-                        <p class="text-navy-light">
-                            ${currentFilter === 'all' ? 'Aún no hay productos en el catálogo' : `No hay productos en la categoría "${currentFilter}"`}
-                        </p>
-                    </div>
-                `;
+            if (products.length === 0) {
+                productsGrid.innerHTML = '';
+                if (currentSearchTerm || currentCategory !== 'all' || showFavoritesOnly) {
+                    noSearchResults.classList.remove('hidden');
+                }
                 return;
             }
+            
+            noSearchResults.classList.add('hidden');
+            
+            if (currentView === 'grid') {
+                productsGrid.className = 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8';
+                productsGrid.innerHTML = products.map(product => createProductCard(product)).join('');
+            } else {
+                productsGrid.className = 'space-y-4';
+                productsGrid.innerHTML = products.map(product => createProductListItem(product)).join('');
+            }
+        }
 
-            grid.innerHTML = filteredProducts.map(product => `
-                <div class="product-card bg-cream border border-brown rounded-xl overflow-hidden cursor-pointer shadow-lg hover:shadow-xl transition-all" onclick="openProductModal('${product.id}')">
+        // Create product card for grid view
+        function createProductCard(product) {
+            const galleryImages = getGalleryImages(product);
+            const mainImage = product.imagen_principal || getPlaceholderImage();
+            const isFavorite = favorites.includes(product.id);
+            const inComparison = comparisonList.some(p => p.id === product.id);
+
+            return `
+                <div class="product-card rounded-xl shadow-lg overflow-hidden fade-in cursor-pointer" onclick="showProductDetail(${product.id})">
                     <div class="relative">
-                        ${product.images && product.images.length > 0 ? `
-                            <img src="${product.images[0]}" alt="${product.name}" class="w-full h-48 object-cover">
-                        ` : `
-                            <div class="w-full h-48 bg-gradient-to-br from-beige to-brown flex items-center justify-center">
-                                <div class="text-4xl text-cream">💎</div>
-                            </div>
-                        `}
-                        <div class="absolute top-2 right-2 flex gap-2">
-                            <span class="bg-brown text-cream px-2 py-1 rounded text-xs font-bold">
-                                ${product.category}
-                            </span>
-                            ${product.source === 'caisy' ? `
-                                <span class="bg-accent text-black px-2 py-1 rounded text-xs font-bold">
-                                    ☁️ Caisy
-                                </span>
-                            ` : ''}
+                        <img src="${mainImage}" alt="${product.nombre}" class="w-full h-64 object-cover">
+                        ${!product.disponible ? '<div class="unavailable-overlay absolute inset-0 rounded-xl">No Disponible</div>' : ''}
+                        ${galleryImages.length > 0 ? `<div class="absolute top-2 right-2 bg-black bg-opacity-50 text-white px-2 py-1 rounded-full text-xs">+${galleryImages.length + 1}</div>` : ''}
+                        
+                        <!-- Action buttons -->
+                        <div class="absolute top-2 left-2 flex flex-col space-y-2">
+                            <button onclick="event.stopPropagation(); toggleFavorite(${product.id})" 
+                                    class="favorite-btn w-8 h-8 bg-white bg-opacity-90 rounded-full flex items-center justify-center ${isFavorite ? 'active' : ''}" 
+                                    title="${isFavorite ? 'Quitar de favoritos' : 'Añadir a favoritos'}">
+                                ${isFavorite ? '❤️' : '🤍'}
+                            </button>
+                            <button onclick="event.stopPropagation(); toggleComparison(${product.id})" 
+                                    class="w-8 h-8 bg-white bg-opacity-90 rounded-full flex items-center justify-center ${inComparison ? 'bg-blue-500 text-white' : ''}" 
+                                    title="${inComparison ? 'Quitar de comparación' : 'Añadir a comparación'}">
+                                ⚖️
+                            </button>
                         </div>
-                        ${product.stock <= 5 ? `
-                            <div class="absolute top-2 left-2 bg-red-600 text-white px-2 py-1 rounded text-xs font-bold">
-                                ${product.stock <= 0 ? 'Agotado' : `Últimas ${product.stock}`}
-                            </div>
-                        ` : ''}
                     </div>
-                    <div class="p-4">
-                        <h3 class="text-lg font-bold text-black mb-2">${product.name}</h3>
-                        <p class="text-brown text-sm mb-3 line-clamp-2">${product.description || 'Producto de sublimación personalizable'}</p>
+                    
+                    <div class="p-6">
+                        <div class="mb-3">
+                            <span class="inline-block px-2 py-1 bg-amber-100 text-amber-800 rounded-full text-xs font-medium mb-2">
+                                ${getCategoryIcon(product.categoria)} ${product.categoria}
+                            </span>
+                            <h3 class="text-xl font-bold text-stone-800 line-clamp-2">${product.nombre}</h3>
+                        </div>
+                        
+                        <p class="text-stone-600 mb-4 line-clamp-2">${product.descripcion}</p>
+                        
                         <div class="flex justify-between items-center">
-                            <span class="text-xl font-bold text-black">$${product.price.toFixed(2)}</span>
-                            <button class="bg-black hover:bg-black-light text-cream px-4 py-2 rounded-lg text-sm font-medium transition-all">
+                            <div class="price-tag">
+                                Gs. ${product.precio.toLocaleString()}
+                            </div>
+                            
+                            <button class="btn-primary text-white px-4 py-2 rounded-lg text-sm font-medium">
                                 Ver Detalles
                             </button>
                         </div>
                     </div>
                 </div>
-            `).join('');
+            `;
         }
 
-        // Open product modal
-        function openProductModal(productId) {
-            const product = allProducts.find(p => p.id === productId);
-            if (!product) return;
+        // Create product list item for list view
+        function createProductListItem(product) {
+            const mainImage = product.imagen_principal || getPlaceholderImage();
+            const isFavorite = favorites.includes(product.id);
+            const inComparison = comparisonList.some(p => p.id === product.id);
 
-            const modal = document.getElementById('productModal');
-            const modalContent = document.getElementById('modalContent');
-            
-            modalContent.innerHTML = `
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                    <div>
-                        ${product.images && product.images.length > 0 ? `
-                            <img src="${product.images[0]}" alt="${product.name}" class="w-full rounded-lg">
-                            ${product.images.length > 1 ? `
-                                <div class="flex gap-2 mt-4 overflow-x-auto">
-                                    ${product.images.slice(1).map(img => `
-                                        <img src="${img}" alt="${product.name}" class="w-20 h-20 object-cover rounded cursor-pointer opacity-70 hover:opacity-100 transition-opacity">
-                                    `).join('')}
+            return `
+                <div class="product-list-item rounded-xl p-4 cursor-pointer" onclick="showProductDetail(${product.id})">
+                    <div class="flex items-center space-x-4">
+                        <img src="${mainImage}" alt="${product.nombre}" class="w-20 h-20 object-cover rounded-lg flex-shrink-0">
+                        
+                        <div class="flex-grow">
+                            <div class="flex items-start justify-between">
+                                <div>
+                                    <span class="inline-block px-2 py-1 bg-amber-100 text-amber-800 rounded-full text-xs font-medium mb-1">
+                                        ${getCategoryIcon(product.categoria)} ${product.categoria}
+                                    </span>
+                                    <h3 class="text-lg font-bold text-stone-800 mb-1">${product.nombre}</h3>
+                                    <p class="text-stone-600 text-sm line-clamp-2">${product.descripcion}</p>
                                 </div>
-                            ` : ''}
-                        ` : `
-                            <div class="w-full h-64 bg-gradient-to-br from-beige to-navy rounded-lg flex items-center justify-center">
-                                <div class="text-6xl text-navy">💎</div>
+                                
+                                <div class="flex items-center space-x-2 ml-4">
+                                    <button onclick="event.stopPropagation(); toggleFavorite(${product.id})" 
+                                            class="favorite-btn p-2 rounded-full hover:bg-gray-100 ${isFavorite ? 'active' : ''}" 
+                                            title="${isFavorite ? 'Quitar de favoritos' : 'Añadir a favoritos'}">
+                                        ${isFavorite ? '❤️' : '🤍'}
+                                    </button>
+                                    <button onclick="event.stopPropagation(); toggleComparison(${product.id})" 
+                                            class="p-2 rounded-full hover:bg-gray-100 ${inComparison ? 'bg-blue-500 text-white' : ''}" 
+                                            title="${inComparison ? 'Quitar de comparación' : 'Añadir a comparación'}">
+                                        ⚖️
+                                    </button>
+                                    <div class="price-tag text-sm">
+                                        Gs. ${product.precio.toLocaleString()}
+                                    </div>
+                                </div>
                             </div>
-                        `}
-                    </div>
-                    <div>
-                        <div class="flex items-center gap-2 mb-4">
-                            <span class="bg-beige text-navy px-3 py-1 rounded-full text-sm font-bold">
-                                ${product.category}
-                            </span>
-                            ${product.source === 'caisy' ? `
-                                <span class="bg-purple-500 text-white px-3 py-1 rounded-full text-sm">
-                                    ☁️ Desde Caisy
-                                </span>
-                            ` : ''}
-                        </div>
-                        
-                        <h2 class="text-3xl font-bold text-beige mb-4">${product.name}</h2>
-                        
-                        <p class="text-navy-light text-lg mb-6">
-                            ${product.description || 'Producto de sublimación personalizable de alta calidad.'}
-                        </p>
-                        
-                        <div class="bg-beige bg-opacity-10 rounded-lg p-4 mb-6">
-                            <div class="flex justify-between items-center mb-2">
-                                <span class="text-beige font-medium">Precio:</span>
-                                <span class="text-2xl font-bold text-beige">$${product.price.toFixed(2)}</span>
-                            </div>
-                            <div class="flex justify-between items-center">
-                                <span class="text-beige font-medium">Disponibilidad:</span>
-                                <span class="text-navy-light">
-                                    ${product.stock > 0 ? `${product.stock} en stock` : 'Agotado'}
-                                </span>
-                            </div>
-                        </div>
-                        
-                        <div class="space-y-3">
-                            <button class="w-full btn-primary text-navy py-3 rounded-lg font-bold text-lg" ${product.stock <= 0 ? 'disabled' : ''}>
-                                ${product.stock > 0 ? '🛒 Solicitar Cotización' : '❌ Agotado'}
-                            </button>
-                            <button onclick="shareProduct('${product.id}')" class="w-full glass-effect py-3 rounded-lg font-medium hover:bg-beige hover:bg-opacity-20 transition-all">
-                                📤 Compartir Producto
-                            </button>
-                        </div>
-                        
-                        <div class="mt-6 text-sm text-navy-light">
-                            <p>💎 Sublimación de alta calidad</p>
-                            <p>🎨 Personalización disponible</p>
-                            <p>🚚 Envío a todo el país</p>
                         </div>
                     </div>
                 </div>
             `;
+        }
+
+        // Helper functions
+        function getGalleryImages(product) {
+            let galleryImages = [];
+            if (product.imagen_galeria) {
+                try {
+                    if (Array.isArray(product.imagen_galeria)) {
+                        galleryImages = product.imagen_galeria;
+                    } else if (typeof product.imagen_galeria === 'string') {
+                        galleryImages = JSON.parse(product.imagen_galeria);
+                    }
+                } catch (error) {
+                    console.error('Error parsing gallery images:', error);
+                    galleryImages = [];
+                }
+            }
+            return galleryImages;
+        }
+
+        function getPlaceholderImage() {
+            return 'data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'300\' height=\'250\' viewBox=\'0 0 300 250\'%3E%3Crect width=\'300\' height=\'250\' fill=\'%23f3f4f6\'/%3E%3Ctext x=\'150\' y=\'130\' text-anchor=\'middle\' font-size=\'18\' fill=\'%236b7280\'%3EImagen no disponible%3C/text%3E%3C/svg%3E';
+        }
+
+        // Get category icon
+        function getCategoryIcon(category) {
+            const icons = {
+                'tazas': '☕',
+                'remeras': '👕',
+                'accesorios': '🎁',
+                'otros': '📦'
+            };
+            return icons[category] || '📦';
+        }
+
+        // Filter products by category
+        function filterByCategory(category) {
+            currentCategory = category;
             
-            modal.classList.add('show');
+            // Update active button
+            document.querySelectorAll('.category-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            applyFilters();
         }
 
-        // Close modal
-        function closeModal() {
-            document.getElementById('productModal').classList.remove('show');
+        // Apply all filters (category + search)
+        function applyFilters() {
+            let filtered = [...allProducts];
+            
+            // Apply category filter
+            if (currentCategory !== 'all') {
+                filtered = filtered.filter(product => product.categoria === currentCategory);
+            }
+            
+            // Apply search filter
+            if (currentSearchTerm) {
+                filtered = filtered.filter(product => 
+                    product.nombre.toLowerCase().includes(currentSearchTerm.toLowerCase()) ||
+                    product.descripcion.toLowerCase().includes(currentSearchTerm.toLowerCase()) ||
+                    product.categoria.toLowerCase().includes(currentSearchTerm.toLowerCase())
+                );
+            }
+            
+            filteredProducts = filtered;
+            displayProducts(filteredProducts);
+            updateProductCount();
         }
 
-        // Share product
-        function shareProduct(productId) {
+        // Search functionality
+        function setupSearch() {
+            const searchInputs = ['search-input', 'mobile-search-input'];
+            
+            searchInputs.forEach(inputId => {
+                const input = document.getElementById(inputId);
+                if (input) {
+                    input.addEventListener('input', function(e) {
+                        currentSearchTerm = e.target.value.trim();
+                        
+                        // Sync both search inputs
+                        searchInputs.forEach(id => {
+                            const otherInput = document.getElementById(id);
+                            if (otherInput && otherInput !== e.target) {
+                                otherInput.value = currentSearchTerm;
+                            }
+                        });
+                        
+                        applyFilters();
+                    });
+                }
+            });
+        }
+
+        // Toggle mobile search
+        function toggleSearch() {
+            const mobileSearch = document.getElementById('mobile-search');
+            mobileSearch.classList.toggle('hidden');
+            
+            if (!mobileSearch.classList.contains('hidden')) {
+                document.getElementById('mobile-search-input').focus();
+            }
+        }
+
+        // Clear search
+        function clearSearch() {
+            currentSearchTerm = '';
+            document.getElementById('search-input').value = '';
+            document.getElementById('mobile-search-input').value = '';
+            
+            // Reset to all categories
+            currentCategory = 'all';
+            document.querySelectorAll('.category-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelector('.category-btn[onclick="filterByCategory(\'all\')"]').classList.add('active');
+            
+            applyFilters();
+        }
+
+        // Show product detail modal
+        function showProductDetail(productId) {
+            selectedProduct = allProducts.find(p => p.id === productId);
+            if (!selectedProduct) return;
+
+            // Set basic info
+            document.getElementById('modal-product-name').textContent = selectedProduct.nombre;
+            document.getElementById('modal-category').textContent = `${getCategoryIcon(selectedProduct.categoria)} ${selectedProduct.categoria}`;
+            document.getElementById('modal-price').textContent = `Gs. ${selectedProduct.precio.toLocaleString()}`;
+            document.getElementById('modal-description').textContent = selectedProduct.descripcion;
+            
+            // Set availability
+            const availabilityDiv = document.getElementById('modal-availability');
+            if (selectedProduct.disponible) {
+                availabilityDiv.innerHTML = '<span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">✅ Disponible</span>';
+            } else {
+                availabilityDiv.innerHTML = '<span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-red-100 text-red-800">❌ No Disponible</span>';
+            }
+
+            // Set main image
+            const mainImage = selectedProduct.imagen_principal || 'data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'400\' height=\'400\' viewBox=\'0 0 400 400\'%3E%3Crect width=\'400\' height=\'400\' fill=\'%23f3f4f6\'/%3E%3Ctext x=\'200\' y=\'210\' text-anchor=\'middle\' font-size=\'24\' fill=\'%236b7280\'%3EImagen no disponible%3C/text%3E%3C/svg%3E';
+            document.getElementById('modal-main-image').src = mainImage;
+
+            // Set gallery
+            const galleryDiv = document.getElementById('modal-gallery');
+            let allImages = [mainImage];
+            
+            if (selectedProduct.imagen_galeria) {
+                try {
+                    let galleryImages = [];
+                    if (Array.isArray(selectedProduct.imagen_galeria)) {
+                        galleryImages = selectedProduct.imagen_galeria;
+                    } else if (typeof selectedProduct.imagen_galeria === 'string') {
+                        galleryImages = JSON.parse(selectedProduct.imagen_galeria);
+                    }
+                    allImages = allImages.concat(galleryImages);
+                } catch (error) {
+                    console.error('Error parsing gallery images:', error);
+                }
+            }
+
+            if (allImages.length > 1) {
+                galleryDiv.innerHTML = allImages.map((imageUrl, index) => `
+                    <img src="${imageUrl}" alt="Imagen ${index + 1}" 
+                         class="gallery-image ${index === 0 ? 'active' : ''}" 
+                         onclick="changeMainImage('${imageUrl}', this)">
+                `).join('');
+            } else {
+                galleryDiv.innerHTML = '';
+            }
+
+            // Show modal
+            document.getElementById('product-modal').classList.remove('hidden');
+        }
+
+        // Change main image in modal
+        function changeMainImage(imageUrl, element) {
+            document.getElementById('modal-main-image').src = imageUrl;
+            
+            // Update active gallery image
+            document.querySelectorAll('.gallery-image').forEach(img => {
+                img.classList.remove('active');
+            });
+            element.classList.add('active');
+        }
+
+        // Close product modal
+        function closeProductModal() {
+            document.getElementById('product-modal').classList.add('hidden');
+            selectedProduct = null;
+        }
+
+        // Contact via WhatsApp
+        function contactWhatsApp() {
+            if (!selectedProduct) return;
+            
+            const message = `Hola! Me interesa el producto: ${selectedProduct.nombre} - Gs. ${selectedProduct.precio.toLocaleString()}. ¿Podrías darme más información?`;
+            const whatsappUrl = `https://wa.me/595985501874?text=${encodeURIComponent(message)}`;
+            window.open(whatsappUrl, '_blank');
+        }
+
+        // Update statistics
+        function updateStats() {
+            const totalProducts = allProducts.length;
+            const categories = new Set(allProducts.map(p => p.categoria)).size;
+            
+            document.getElementById('total-products-stat').textContent = totalProducts;
+            document.getElementById('categories-stat').textContent = categories;
+        }
+
+        // Update product count
+        function updateProductCount() {
+            const count = filteredProducts.length;
+            const countText = count === 1 ? '1 producto' : `${count} productos`;
+            document.getElementById('product-count').textContent = countText;
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('product-modal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeProductModal();
+            }
+        });
+
+        // New filtering and sorting functions
+        function filterByPrice() {
+            currentPriceRange = document.getElementById('price-range').value;
+            applyFilters();
+        }
+
+        function sortProducts() {
+            currentSort = document.getElementById('sort-select').value;
+            applyFilters();
+        }
+
+        function changeView(view) {
+            currentView = view;
+            
+            // Update active button
+            document.querySelectorAll('.view-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(view + '-view-btn').classList.add('active');
+            
+            displayProducts(filteredProducts);
+        }
+
+        function clearAllFilters() {
+            currentCategory = 'all';
+            currentSearchTerm = '';
+            currentPriceRange = 'all';
+            currentSort = 'newest';
+            showFavoritesOnly = false;
+            
+            // Reset UI
+            document.getElementById('search-input').value = '';
+            document.getElementById('mobile-search-input').value = '';
+            document.getElementById('category-select').value = 'all';
+            document.getElementById('price-range').value = 'all';
+            document.getElementById('sort-select').value = 'newest';
+            
+            // Reset category buttons
+            document.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelector('.category-btn[onclick="filterByCategory(\'all\')"]').classList.add('active');
+            
+            // Reset favorites button
+            const favBtn = document.getElementById('favorites-btn');
+            favBtn.classList.remove('bg-red-500', 'text-white');
+            favBtn.classList.add('bg-red-100', 'text-red-700');
+            
+            applyFilters();
+        }
+
+        // Apply all filters with sorting
+        function applyFilters() {
+            let filtered = [...allProducts];
+            
+            // Apply category filter
+            if (currentCategory !== 'all') {
+                filtered = filtered.filter(product => product.categoria === currentCategory);
+            }
+            
+            // Apply search filter
+            if (currentSearchTerm) {
+                filtered = filtered.filter(product => 
+                    product.nombre.toLowerCase().includes(currentSearchTerm.toLowerCase()) ||
+                    product.descripcion.toLowerCase().includes(currentSearchTerm.toLowerCase()) ||
+                    product.categoria.toLowerCase().includes(currentSearchTerm.toLowerCase())
+                );
+            }
+            
+            // Apply price filter
+            if (currentPriceRange !== 'all') {
+                const [min, max] = currentPriceRange.split('-').map(Number);
+                filtered = filtered.filter(product => 
+                    product.precio >= min && product.precio <= max
+                );
+            }
+            
+            // Apply favorites filter
+            if (showFavoritesOnly) {
+                filtered = filtered.filter(product => favorites.includes(product.id));
+            }
+            
+            // Apply sorting
+            filtered.sort((a, b) => {
+                switch (currentSort) {
+                    case 'name-asc':
+                        return a.nombre.localeCompare(b.nombre);
+                    case 'name-desc':
+                        return b.nombre.localeCompare(a.nombre);
+                    case 'price-asc':
+                        return a.precio - b.precio;
+                    case 'price-desc':
+                        return b.precio - a.precio;
+                    case 'newest':
+                    default:
+                        return new Date(b.fecha_creacion) - new Date(a.fecha_creacion);
+                }
+            });
+            
+            filteredProducts = filtered;
+            displayProducts(filteredProducts);
+            updateProductCount();
+        }
+
+        // Favorites functionality
+        function toggleFavorite(productId) {
+            const index = favorites.indexOf(productId);
+            if (index > -1) {
+                favorites.splice(index, 1);
+            } else {
+                favorites.push(productId);
+            }
+            
+            localStorage.setItem('panu-favorites', JSON.stringify(favorites));
+            displayProducts(filteredProducts); // Refresh display
+        }
+
+        function toggleFavorites() {
+            showFavoritesOnly = !showFavoritesOnly;
+            const favBtn = document.getElementById('favorites-btn');
+            
+            if (showFavoritesOnly) {
+                favBtn.classList.remove('bg-red-100', 'text-red-700');
+                favBtn.classList.add('bg-red-500', 'text-white');
+            } else {
+                favBtn.classList.remove('bg-red-500', 'text-white');
+                favBtn.classList.add('bg-red-100', 'text-red-700');
+            }
+            
+            applyFilters();
+        }
+
+        // Comparison functionality
+        function toggleComparison(productId) {
+            if (typeof productId === 'undefined') {
+                // Toggle comparison panel visibility
+                const panel = document.getElementById('comparison-panel');
+                panel.classList.toggle('hidden');
+                return;
+            }
+            
             const product = allProducts.find(p => p.id === productId);
             if (!product) return;
+            
+            const index = comparisonList.findIndex(p => p.id === productId);
+            
+            if (index > -1) {
+                comparisonList.splice(index, 1);
+            } else if (comparisonList.length < 3) {
+                comparisonList.push(product);
+            } else {
+                showToast('Máximo 3 productos para comparar', 'warning');
+                return;
+            }
+            
+            updateComparisonPanel();
+            displayProducts(filteredProducts); // Refresh display
+        }
 
+        function updateComparisonPanel() {
+            const panel = document.getElementById('comparison-panel');
+            const count = document.getElementById('compare-count');
+            const items = document.getElementById('comparison-items');
+            
+            count.textContent = comparisonList.length;
+            
+            if (comparisonList.length > 0) {
+                panel.classList.remove('hidden');
+                items.innerHTML = comparisonList.map(product => `
+                    <div class="flex-shrink-0 bg-white rounded-lg p-3 shadow-sm border">
+                        <img src="${product.imagen_principal || getPlaceholderImage()}" alt="${product.nombre}" class="w-16 h-16 object-cover rounded-lg mb-2">
+                        <h4 class="text-sm font-medium text-stone-800 line-clamp-2">${product.nombre}</h4>
+                        <p class="text-xs text-stone-600">Gs. ${product.precio.toLocaleString()}</p>
+                        <button onclick="toggleComparison(${product.id})" class="mt-2 text-red-500 hover:text-red-700 text-xs">Quitar</button>
+                    </div>
+                `).join('');
+            } else {
+                panel.classList.add('hidden');
+            }
+        }
+
+        function clearComparison() {
+            comparisonList = [];
+            updateComparisonPanel();
+            displayProducts(filteredProducts);
+        }
+
+        function compareProducts() {
+            if (comparisonList.length < 2) {
+                showToast('Selecciona al menos 2 productos para comparar', 'warning');
+                return;
+            }
+            
+            const modal = document.getElementById('comparison-modal');
+            const table = document.getElementById('comparison-table');
+            
+            table.innerHTML = `
+                <table class="w-full border-collapse">
+                    <thead>
+                        <tr class="bg-stone-100">
+                            <th class="border border-stone-300 p-3 text-left font-bold">Característica</th>
+                            ${comparisonList.map(product => `
+                                <th class="border border-stone-300 p-3 text-center">
+                                    <img src="${product.imagen_principal || getPlaceholderImage()}" alt="${product.nombre}" class="w-20 h-20 object-cover rounded-lg mx-auto mb-2">
+                                    <div class="font-bold text-sm">${product.nombre}</div>
+                                </th>
+                            `).join('')}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="border border-stone-300 p-3 font-medium">Precio</td>
+                            ${comparisonList.map(product => `
+                                <td class="border border-stone-300 p-3 text-center">
+                                    <div class="price-tag inline-block">Gs. ${product.precio.toLocaleString()}</div>
+                                </td>
+                            `).join('')}
+                        </tr>
+                        <tr class="bg-stone-50">
+                            <td class="border border-stone-300 p-3 font-medium">Categoría</td>
+                            ${comparisonList.map(product => `
+                                <td class="border border-stone-300 p-3 text-center">
+                                    <span class="inline-block px-2 py-1 bg-amber-100 text-amber-800 rounded-full text-xs font-medium">
+                                        ${getCategoryIcon(product.categoria)} ${product.categoria}
+                                    </span>
+                                </td>
+                            `).join('')}
+                        </tr>
+                        <tr>
+                            <td class="border border-stone-300 p-3 font-medium">Disponibilidad</td>
+                            ${comparisonList.map(product => `
+                                <td class="border border-stone-300 p-3 text-center">
+                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${product.disponible ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">
+                                        ${product.disponible ? '✅ Disponible' : '❌ No Disponible'}
+                                    </span>
+                                </td>
+                            `).join('')}
+                        </tr>
+                        <tr class="bg-stone-50">
+                            <td class="border border-stone-300 p-3 font-medium">Descripción</td>
+                            ${comparisonList.map(product => `
+                                <td class="border border-stone-300 p-3 text-sm">${product.descripcion}</td>
+                            `).join('')}
+                        </tr>
+                        <tr>
+                            <td class="border border-stone-300 p-3 font-medium">Acciones</td>
+                            ${comparisonList.map(product => `
+                                <td class="border border-stone-300 p-3 text-center">
+                                    <button onclick="showProductDetail(${product.id}); closeComparisonModal();" class="btn-primary text-white px-3 py-2 rounded-lg text-sm font-medium mb-2 w-full">
+                                        Ver Detalles
+                                    </button>
+                                    <button onclick="contactWhatsAppProduct(${product.id})" class="bg-green-500 hover:bg-green-600 text-white px-3 py-2 rounded-lg text-sm font-medium w-full">
+                                        WhatsApp
+                                    </button>
+                                </td>
+                            `).join('')}
+                        </tr>
+                    </tbody>
+                </table>
+            `;
+            
+            modal.classList.remove('hidden');
+        }
+
+        function closeComparisonModal() {
+            document.getElementById('comparison-modal').classList.add('hidden');
+        }
+
+        function contactWhatsAppProduct(productId) {
+            const product = allProducts.find(p => p.id === productId);
+            if (!product) return;
+            
+            const message = `Hola! Me interesa el producto: ${product.nombre} - Gs. ${product.precio.toLocaleString()}. ¿Podrías darme más información?`;
+            const whatsappUrl = `https://wa.me/595985501874?text=${encodeURIComponent(message)}`;
+            window.open(whatsappUrl, '_blank');
+        }
+
+        // Utility functions
+        function scrollToTop() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function exportCatalog() {
+            const csvContent = [
+                ['Nombre', 'Categoría', 'Precio', 'Descripción', 'Disponible'],
+                ...filteredProducts.map(product => [
+                    product.nombre,
+                    product.categoria,
+                    product.precio,
+                    product.descripcion,
+                    product.disponible ? 'Sí' : 'No'
+                ])
+            ].map(row => row.map(field => `"${field}"`).join(',')).join('\n');
+            
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            link.setAttribute('href', url);
+            link.setAttribute('download', 'catalogo-panu.csv');
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            showToast('Catálogo exportado exitosamente', 'success');
+        }
+
+        function shareApp() {
             if (navigator.share) {
                 navigator.share({
-                    title: product.name,
-                    text: `Mira este producto de Panu Sublimaciones: ${product.name} - $${product.price.toFixed(2)}`,
+                    title: 'Panu - Sublimaciones Premium',
+                    text: 'Descubre nuestro catálogo de productos de sublimación premium',
                     url: window.location.href
                 });
             } else {
                 // Fallback: copy to clipboard
-                const text = `${product.name} - $${product.price.toFixed(2)} | Panu Sublimaciones - ${window.location.href}`;
-                navigator.clipboard.writeText(text).then(() => {
-                    showNotification('Enlace copiado al portapapeles', 'success');
+                navigator.clipboard.writeText(window.location.href).then(() => {
+                    showToast('Enlace copiado al portapapeles', 'success');
                 });
             }
         }
 
-        // Scroll to products
-        function scrollToProducts() {
-            document.querySelector('main').scrollIntoView({ behavior: 'smooth' });
-        }
-
-        // Show notification
-        function showNotification(message, type = 'info') {
-            const notification = document.createElement('div');
-            notification.className = `fixed top-20 right-4 z-50 px-6 py-3 rounded-lg text-white font-medium max-w-sm ${
-                type === 'success' ? 'bg-green-600' : 
-                type === 'error' ? 'bg-red-600' : 
-                type === 'warning' ? 'bg-yellow-600' : 'bg-blue-600'
-            }`;
-            notification.textContent = message;
+        function showToast(message, type = 'info') {
+            const toast = document.createElement('div');
+            toast.className = `fixed top-4 right-4 z-50 px-6 py-3 rounded-lg shadow-lg text-white font-medium transition-all duration-300 transform translate-x-full`;
             
-            document.body.appendChild(notification);
+            switch (type) {
+                case 'success':
+                    toast.classList.add('bg-green-500');
+                    break;
+                case 'warning':
+                    toast.classList.add('bg-yellow-500');
+                    break;
+                case 'error':
+                    toast.classList.add('bg-red-500');
+                    break;
+                default:
+                    toast.classList.add('bg-blue-500');
+            }
             
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            
+            // Animate in
             setTimeout(() => {
-                notification.remove();
-            }, 5000);
+                toast.classList.remove('translate-x-full');
+            }, 100);
+            
+            // Animate out and remove
+            setTimeout(() => {
+                toast.classList.add('translate-x-full');
+                setTimeout(() => {
+                    document.body.removeChild(toast);
+                }, 300);
+            }, 3000);
         }
 
-        // Editor variables
-        let canvas, ctx;
-        let isDrawing = false;
-        let currentTool = 'brush';
-        let currentColor = '#000000';
-        let currentSize = 5;
-        let lastX = 0;
-        let lastY = 0;
-
-        // Initialize editor
-        function initializeEditor() {
-            canvas = document.getElementById('designCanvas');
-            ctx = canvas.getContext('2d');
-            
-            // Set up canvas
-            ctx.lineCap = 'round';
-            ctx.lineJoin = 'round';
-            
-            // Canvas event listeners
-            canvas.addEventListener('mousedown', startDrawing);
-            canvas.addEventListener('mousemove', draw);
-            canvas.addEventListener('mouseup', stopDrawing);
-            canvas.addEventListener('mouseout', stopDrawing);
-            
-            // Touch events for mobile
-            canvas.addEventListener('touchstart', handleTouch);
-            canvas.addEventListener('touchmove', handleTouch);
-            canvas.addEventListener('touchend', stopDrawing);
-            
-            // Tool event listeners
-            document.getElementById('colorPicker').addEventListener('change', (e) => {
-                currentColor = e.target.value;
+        // Tab switching functionality
+        function switchTab(tabName) {
+            // Hide all tab contents
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
             });
             
-            document.getElementById('brushSize').addEventListener('input', (e) => {
-                currentSize = e.target.value;
-                document.getElementById('brushSizeValue').textContent = currentSize;
+            // Remove active class from all tab buttons
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
             });
             
-            document.getElementById('fontSize').addEventListener('input', (e) => {
-                document.getElementById('fontSizeValue').textContent = e.target.value;
-            });
-            
-            document.getElementById('imageUpload').addEventListener('change', handleImageUpload);
-            
-            // Set initial background
-            ctx.fillStyle = 'white';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            // Show selected tab content
+            document.getElementById(tabName + '-content').classList.add('active');
+            document.getElementById(tabName + '-tab').classList.add('active');
         }
 
-        // Open editor
-        function openEditor() {
-            document.getElementById('editorModal').classList.add('show');
-            if (!canvas) {
-                setTimeout(initializeEditor, 100);
-            }
-        }
-
-        // Close editor
-        function closeEditor() {
-            document.getElementById('editorModal').classList.remove('show');
-        }
-
-        // Set drawing tool
-        function setTool(tool) {
-            currentTool = tool;
+        // Enterprise quote functionality
+        function sendEnterpriseQuote() {
+            const companyName = document.getElementById('company-name').value.trim();
+            const contactName = document.getElementById('contact-name').value.trim();
+            const contactPhone = document.getElementById('contact-phone').value.trim();
+            const quantityRange = document.getElementById('quantity-range').value;
+            const productInterest = document.getElementById('product-interest').value.trim();
             
-            // Update tool buttons
-            document.querySelectorAll('.tool-btn').forEach(btn => {
-                btn.classList.remove('active', 'bg-beige', 'bg-opacity-20', 'text-navy');
-            });
-            
-            event.target.classList.add('active', 'bg-beige', 'bg-opacity-20', 'text-navy');
-            
-            // Show/hide text tools
-            const textTools = document.getElementById('textTools');
-            if (tool === 'text') {
-                textTools.classList.remove('hidden');
-            } else {
-                textTools.classList.add('hidden');
-            }
-            
-            // Change cursor
-            canvas.style.cursor = tool === 'text' ? 'text' : 'crosshair';
-        }
-
-        // Start drawing
-        function startDrawing(e) {
-            if (currentTool === 'text') {
-                addText(e);
+            if (!companyName || !contactName || !contactPhone || !quantityRange || !productInterest) {
+                showToast('Por favor completa todos los campos', 'warning');
                 return;
             }
             
-            isDrawing = true;
-            const rect = canvas.getBoundingClientRect();
-            lastX = e.clientX - rect.left;
-            lastY = e.clientY - rect.top;
+            const message = `🏢 COTIZACIÓN EMPRESARIAL
+            
+Empresa: ${companyName}
+Contacto: ${contactName}
+Teléfono: ${contactPhone}
+Cantidad: ${quantityRange}
+
+Productos de interés:
+${productInterest}
+
+¡Hola! Me interesa una cotización empresarial con los datos arriba mencionados. ¿Podrían ayudarme?`;
+            
+            const whatsappUrl = `https://wa.me/595985501874?text=${encodeURIComponent(message)}`;
+            window.open(whatsappUrl, '_blank');
+            
+            // Clear form
+            document.getElementById('company-name').value = '';
+            document.getElementById('contact-name').value = '';
+            document.getElementById('contact-phone').value = '';
+            document.getElementById('quantity-range').value = '';
+            document.getElementById('product-interest').value = '';
+            
+            showToast('Cotización enviada por WhatsApp', 'success');
         }
 
-        // Draw function
-        function draw(e) {
-            if (!isDrawing) return;
-            
-            const rect = canvas.getBoundingClientRect();
-            const currentX = e.clientX - rect.left;
-            const currentY = e.clientY - rect.top;
-            
-            ctx.globalCompositeOperation = currentTool === 'eraser' ? 'destination-out' : 'source-over';
-            ctx.strokeStyle = currentColor;
-            ctx.lineWidth = currentSize;
-            
-            ctx.beginPath();
-            ctx.moveTo(lastX, lastY);
-            ctx.lineTo(currentX, currentY);
-            ctx.stroke();
-            
-            lastX = currentX;
-            lastY = currentY;
-        }
-
-        // Stop drawing
-        function stopDrawing() {
-            isDrawing = false;
-        }
-
-        // Handle touch events
-        function handleTouch(e) {
-            e.preventDefault();
-            const touch = e.touches[0];
-            const mouseEvent = new MouseEvent(e.type === 'touchstart' ? 'mousedown' : 'mousemove', {
-                clientX: touch.clientX,
-                clientY: touch.clientY
-            });
-            canvas.dispatchEvent(mouseEvent);
-        }
-
-        // Add text to canvas
-        function addText(e) {
-            const text = document.getElementById('textInput').value;
-            if (!text) {
-                showNotification('Escribe un texto primero', 'warning');
-                return;
-            }
-            
-            const rect = canvas.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-            
-            const font = document.getElementById('fontSelect').value;
-            const size = document.getElementById('fontSize').value;
-            
-            ctx.globalCompositeOperation = 'source-over';
-            ctx.fillStyle = currentColor;
-            ctx.font = `${size}px ${font}`;
-            ctx.fillText(text, x, y);
-        }
-
-        // Handle image upload
-        function handleImageUpload(e) {
-            const file = e.target.files[0];
-            if (!file) return;
-            
-            const reader = new FileReader();
-            reader.onload = function(event) {
-                const img = new Image();
-                img.onload = function() {
-                    // Scale image to fit canvas
-                    const maxWidth = canvas.width * 0.5;
-                    const maxHeight = canvas.height * 0.5;
-                    
-                    let { width, height } = img;
-                    
-                    if (width > maxWidth) {
-                        height = (height * maxWidth) / width;
-                        width = maxWidth;
-                    }
-                    
-                    if (height > maxHeight) {
-                        width = (width * maxHeight) / height;
-                        height = maxHeight;
-                    }
-                    
-                    // Draw image at center
-                    const x = (canvas.width - width) / 2;
-                    const y = (canvas.height - height) / 2;
-                    
-                    ctx.drawImage(img, x, y, width, height);
-                };
-                img.src = event.target.result;
-            };
-            reader.readAsDataURL(file);
-        }
-
-        // Clear canvas
-        function clearCanvas() {
-            ctx.fillStyle = 'white';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            showNotification('Canvas limpiado', 'success');
-        }
-
-        // Download design
-        function downloadDesign() {
-            const link = document.createElement('a');
-            link.download = 'mi-diseño-panu.png';
-            link.href = canvas.toDataURL();
-            link.click();
-            showNotification('Diseño descargado', 'success');
-        }
-
-        // Save design
-        function saveDesign() {
-            const designData = canvas.toDataURL();
-            const designs = JSON.parse(localStorage.getItem('panuDesigns') || '[]');
-            
-            const newDesign = {
-                id: 'design_' + Date.now(),
-                name: `Diseño ${designs.length + 1}`,
-                data: designData,
-                product: document.getElementById('productSelect').value,
-                createdAt: new Date().toISOString()
-            };
-            
-            designs.push(newDesign);
-            localStorage.setItem('panuDesigns', JSON.stringify(designs));
-            
-            showNotification('Diseño guardado correctamente', 'success');
-        }
-
-        // Request quote
-        function requestQuote() {
-            const designData = canvas.toDataURL();
-            const product = document.getElementById('productSelect').value;
-            
-            // Get customer info
-            const customerName = document.getElementById('textInput').value || 'Cliente';
-            
-            // Create email content
-            const subject = `Solicitud de Cotización - ${product} - ${customerName}`;
-            const body = `Hola Panu Sublimaciones,
-
-Me gustaría solicitar una cotización para el siguiente producto personalizado:
-
-Producto: ${product}
-Cliente: ${customerName}
-Fecha: ${new Date().toLocaleDateString()}
-
-He adjuntado mi diseño personalizado. Por favor, envíenme información sobre:
-- Precio del producto con mi diseño
-- Tiempo de producción
-- Opciones de envío
-- Cualquier recomendación técnica
-
-Quedo atento a su respuesta.
-
-Saludos cordiales.
-
----
-Diseño creado con el Editor de Panu Sublimaciones
-${window.location.href}`;
-
-            // Create mailto link
-            const mailtoLink = `mailto:panu@aurical.org?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-            
-            // Try to open email client
-            try {
-                window.open(mailtoLink, '_blank');
-                showNotification('📧 Abriendo tu cliente de email para enviar la cotización a panu@aurical.org', 'success');
-                
-                // Also save the quote locally for backup
-                const quotes = JSON.parse(localStorage.getItem('panuQuotes') || '[]');
-                quotes.push({
-                    id: 'quote_' + Date.now(),
-                    design: designData,
-                    product: product,
-                    customerName: customerName,
-                    timestamp: new Date().toISOString(),
-                    status: 'pending'
-                });
-                localStorage.setItem('panuQuotes', JSON.stringify(quotes));
-                
-            } catch (error) {
-                // Fallback: show contact info
-                showNotification('Por favor contacta directamente a: panu@aurical.org', 'info');
-                console.log('Quote data saved locally:', { designData, product, customerName });
-            }
-        }
-
-        // Close modal on outside click
-        document.getElementById('productModal').addEventListener('click', function(e) {
-            if (e.target === this) closeModal();
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', function() {
+            setupSearch();
+            loadProducts();
+            updateComparisonPanel();
+            console.log('Panu catalog loaded successfully');
         });
-        
-        document.getElementById('editorModal').addEventListener('click', function(e) {
-            if (e.target === this) closeEditor();
+
+        // Handle keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeProductModal();
+                closeComparisonModal();
+            }
+        });
+
+        // Close modals when clicking outside
+        document.getElementById('comparison-modal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeComparisonModal();
+            }
         });
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98f2a52e44de1161',t:'MTc2MDU2NjIxMy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'991838f98231116c',t:'MTc2MDk2MDIzOS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
