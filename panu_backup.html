@@ -523,43 +523,47 @@
      </div>
     </div>
    </div>
-  </section><!-- 
+    </section>
+
     <!-- 🎬 SECCIÓN PROMOCIÓN SIMPLE -->
-<html>
- <head>
-  <style>@view-transition { navigation: auto; }</style>
-  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
-  <script src="/_sdk/element_sdk.js" type="text/javascript"></script>
-  <script src="https://cdn.tailwindcss.com" type="text/javascript"></script>
- </head>
- <body>
-  <section id="promotion-section" class="hidden mb-8">
-   <div id="promotion-content" class="w-full"><!-- El contenido se genera dinámicamente -->
-   </div>
-  </section>
-  <script>
-  function displayPromotion() {
-    const section = document.getElementById("promotion-section");
-    const content = document.getElementById("promotion-content");
+    <section id="promotion-section" class="hidden mb-8">
+        <div id="promotion-content" class="w-full"><!-- El contenido se genera dinámicamente --></div>
+    </section>
 
-    if (!activePromotion) return hidePromotion();
+    <script>
+        // Sección de promoción integrada: usar window.setActivePromotion({ tipo_media, url_media, titulo })
+        // para activar y mostrar una promoción desde otros scripts.
+        let activePromotion = null;
 
-    const isVideo = activePromotion.tipo_media === "video";
-    const mediaElement = isVideo
-      ? `<video src="${activePromotion.url_media}" class="w-full h-64 md:h-80 object-cover rounded-lg shadow-lg" autoplay muted loop></video>`
-      : `<img src="${activePromotion.url_media}" alt="${activePromotion.titulo}" class="w-full h-64 md:h-80 object-cover rounded-lg shadow-lg">`;
+        function displayPromotion() {
+            const section = document.getElementById('promotion-section');
+            const content = document.getElementById('promotion-content');
 
-    content.innerHTML = mediaElement;
-    section.classList.remove("hidden");
-  }
+            if (!activePromotion) return hidePromotion();
 
-  function hidePromotion() {
-    document.getElementById("promotion-section").classList.add("hidden");
-  }
-</script><!-- 🎬 FIN SECCIÓN PROMOCIÓN -->
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9918bd61d2e701ac',t:'MTc2MDk2NTY2My4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
-</html>
-    Tab Navigation -->
+            const isVideo = activePromotion.tipo_media === 'video';
+            const mediaElement = isVideo
+                ? `<video src="${activePromotion.url_media}" class="w-full h-64 md:h-80 object-cover rounded-lg shadow-lg" autoplay muted loop playsinline></video>`
+                : `<img src="${activePromotion.url_media}" alt="${(activePromotion.titulo || '')}" class="w-full h-64 md:h-80 object-cover rounded-lg shadow-lg">`;
+
+            content.innerHTML = mediaElement;
+            section.classList.remove('hidden');
+        }
+
+        function hidePromotion() {
+            const section = document.getElementById('promotion-section');
+            if (section) section.classList.add('hidden');
+        }
+
+        // Permite activar la promoción desde la consola o desde otros scripts
+        window.setActivePromotion = function(promo) {
+            activePromotion = promo;
+            displayPromotion();
+        };
+    </script>
+
+    <!-- 🎬 FIN SECCIÓN PROMOCIÓN -->
+        Tab Navigation -->
   <section class="bg-white shadow-sm">
    <div class="max-w-7xl mx-auto px-4">
     <div class="tab-nav flex"><button onclick="switchTab('catalog')" id="catalog-tab" class="tab-btn active flex-1 text-center font-medium"> 🛍️ Catálogo </button> <button onclick="switchTab('enterprise')" id="enterprise-tab" class="tab-btn flex-1 text-center font-medium"> 🏢 Empresarial </button>
