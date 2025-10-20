@@ -706,44 +706,22 @@
             });
         }
 
-        // Upload media file to Supabase Storage
+        // Upload media file - now uses Data URLs directly
         async function uploadMediaFile(file) {
             try {
-                // Try to upload to storage, if bucket doesn't exist, use a fallback
-                let publicUrl;
+                // Always use Data URL as primary method (works without bucket setup)
+                console.log('Using Data URL for media storage (no bucket required)');
+                const dataUrl = await createDataUrl(file);
                 
-                try {
-                    const fileExt = file.name.split('.').pop();
-                    const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
-                    const filePath = `promociones/${fileName}`;
-
-                    const { data, error } = await supabase.storage
-                        .from('media')
-                        .upload(filePath, file);
-
-                    if (error) {
-                        // If bucket doesn't exist, create a data URL as fallback
-                        if (error.message.includes('Bucket not found')) {
-                            console.warn('Storage bucket not available, using data URL fallback');
-                            return await createDataUrl(file);
-                        }
-                        throw error;
-                    }
-
-                    const { data: { publicUrl: url } } = supabase.storage
-                        .from('media')
-                        .getPublicUrl(filePath);
-                    
-                    publicUrl = url;
-                } catch (storageError) {
-                    console.warn('Storage upload failed, using data URL fallback:', storageError);
-                    return await createDataUrl(file);
+                // Show info message about storage method
+                if (file.size > 5 * 1024 * 1024) { // 5MB
+                    showMessage('ℹ️ Archivo grande detectado. Para mejor rendimiento, configura el bucket "media" en Supabase Storage.', 'info');
                 }
-
-                return publicUrl;
+                
+                return dataUrl;
             } catch (error) {
-                console.error('Error uploading file:', error);
-                throw new Error(`Error al subir archivo: ${error.message}`);
+                console.error('Error processing file:', error);
+                throw new Error(`Error al procesar archivo: ${error.message}`);
             }
         }
 
@@ -1293,5 +1271,5 @@
             }
         });
     </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9918b01c702101ac',t:'MTc2MDk2NTExOS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9918eda9903e01ac',t:'MTc2MDk2NzY0MC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
