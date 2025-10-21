@@ -551,7 +551,7 @@
       <div class="tool-group">
        <div class="tool-label">
         Acciones
-       </div><button onclick="clearCanvas()" class="btn-secondary w-full mb-2 text-sm"> Limpiar Todo </button> <button onclick="resetCanvas()" class="btn-secondary w-full mb-2 text-sm"> Reiniciar </button> <button onclick="downloadDesign()" class="btn-primary w-full text-sm"> 📥 Descargar con Marca de Agua </button>
+       </div><button onclick="clearCanvas()" class="btn-secondary w-full mb-2 text-sm"> Limpiar Todo </button> <button onclick="resetCanvas()" class="btn-secondary w-full mb-2 text-sm"> Reiniciar </button> <button onclick="downloadDesign()" class="btn-primary w-full text-sm"> 📥 Descargar Diseño </button>
       </div>
      </div>
     </div><!-- Canvas Area -->
@@ -1176,12 +1176,12 @@
                 template.designArea.height * scale
             );
             
-            // Draw images
+            // Draw user images
             let loadedImages = 0;
             const totalImages = images.length;
             
             if (totalImages === 0) {
-                addWatermarkAndFinish();
+                addFooterAndFinish();
                 return;
             }
             
@@ -1211,53 +1211,182 @@
                     
                     loadedImages++;
                     if (loadedImages === totalImages) {
-                        addWatermarkAndFinish();
+                        addFooterAndFinish();
                     }
                 };
                 newImg.src = img.src;
             });
             
-            function addWatermarkAndFinish() {
-                // Add diagonal watermark in the center
-                ctx.save();
-                ctx.translate(canvas.width/2, canvas.height/2);
-                ctx.rotate(-Math.PI/6); // -30 degrees
-                ctx.fillStyle = 'rgba(139, 69, 19, 0.15)';
-                ctx.font = 'bold 48px Arial';
-                ctx.textAlign = 'center';
-                ctx.fillText('AURICAL ART', 0, -20);
-                ctx.font = 'bold 32px Arial';
-                ctx.fillText('DESIGN', 0, 20);
-                ctx.restore();
-                
-                // Add footer
-                ctx.fillStyle = '#8B4513';
-                ctx.fillRect(0, canvas.height - 60, canvas.width, 60);
-                ctx.fillStyle = '#ffffff';
+            function addFooterAndFinish() {
+                // Add simple footer text
+                ctx.fillStyle = '#666';
                 ctx.font = '14px Arial';
                 ctx.textAlign = 'center';
-                ctx.fillText('AURICAL ART DESIGN - Diseños Personalizados', canvas.width/2, canvas.height - 35);
-                ctx.fillText('WhatsApp: +595985501874 | aurical@panu.org', canvas.width/2, canvas.height - 15);
+                ctx.fillText('Diseñado desde Aurical Art Design', canvas.width/2, canvas.height - 20);
                 
-                const dataURL = canvas.toDataURL('image/jpeg', 0.9);
+                const dataURL = canvas.toDataURL('image/jpeg', 0.95);
                 callback(dataURL);
             }
         }
+        
+        // Draw product template on canvas
+        function drawProductTemplate(ctx, template, scale, offsetX, offsetY) {
+            ctx.save();
+            ctx.translate(offsetX, offsetY);
+            ctx.scale(scale, scale);
+            
+            // Set common styles
+            ctx.fillStyle = '#f8f9fa';
+            ctx.strokeStyle = '#ddd';
+            ctx.lineWidth = 2;
+            
+            // Draw based on product type
+            switch (currentProduct) {
+                case 'tshirt':
+                    // T-shirt shape
+                    ctx.beginPath();
+                    ctx.moveTo(150, 100);
+                    ctx.lineTo(150, 80);
+                    ctx.quadraticCurveTo(150, 70, 160, 70);
+                    ctx.lineTo(340, 70);
+                    ctx.quadraticCurveTo(350, 70, 350, 80);
+                    ctx.lineTo(350, 100);
+                    ctx.lineTo(380, 120);
+                    ctx.lineTo(380, 180);
+                    ctx.lineTo(360, 180);
+                    ctx.lineTo(360, 450);
+                    ctx.quadraticCurveTo(360, 460, 350, 460);
+                    ctx.lineTo(150, 460);
+                    ctx.quadraticCurveTo(140, 460, 140, 450);
+                    ctx.lineTo(140, 180);
+                    ctx.lineTo(120, 180);
+                    ctx.lineTo(120, 120);
+                    ctx.closePath();
+                    ctx.fill();
+                    ctx.stroke();
+                    break;
+                    
+                case 'mug':
+                    // Mug base shadow
+                    ctx.fillStyle = '#ddd';
+                    ctx.beginPath();
+                    ctx.ellipse(250, 350, 80, 20, 0, 0, 2 * Math.PI);
+                    ctx.fill();
+                    
+                    // Mug body
+                    ctx.fillStyle = '#f8f9fa';
+                    ctx.fillRect(170, 150, 160, 200);
+                    ctx.strokeRect(170, 150, 160, 200);
+                    
+                    // Mug handle
+                    ctx.beginPath();
+                    ctx.moveTo(330, 200);
+                    ctx.quadraticCurveTo(350, 200, 350, 220);
+                    ctx.lineTo(350, 280);
+                    ctx.quadraticCurveTo(350, 300, 330, 300);
+                    ctx.stroke();
+                    break;
+                    
+                case 'hoppie':
+                    // Hoppie base shadow
+                    ctx.fillStyle = '#ddd';
+                    ctx.beginPath();
+                    ctx.ellipse(250, 380, 50, 15, 0, 0, 2 * Math.PI);
+                    ctx.fill();
+                    
+                    // Hoppie body
+                    ctx.fillStyle = '#f8f9fa';
+                    ctx.fillRect(200, 100, 100, 280);
+                    ctx.strokeRect(200, 100, 100, 280);
+                    
+                    // Hoppie lid
+                    ctx.fillStyle = '#333';
+                    ctx.fillRect(195, 95, 110, 25);
+                    
+                    // Straw hole
+                    ctx.strokeStyle = '#ddd';
+                    ctx.beginPath();
+                    ctx.arc(320, 150, 8, 0, 2 * Math.PI);
+                    ctx.stroke();
+                    break;
+                    
+                case 'notebook':
+                    // Notebook cover
+                    ctx.fillStyle = '#f8f9fa';
+                    ctx.fillRect(150, 80, 200, 280);
+                    ctx.strokeRect(150, 80, 200, 280);
+                    
+                    // Notebook binding
+                    ctx.fillStyle = '#8B4513';
+                    ctx.fillRect(150, 80, 200, 40);
+                    
+                    // Lines
+                    ctx.strokeStyle = '#ddd';
+                    ctx.lineWidth = 1;
+                    for (let i = 140; i <= 200; i += 20) {
+                        ctx.beginPath();
+                        ctx.moveTo(160, i);
+                        ctx.lineTo(340, i);
+                        ctx.stroke();
+                    }
+                    break;
+                    
+                case 'mousepad':
+                    // Mousepad
+                    ctx.fillStyle = '#f8f9fa';
+                    ctx.beginPath();
+                    ctx.roundRect(80, 130, 340, 240, 20);
+                    ctx.fill();
+                    ctx.stroke();
+                    break;
+                    
+                case 'cap':
+                    // Cap base shadow
+                    ctx.fillStyle = '#ddd';
+                    ctx.beginPath();
+                    ctx.ellipse(250, 350, 120, 30, 0, 0, 2 * Math.PI);
+                    ctx.fill();
+                    
+                    // Cap body
+                    ctx.fillStyle = '#f8f9fa';
+                    ctx.beginPath();
+                    ctx.moveTo(130, 250);
+                    ctx.quadraticCurveTo(130, 150, 250, 150);
+                    ctx.quadraticCurveTo(370, 150, 370, 250);
+                    ctx.lineTo(370, 300);
+                    ctx.quadraticCurveTo(370, 320, 350, 320);
+                    ctx.lineTo(150, 320);
+                    ctx.quadraticCurveTo(130, 320, 130, 300);
+                    ctx.closePath();
+                    ctx.fill();
+                    ctx.stroke();
+                    break;
+            }
+            
+            ctx.restore();
+        }
 
-        // Download design with watermark
+        // Download design preview (manual download)
         function downloadDesign() {
             if (images.length === 0) {
                 showNotification('Agrega al menos una imagen antes de descargar', 'error');
                 return;
             }
             
-            generateDesignWithWatermark((dataURL) => {
+            downloadDesignPreview(() => {
+                showNotification('✅ Diseño descargado', 'success');
+            });
+        }
+        
+        // Download design preview with callback
+        function downloadDesignPreview(callback) {
+            generateDesignPreview((dataURL) => {
                 const link = document.createElement('a');
-                link.download = `aurical-design-${currentProduct}-${Date.now()}.jpg`;
+                link.download = `panu-design-${currentProduct}-${Date.now()}.jpg`;
                 link.href = dataURL;
                 link.click();
                 
-                showNotification('✅ Diseño descargado con marca de agua', 'success');
+                if (callback) callback();
             });
         }
 
@@ -1432,7 +1561,7 @@ ${new Date().toLocaleString()}
                         <div class="font-semibold text-orange-800 mb-2">📎 Siguiente Paso:</div>
                         <div class="text-sm text-orange-700">
                             <strong>Envía tu diseño desde la galería</strong><br>
-                            El diseño se descargó con marca de agua "AURICAL ART DESIGN".<br>
+                            El diseño se descargó automáticamente en tu dispositivo.<br>
                             Compártelo por WhatsApp para completar tu solicitud.
                         </div>
                     </div>
@@ -1714,5 +1843,5 @@ ${new Date().toLocaleString()}
             }, 5000);
         }
     </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'991cc90e10eb00e0',t:'MTc2MTAwODA4NC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'991cd68af6af1161',t:'MTc2MTAwODYzNi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
