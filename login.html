@@ -90,9 +90,9 @@
   const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN4aWhvamNpeWl5cG9seGFob2VqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA3Nzc3OTEsImV4cCI6MjA3NjM1Mzc5MX0.PGIGHwPmhTjpGCl-m61P2HXrSNwiR1ku8rgIshc-RUA';
   const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+  // If already logged in, redirect to admin page
   if (localStorage.getItem('panu_admin_login') === 'true') {
-    document.getElementById('login-screen').style.display = 'none';
-    document.getElementById('admin-panel').style.display = 'block';
+    window.location.href = 'admin.html';
   }
 
   document.getElementById('login-form').addEventListener('submit', async (e) => {
@@ -116,9 +116,9 @@
         return;
       }
 
-      localStorage.setItem('panu_admin_login', 'true');
-      document.getElementById('login-screen').style.display = 'none';
-      document.getElementById('admin-panel').style.display = 'block';
+  localStorage.setItem('panu_admin_login', 'true');
+  // Redirect to the dedicated admin page
+  window.location.href = 'admin.html';
     } catch (err) {
       console.error(err);
       errorEl.classList.remove('hidden');
