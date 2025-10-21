@@ -581,7 +581,14 @@
         </svg><!-- User images will be added here -->
        </div>
       </div>
-      <div class="mt-4 text-center text-sm text-gray-600"><strong>Tip:</strong> Arrastra y suelta imágenes directamente en el área de diseño
+      <div class="mt-4 text-center text-sm text-gray-600">
+       <div class="mb-2"><strong>💻 PC:</strong> Arrastra y suelta imágenes directamente en el área de diseño
+       </div>
+       <div class="mb-3"><strong>📱 Móvil:</strong> Para mover imágenes, desliza tu dedo <em>cerca</em> de la imagen (no directamente sobre ella)
+       </div>
+       <div class="text-xs text-gray-500 border-t pt-2"><strong>Panu Design Editor v1.066</strong><br>
+         Built by <strong>Joel Páez</strong> and <strong>Ren_q (Alexa Ferreira)</strong>
+       </div>
       </div>
      </div>
     </div><!-- Preview Panel -->
@@ -1229,15 +1236,24 @@
                         addFooterAndFinish();
                     }
                 };
+                newImg.onerror = function() {
+                    console.error('Error loading image for export');
+                    loadedImages++;
+                    if (loadedImages === totalImages) {
+                        addFooterAndFinish();
+                    }
+                };
                 newImg.src = img.src;
             });
             
             function addFooterAndFinish() {
-                // Add simple footer text
+                // Add version and credits
                 ctx.fillStyle = '#666';
-                ctx.font = '14px Arial';
+                ctx.font = '12px Arial';
                 ctx.textAlign = 'center';
-                ctx.fillText('Diseñado desde Aurical Art Design', canvas.width/2, canvas.height - 20);
+                ctx.fillText('Panu Design Editor v1.066', canvas.width/2, canvas.height - 40);
+                ctx.fillText('Built by Joel Páez and Ren_q (Alexa Ferreira)', canvas.width/2, canvas.height - 25);
+                ctx.fillText('Diseñado desde Aurical Art Design', canvas.width/2, canvas.height - 10);
                 
                 const dataURL = canvas.toDataURL('image/jpeg', 0.95);
                 callback(dataURL);
@@ -1388,20 +1404,17 @@
                 return;
             }
             
-            downloadDesignPreview(() => {
-                showNotification('✅ Diseño descargado', 'success');
-            });
-        }
-        
-        // Download design preview with callback
-        function downloadDesignPreview(callback) {
-            generateDesignPreview((dataURL) => {
+            showNotification('📥 Generando diseño...', 'info');
+            
+            generateDesignWithWatermark((dataURL) => {
                 const link = document.createElement('a');
                 link.download = `panu-design-${currentProduct}-${Date.now()}.jpg`;
                 link.href = dataURL;
+                document.body.appendChild(link);
                 link.click();
+                document.body.removeChild(link);
                 
-                if (callback) callback();
+                showNotification('✅ Diseño descargado correctamente', 'success');
             });
         }
 
@@ -1436,7 +1449,20 @@
 
         // Send to WhatsApp (for individual purchases)
         function sendToWhatsApp() {
-            const designInfo = `
+            showNotification('📥 Descargando diseño automáticamente...', 'info');
+            
+            // First download the design
+            generateDesignWithWatermark((dataURL) => {
+                const link = document.createElement('a');
+                link.download = `panu-design-${currentProduct}-${Date.now()}.jpg`;
+                link.href = dataURL;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                
+                // Then open WhatsApp after a short delay
+                setTimeout(() => {
+                    const designInfo = `
 🎨 *Nuevo Diseño - AURICAL ART DESIGN*
 
 📦 *Producto:* ${productTemplates[currentProduct].name}
@@ -1446,17 +1472,19 @@
 
 ¡Hola! He creado un diseño personalizado usando su editor y me gustaría que sus diseñadores profesionales lo mejoren.
 
-📎 *Voy a enviar el diseño por separado desde mi galería*
+📎 *El diseño se descargó automáticamente en mi dispositivo*
 
 ¿Podrían ayudarme con una cotización para este producto personalizado?
 
 ¡Gracias!
-            `.trim();
-            
-            const whatsappUrl = `https://wa.me/595985501874?text=${encodeURIComponent(designInfo)}`;
-            window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
-            
-            showSuccessMessage('WhatsApp', 'individual');
+                    `.trim();
+                    
+                    const whatsappUrl = `https://wa.me/595985501874?text=${encodeURIComponent(designInfo)}`;
+                    window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
+                    
+                    showSuccessMessage('WhatsApp', 'individual');
+                }, 1000);
+            });
         }
 
         // Show contact options (for empresa purchases)
@@ -1491,7 +1519,20 @@
 
         // Send empresa WhatsApp
         function sendEmpresaWhatsApp() {
-            const designInfo = `
+            showNotification('📥 Descargando diseño automáticamente...', 'info');
+            
+            // First download the design
+            generateDesignWithWatermark((dataURL) => {
+                const link = document.createElement('a');
+                link.download = `panu-design-empresa-${currentProduct}-${Date.now()}.jpg`;
+                link.href = dataURL;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                
+                // Then open WhatsApp after a short delay
+                setTimeout(() => {
+                    const designInfo = `
 🏢 *Cotización Empresarial - AURICAL ART DESIGN*
 
 📦 *Producto:* ${productTemplates[currentProduct].name}
@@ -1506,17 +1547,19 @@
 • Opciones de cantidad y precios
 • Tiempos de entrega
 
-📎 *Voy a enviar el diseño por separado desde mi galería*
+📎 *El diseño se descargó automáticamente en mi dispositivo*
 
 ¿Podrían contactarnos para discutir los detalles del proyecto?
 
 ¡Gracias!
-            `.trim();
-            
-            const whatsappUrl = `https://wa.me/595985501874?text=${encodeURIComponent(designInfo)}`;
-            window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
-            
-            showSuccessMessage('WhatsApp', 'empresa');
+                    `.trim();
+                    
+                    const whatsappUrl = `https://wa.me/595985501874?text=${encodeURIComponent(designInfo)}`;
+                    window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
+                    
+                    showSuccessMessage('WhatsApp', 'empresa');
+                }, 1000);
+            });
         }
 
         // Send empresa email
@@ -1886,5 +1929,5 @@ ${new Date().toLocaleString()}
             }, 5000);
         }
     </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'992053519310116c',t:'MTc2MTA0NTIwNS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9920712995fc116c',t:'MTc2MTA0NjQyNy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
