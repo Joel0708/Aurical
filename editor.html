@@ -1159,51 +1159,25 @@
             canvas.width = 800;
             canvas.height = 800;
             
-            // Draw background
+            // Draw clean white background
             ctx.fillStyle = '#ffffff';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
             
-            // Add header with branding
-            ctx.fillStyle = '#8B4513';
-            ctx.fillRect(0, 0, canvas.width, 80);
-            
-            // Add AURICAL ART design branding
-            ctx.fillStyle = '#ffffff';
-            ctx.font = 'bold 28px Arial';
-            ctx.textAlign = 'center';
-            ctx.fillText('AURICAL ART DESIGN', canvas.width/2, 35);
-            ctx.font = '16px Arial';
-            ctx.fillText('Diseño Personalizado', canvas.width/2, 60);
-            
-            // Add product info
-            ctx.fillStyle = '#333';
-            ctx.font = '18px Arial';
-            ctx.fillText(`Producto: ${productTemplates[currentProduct].name}`, canvas.width/2, 110);
-            ctx.font = '14px Arial';
-            ctx.fillText(`Fecha: ${new Date().toLocaleDateString()}`, canvas.width/2, 130);
-            
-            // Scale design area to fit canvas
+            // Scale design area to fit canvas (centered)
             const template = productTemplates[currentProduct];
             const scale = 1.4;
             const offsetX = (canvas.width - 500 * scale) / 2;
-            const offsetY = 160;
+            const offsetY = (canvas.height - 500 * scale) / 2;
             
-            // Draw product template outline
-            ctx.strokeStyle = '#ddd';
-            ctx.lineWidth = 2;
-            ctx.strokeRect(
-                offsetX + template.designArea.x * scale, 
-                offsetY + template.designArea.y * scale, 
-                template.designArea.width * scale, 
-                template.designArea.height * scale
-            );
+            // Draw product template shape (actual product silhouette)
+            drawProductTemplate(ctx, template, scale, offsetX, offsetY);
             
             // Draw user images
             let loadedImages = 0;
             const totalImages = images.length;
             
             if (totalImages === 0) {
-                addFooterAndFinish();
+                addCreditsAndFinish();
                 return;
             }
             
@@ -1233,27 +1207,25 @@
                     
                     loadedImages++;
                     if (loadedImages === totalImages) {
-                        addFooterAndFinish();
+                        addCreditsAndFinish();
                     }
                 };
                 newImg.onerror = function() {
                     console.error('Error loading image for export');
                     loadedImages++;
                     if (loadedImages === totalImages) {
-                        addFooterAndFinish();
+                        addCreditsAndFinish();
                     }
                 };
                 newImg.src = img.src;
             });
             
-            function addFooterAndFinish() {
-                // Add version and credits
-                ctx.fillStyle = '#666';
+            function addCreditsAndFinish() {
+                // Add small credits in bottom right corner
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
                 ctx.font = '12px Arial';
-                ctx.textAlign = 'center';
-                ctx.fillText('Panu Design Editor v1.066', canvas.width/2, canvas.height - 40);
-                ctx.fillText('Built by Joel Páez and Ren_q (Alexa Ferreira)', canvas.width/2, canvas.height - 25);
-                ctx.fillText('Diseñado desde Aurical Art Design', canvas.width/2, canvas.height - 10);
+                ctx.textAlign = 'right';
+                ctx.fillText('Panu Design Editor', canvas.width - 15, canvas.height - 15);
                 
                 const dataURL = canvas.toDataURL('image/jpeg', 0.95);
                 callback(dataURL);
@@ -1929,5 +1901,5 @@ ${new Date().toLocaleString()}
             }, 5000);
         }
     </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9920712995fc116c',t:'MTc2MTA0NjQyNy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'99207b58b096116c',t:'MTc2MTA0Njg0NC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
