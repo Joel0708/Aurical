@@ -586,7 +586,7 @@
        </div>
        <div class="mb-3"><strong>📱 Móvil:</strong> Para mover imágenes, desliza tu dedo <em>cerca</em> de la imagen (no directamente sobre ella)
        </div>
-       <div class="text-xs text-gray-500 border-t pt-2"><strong>Panu Design Editor v1.066</strong><br>
+       <div class="text-xs text-gray-500 border-t pt-2"><strong>Panu Design Editor v1.067</strong><br>
          Built by <strong>Joel Páez</strong> and <strong>Ren_q (Alexa Ferreira)</strong>
        </div>
       </div>
@@ -856,7 +856,6 @@
             const designArea = template.designArea;
             
             const img = document.createElement('img');
-            img.src = imageSrc;
             img.className = 'user-image';
             img.draggable = false;
             img.style.position = 'absolute';
@@ -864,14 +863,27 @@
             img.style.border = '2px solid transparent';
             img.style.transition = 'all 0.2s ease';
             img.style.zIndex = '50';
+            img.style.userSelect = 'none';
+            img.style.webkitUserSelect = 'none';
+            img.style.webkitTouchCallout = 'none';
+            
+            // Add data attributes first
+            img.dataset.id = 'img_' + (++imageCounter);
+            img.dataset.rotation = '0';
+            img.dataset.flipH = 'false';
+            img.dataset.flipV = 'false';
             
             img.onload = function() {
+                console.log('Image loaded successfully:', img.dataset.id);
+                
                 // Calculate initial size and position
                 const maxWidth = designArea.width * 0.7;
                 const maxHeight = designArea.height * 0.7;
                 
-                let width = this.naturalWidth;
-                let height = this.naturalHeight;
+                let width = this.naturalWidth || 200; // Fallback size
+                let height = this.naturalHeight || 200; // Fallback size
+                
+                console.log('Original dimensions:', width, 'x', height);
                 
                 // Scale to fit design area
                 if (width > maxWidth || height > maxHeight) {
@@ -891,64 +903,70 @@
                     height *= scale;
                 }
                 
-                // Position perfectly centered in design area
-                // Convert SVG coordinates to actual canvas pixels
-                const canvasRect = canvas.getBoundingClientRect();
-                const svgRect = document.getElementById('product-template').getBoundingClientRect();
-                
-                // Calculate scale factor between SVG viewBox and actual rendered size
-                const scaleX = canvasRect.width / 500; // SVG viewBox is 500x500
-                const scaleY = canvasRect.height / 500;
-                
-                // Apply scale to design area coordinates
-                const actualDesignX = designArea.x * scaleX;
-                const actualDesignY = designArea.y * scaleY;
-                const actualDesignWidth = designArea.width * scaleX;
-                const actualDesignHeight = designArea.height * scaleY;
-                
-                // Center in the actual scaled design area
-                const x = actualDesignX + (actualDesignWidth - width) / 2;
-                const y = actualDesignY + (actualDesignHeight - height) / 2;
-                
-                img.style.left = x + 'px';
-                img.style.top = y + 'px';
-                img.style.width = width + 'px';
-                img.style.height = height + 'px';
-                img.style.transform = 'rotate(0deg)';
-                img.style.opacity = '1';
-                
-                // Add data attributes
-                img.dataset.id = 'img_' + (++imageCounter);
+                // Store original dimensions
                 img.dataset.originalWidth = width;
                 img.dataset.originalHeight = height;
-                img.dataset.rotation = '0';
-                img.dataset.flipH = 'false';
-                img.dataset.flipV = 'false';
                 
-                // Add touch and click handlers
-                img.addEventListener('click', function(e) {
-                    e.stopPropagation();
-                    selectImage(this);
-                });
-                
-                img.addEventListener('touchstart', function(e) {
-                    e.stopPropagation();
-                    selectImage(this);
-                });
-                
-                canvas.appendChild(img);
-                addResizeHandles(img);
-                
-                images.push(img);
-                selectImage(img);
-                updateStats();
-                
-                showNotification('✅ Imagen agregada al diseño', 'success');
+                // Wait for canvas to be fully rendered
+                setTimeout(() => {
+                    // Get fresh canvas dimensions
+                    const canvasRect = canvas.getBoundingClientRect();
+                    
+                    // Calculate scale factor between SVG viewBox (500x500) and actual rendered size
+                    const scaleFactorX = canvasRect.width / 500;
+                    const scaleFactorY = canvasRect.height / 500;
+                    
+                    // Apply scale to design area coordinates
+                    const actualDesignX = designArea.x * scaleFactorX;
+                    const actualDesignY = designArea.y * scaleFactorY;
+                    const actualDesignWidth = designArea.width * scaleFactorX;
+                    const actualDesignHeight = designArea.height * scaleFactorY;
+                    
+                    // Center perfectly in the actual scaled design area
+                    const x = actualDesignX + (actualDesignWidth - width) / 2;
+                    const y = actualDesignY + (actualDesignHeight - height) / 2;
+                    
+                    img.style.left = Math.round(x) + 'px';
+                    img.style.top = Math.round(y) + 'px';
+                    img.style.width = Math.round(width) + 'px';
+                    img.style.height = Math.round(height) + 'px';
+                    img.style.transform = 'rotate(0deg)';
+                    img.style.opacity = '1';
+                    img.style.display = 'block';
+                    
+                    console.log('Image positioned at:', x, y, 'with size:', width, height);
+                    
+                    // Add to canvas and arrays
+                    canvas.appendChild(img);
+                    addResizeHandles(img);
+                    
+                    images.push(img);
+                    selectImage(img);
+                    updateStats();
+                    
+                    showNotification('✅ Imagen agregada al diseño', 'success');
+                }, 100); // Increased delay for better reliability
             };
             
             img.onerror = function() {
-                showNotification('❌ Error al cargar la imagen', 'error');
+                console.error('Error loading image:', imageSrc);
+                showNotification('❌ Error al cargar la imagen. Verifica el formato.', 'error');
             };
+            
+            // Add touch and click handlers before setting src
+            img.addEventListener('click', function(e) {
+                e.stopPropagation();
+                selectImage(this);
+            });
+            
+            img.addEventListener('touchstart', function(e) {
+                e.stopPropagation();
+                selectImage(this);
+            });
+            
+            // Set src last to trigger loading
+            img.src = imageSrc;
+            console.log('Loading image:', img.dataset.id);
         }
 
         // Add resize handles to image
@@ -1199,10 +1217,32 @@
                 const newImg = new Image();
                 newImg.crossOrigin = 'anonymous';
                 newImg.onload = function() {
-                    const x = parseFloat(img.style.left) * scale + offsetX;
-                    const y = parseFloat(img.style.top) * scale + offsetY;
-                    const width = parseFloat(img.style.width) * scale;
-                    const height = parseFloat(img.style.height) * scale;
+                    // Get the current canvas dimensions for proper scaling
+                    const canvasElement = document.getElementById('design-canvas');
+                    const canvasRect = canvasElement.getBoundingClientRect();
+                    
+                    // Calculate the scale factor between the actual canvas size and SVG viewBox (500x500)
+                    const canvasScaleX = canvasRect.width / 500;
+                    const canvasScaleY = canvasRect.height / 500;
+                    
+                    // Convert image position from screen coordinates to SVG coordinates
+                    const imgLeft = parseFloat(img.style.left);
+                    const imgTop = parseFloat(img.style.top);
+                    const imgWidth = parseFloat(img.style.width);
+                    const imgHeight = parseFloat(img.style.height);
+                    
+                    // Convert to SVG coordinate system first
+                    const svgX = imgLeft / canvasScaleX;
+                    const svgY = imgTop / canvasScaleY;
+                    const svgWidth = imgWidth / canvasScaleX;
+                    const svgHeight = imgHeight / canvasScaleY;
+                    
+                    // Now apply export canvas scaling
+                    const x = svgX * scale + offsetX;
+                    const y = svgY * scale + offsetY;
+                    const width = svgWidth * scale;
+                    const height = svgHeight * scale;
+                    
                     const rotation = parseFloat(img.dataset.rotation || 0);
                     const opacity = parseFloat(img.style.opacity || 1);
                     
@@ -1852,38 +1892,79 @@ ${new Date().toLocaleString()}
 
         // Add test image
         function addTestImage() {
-            // Create a simple test image using canvas
-            const canvas = document.createElement('canvas');
-            canvas.width = 200;
-            canvas.height = 200;
-            const ctx = canvas.getContext('2d');
-            
-            // Create gradient background
-            const gradient = ctx.createLinearGradient(0, 0, 200, 200);
-            gradient.addColorStop(0, '#8B4513');
-            gradient.addColorStop(0.5, '#CD853F');
-            gradient.addColorStop(1, '#DEB887');
-            
-            ctx.fillStyle = gradient;
-            ctx.fillRect(0, 0, 200, 200);
-            
-            // Add text
-            ctx.fillStyle = 'white';
-            ctx.font = 'bold 24px Arial';
-            ctx.textAlign = 'center';
-            ctx.fillText('PANU', 100, 80);
-            ctx.font = '16px Arial';
-            ctx.fillText('Diseño', 100, 110);
-            ctx.fillText('Personalizado', 100, 130);
-            
-            // Add decorative elements
-            ctx.strokeStyle = 'white';
-            ctx.lineWidth = 3;
-            ctx.strokeRect(20, 20, 160, 160);
-            
-            // Convert to data URL and add to canvas
-            const dataURL = canvas.toDataURL('image/png');
-            addImageToCanvas(dataURL);
+            try {
+                console.log('Creating test image...');
+                
+                // Create a simple test image using canvas
+                const testCanvas = document.createElement('canvas');
+                testCanvas.width = 300;
+                testCanvas.height = 300;
+                const ctx = testCanvas.getContext('2d');
+                
+                // Create gradient background
+                const gradient = ctx.createLinearGradient(0, 0, 300, 300);
+                gradient.addColorStop(0, '#8B4513');
+                gradient.addColorStop(0.5, '#CD853F');
+                gradient.addColorStop(1, '#DEB887');
+                
+                ctx.fillStyle = gradient;
+                ctx.fillRect(0, 0, 300, 300);
+                
+                // Add decorative border
+                ctx.strokeStyle = 'white';
+                ctx.lineWidth = 8;
+                ctx.strokeRect(20, 20, 260, 260);
+                
+                // Add inner border
+                ctx.lineWidth = 3;
+                ctx.strokeRect(40, 40, 220, 220);
+                
+                // Add text
+                ctx.fillStyle = 'white';
+                ctx.font = 'bold 36px Arial';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText('PANU', 150, 120);
+                
+                ctx.font = 'bold 20px Arial';
+                ctx.fillText('Diseño', 150, 160);
+                ctx.fillText('Personalizado', 150, 185);
+                
+                // Add version info
+                ctx.font = '12px Arial';
+                ctx.fillText('v1.067', 150, 220);
+                
+                // Add decorative elements
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+                ctx.beginPath();
+                ctx.arc(80, 80, 15, 0, 2 * Math.PI);
+                ctx.fill();
+                
+                ctx.beginPath();
+                ctx.arc(220, 80, 15, 0, 2 * Math.PI);
+                ctx.fill();
+                
+                ctx.beginPath();
+                ctx.arc(80, 220, 15, 0, 2 * Math.PI);
+                ctx.fill();
+                
+                ctx.beginPath();
+                ctx.arc(220, 220, 15, 0, 2 * Math.PI);
+                ctx.fill();
+                
+                // Convert to data URL with high quality
+                const dataURL = testCanvas.toDataURL('image/png', 1.0);
+                console.log('Test image created, data URL length:', dataURL.length);
+                
+                // Add to canvas
+                addImageToCanvas(dataURL);
+                
+                showNotification('🎨 Imagen de prueba agregada', 'success');
+                
+            } catch (error) {
+                console.error('Error creating test image:', error);
+                showNotification('❌ Error al crear imagen de prueba', 'error');
+            }
         }
 
         // Show notification
@@ -1915,5 +1996,5 @@ ${new Date().toLocaleString()}
             }, 5000);
         }
     </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9920b1dd169500e0',t:'MTc2MTA0OTA3Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9920e342d5ba00e0',t:'MTc2MTA1MTEwMC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

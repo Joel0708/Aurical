@@ -1097,13 +1097,35 @@
 
             // If we couldn't get an element, try to find the button by its onclick attribute
             if (!el) {
-                // match exact onclick string used in markup
                 el = document.querySelector(`.category-btn[onclick="filterByCategory('${category}')"]`) || document.querySelector(`.category-btn[onclick="filterByCategory(\\'${category}\\')"]`);
             }
 
             if (el && el.classList) el.classList.add('active');
 
             applyFilters();
+        }
+
+        // Apply all filters (category + search)
+        function applyFilters() {
+            let filtered = [...allProducts];
+            
+            // Apply category filter
+            if (currentCategory !== 'all') {
+                filtered = filtered.filter(product => product.categoria === currentCategory);
+            }
+            
+            // Apply search filter
+            if (currentSearchTerm) {
+                filtered = filtered.filter(product => 
+                    product.nombre.toLowerCase().includes(currentSearchTerm.toLowerCase()) ||
+                    product.descripcion.toLowerCase().includes(currentSearchTerm.toLowerCase()) ||
+                    product.categoria.toLowerCase().includes(currentSearchTerm.toLowerCase())
+                );
+            }
+            
+            filteredProducts = filtered;
+            displayProducts(filteredProducts);
+            updateProductCount();
         }
 
         // Search functionality
