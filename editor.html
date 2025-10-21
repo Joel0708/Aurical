@@ -122,6 +122,10 @@
             border: 2px solid transparent;
             transition: all 0.2s ease;
             z-index: 15;
+            touch-action: none;
+            user-select: none;
+            -webkit-user-select: none;
+            -webkit-touch-callout: none;
         }
         
         .user-image:hover {
@@ -360,34 +364,40 @@
             }
             
             .resize-handle {
-                width: 16px;
-                height: 16px;
+                width: 20px;
+                height: 20px;
                 border: 3px solid white;
+                touch-action: none;
             }
             
             .resize-handle.se {
-                bottom: -8px;
-                right: -8px;
+                bottom: -10px;
+                right: -10px;
             }
             
             .resize-handle.sw {
-                bottom: -8px;
-                left: -8px;
+                bottom: -10px;
+                left: -10px;
             }
             
             .resize-handle.ne {
-                top: -8px;
-                right: -8px;
+                top: -10px;
+                right: -10px;
             }
             
             .resize-handle.nw {
-                top: -8px;
-                left: -8px;
+                top: -10px;
+                left: -10px;
             }
             
             .user-image {
-                min-width: 40px;
-                min-height: 40px;
+                min-width: 60px;
+                min-height: 60px;
+            }
+            
+            .design-canvas {
+                touch-action: none;
+                -webkit-overflow-scrolling: touch;
             }
             
             .slider {
@@ -957,6 +967,11 @@
             selectedImage = img;
             showImageControls();
             updateImageControls();
+            
+            // Haptic feedback for mobile
+            if (navigator.vibrate) {
+                navigator.vibrate(50);
+            }
         }
 
         // Show image controls
@@ -1631,42 +1646,82 @@ ${new Date().toLocaleString()}
         // Touch event handlers
         function handleTouchStart(e) {
             const touch = e.touches[0];
-            const target = document.elementFromPoint(touch.clientX, touch.clientY);
+            let target = e.target;
+            
+            // If we didn't get the right target, try elementFromPoint
+            if (!target.classList.contains('user-image') && !target.classList.contains('resize-handle')) {
+                target = document.elementFromPoint(touch.clientX, touch.clientY);
+            }
             
             if (target && target.classList.contains('user-image')) {
                 e.preventDefault();
+                e.stopPropagation();
                 selectImage(target);
                 startDrag({ clientX: touch.clientX, clientY: touch.clientY }, target);
             } else if (target && target.classList.contains('resize-handle')) {
                 e.preventDefault();
+                e.stopPropagation();
                 const img = target.closest('.user-image');
                 if (img) {
                     startResize({ clientX: touch.clientX, clientY: touch.clientY, preventDefault: () => {} }, img, target.dataset.position);
                 }
             } else {
-                // Deselect all images
-                document.querySelectorAll('.user-image').forEach(img => {
-                    img.classList.remove('selected');
-                    img.querySelectorAll('.resize-handle').forEach(handle => {
-                        handle.style.display = 'none';
+                // Check if touch is within any image bounds (more forgiving detection)
+                const images = document.querySelectorAll('.user-image');
+                let touchedImage = null;
+                
+                for (let img of images) {
+                    const rect = img.getBoundingClientRect();
+                    const canvasRect = document.getElementById('design-canvas').getBoundingClientRect();
+                    
+                    // Add padding for easier touch detection
+                    const padding = 10;
+                    if (touch.clientX >= rect.left - padding && 
+                        touch.clientX <= rect.right + padding && 
+                        touch.clientY >= rect.top - padding && 
+                        touch.clientY <= rect.bottom + padding) {
+                        touchedImage = img;
+                        break;
+                    }
+                }
+                
+                if (touchedImage) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    selectImage(touchedImage);
+                    startDrag({ clientX: touch.clientX, clientY: touch.clientY }, touchedImage);
+                } else {
+                    // Deselect all images
+                    document.querySelectorAll('.user-image').forEach(img => {
+                        img.classList.remove('selected');
+                        img.querySelectorAll('.resize-handle').forEach(handle => {
+                            handle.style.display = 'none';
+                        });
                     });
-                });
-                selectedImage = null;
-                document.getElementById('image-controls').style.display = 'none';
+                    selectedImage = null;
+                    document.getElementById('image-controls').style.display = 'none';
+                }
             }
         }
 
         function handleTouchMove(e) {
             if (isDragging || isResizing) {
                 e.preventDefault();
+                e.stopPropagation();
                 const touch = e.touches[0];
-                const mouseEvent = {
-                    clientX: touch.clientX,
-                    clientY: touch.clientY
-                };
                 
-                if (isDragging) {
-                    handleMouseMove(mouseEvent);
+                if (isDragging && selectedImage) {
+                    const rect = document.getElementById('design-canvas').getBoundingClientRect();
+                    const x = touch.clientX - rect.left - dragOffset.x;
+                    const y = touch.clientY - rect.top - dragOffset.y;
+                    
+                    // Smooth movement with requestAnimationFrame
+                    requestAnimationFrame(() => {
+                        if (selectedImage) {
+                            selectedImage.style.left = x + 'px';
+                            selectedImage.style.top = y + 'px';
+                        }
+                    });
                 }
             }
         }
@@ -1843,5 +1898,5 @@ ${new Date().toLocaleString()}
             }, 5000);
         }
     </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'991cd68af6af1161',t:'MTc2MTAwODYzNi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'991cdbdd44cf1161',t:'MTc2MTAwODg1NC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
