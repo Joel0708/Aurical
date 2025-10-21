@@ -329,6 +329,7 @@
             }
         }
         
+        /* Mobile-first responsive design */
         @media (max-width: 768px) {
             .design-canvas {
                 height: 320px;
@@ -348,13 +349,26 @@
                 margin-bottom: 3px;
             }
             
-            .tools-panel {
+            /* Mobile layout optimization */
+            .mobile-controls {
+                position: sticky;
+                top: 10px;
+                z-index: 100;
+                background: rgba(255, 255, 255, 0.98);
+                border-radius: 15px;
                 padding: 12px;
+                margin: 10px 0;
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+                backdrop-filter: blur(10px);
             }
             
-            .tool-group {
-                margin-bottom: 16px;
-                padding-bottom: 12px;
+            .mobile-controls .tool-group {
+                margin-bottom: 12px;
+                padding-bottom: 8px;
+            }
+            
+            .mobile-controls .slider-container {
+                margin: 6px 0;
             }
             
             .btn-primary, .btn-secondary {
@@ -434,24 +448,6 @@
             .product-selector {
                 grid-template-columns: repeat(2, 1fr);
             }
-            
-            .grid.lg\\:grid-cols-4 {
-                grid-template-columns: 1fr;
-            }
-            
-            .tools-panel {
-                order: 2;
-                margin-top: 20px;
-            }
-            
-            .lg\\:col-span-2 {
-                order: 1;
-            }
-            
-            .lg\\:col-span-1:last-child {
-                order: 3;
-                margin-top: 20px;
-            }
         }
     </style>
   <style>@view-transition { navigation: auto; }</style>
@@ -511,10 +507,45 @@
        Gorra
       </div>
      </div>
+     <div class="product-option" onclick="selectProduct('backpack', this)"><span class="product-icon">🎒</span>
+      <div class="font-semibold">
+       Mochila
+      </div>
+     </div>
+     <div class="product-option" onclick="selectProduct('lunchbox', this)"><span class="product-icon">🍱</span>
+      <div class="font-semibold">
+       Lonchera
+      </div>
+     </div>
     </div>
-   </section><!-- Editor Layout -->
-   <div class="grid grid-cols-1 lg:grid-cols-4 gap-6"><!-- Tools Panel -->
-    <div class="lg:col-span-1">
+   </section><!-- Mobile Image Controls (shown only when image is selected) -->
+   <div class="mobile-controls lg:hidden" id="mobile-image-controls" style="display: none;">
+    <h3 class="text-sm font-bold text-gray-800 mb-3 flex items-center">🎛️ Controles de Imagen</h3>
+    <div class="tool-group">
+     <div class="mb-3"><label class="block text-xs font-medium mb-1">Tamaño</label>
+      <div class="slider-container"><input type="range" id="mobile-size-slider" class="slider" min="10" max="200" value="100" oninput="updateImageSize(this.value)">
+       <div class="flex justify-between text-xs text-gray-500 mt-1"><span>10%</span> <span id="mobile-size-value">100%</span> <span>200%</span>
+       </div>
+      </div>
+     </div>
+     <div class="mb-3"><label class="block text-xs font-medium mb-1">Rotación</label>
+      <div class="slider-container"><input type="range" id="mobile-rotation-slider" class="slider" min="0" max="360" value="0" oninput="updateImageRotation(this.value)">
+       <div class="flex justify-between text-xs text-gray-500 mt-1"><span>0°</span> <span id="mobile-rotation-value">0°</span> <span>360°</span>
+       </div>
+      </div>
+     </div>
+     <div class="mb-3"><label class="block text-xs font-medium mb-1">Opacidad</label>
+      <div class="slider-container"><input type="range" id="mobile-opacity-slider" class="slider" min="10" max="100" value="100" oninput="updateImageOpacity(this.value)">
+       <div class="flex justify-between text-xs text-gray-500 mt-1"><span>10%</span> <span id="mobile-opacity-value">100%</span> <span>100%</span>
+       </div>
+      </div>
+     </div>
+     <div class="grid grid-cols-4 gap-2"><button onclick="flipImage('horizontal')" class="btn-secondary text-xs py-2"> ↔️ </button> <button onclick="flipImage('vertical')" class="btn-secondary text-xs py-2"> ↕️ </button> <button onclick="moveLayer('front')" class="btn-secondary text-xs py-2"> ⬆️ </button> <button onclick="deleteSelectedImage()" class="btn-secondary text-xs py-2 bg-red-500 text-white border-red-500"> 🗑️ </button>
+     </div>
+    </div>
+   </div><!-- Editor Layout -->
+   <div class="grid grid-cols-1 lg:grid-cols-4 gap-6"><!-- Tools Panel (Desktop) -->
+    <div class="lg:col-span-1 hidden lg:block">
      <div class="tools-panel fade-in">
       <h3 class="text-base font-bold text-gray-800 mb-3">Herramientas</h3><!-- Image Upload -->
       <div class="tool-group">
@@ -569,7 +600,7 @@
      <div class="glass-card p-4 fade-in">
       <div class="flex items-center justify-between mb-4">
        <h3 class="text-base font-bold text-gray-800">Área de Diseño</h3>
-       <div class="flex items-center space-x-4"><button onclick="zoomCanvas('in')" class="btn-secondary text-sm"> Zoom + </button> <button onclick="zoomCanvas('out')" class="btn-secondary text-sm"> Zoom - </button> <button onclick="zoomCanvas('fit')" class="btn-secondary text-sm"> Ajustar </button>
+       <div class="flex items-center space-x-2"><!-- Mobile Upload Button --> <button onclick="document.getElementById('image-upload-mobile').click()" class="btn-primary text-sm px-3 py-2 lg:hidden"> 📷 Subir </button> <input type="file" id="image-upload-mobile" accept="image/*" multiple class="hidden" onchange="handleImageUpload(event)"> <button onclick="addTestImage()" class="btn-secondary text-sm px-3 py-2 lg:hidden"> 🎨 </button> <button onclick="zoomCanvas('in')" class="btn-secondary text-sm px-3 py-2"> + </button> <button onclick="zoomCanvas('out')" class="btn-secondary text-sm px-3 py-2"> - </button> <button onclick="zoomCanvas('fit')" class="btn-secondary text-sm px-3 py-2"> ⚏ </button>
        </div>
       </div>
       <div class="canvas-container">
@@ -586,7 +617,7 @@
        </div>
        <div class="mb-3"><strong>📱 Móvil:</strong> Para mover imágenes, desliza tu dedo <em>cerca</em> de la imagen (no directamente sobre ella)
        </div>
-       <div class="text-xs text-gray-500 border-t pt-2"><strong>Panu Design Editor v1.067</strong><br>
+       <div class="text-xs text-gray-500 border-t pt-2"><strong>Panu Design Editor v1.069</strong><br>
          Built by <strong>Joel Páez</strong> and <strong>Ren_q (Alexa Ferreira)</strong>
        </div>
       </div>
@@ -637,6 +668,8 @@
          <div class="flex space-x-2"><button onclick="selectPurchaseType('individual')" id="btn-individual" class="btn-secondary text-xs px-3 py-1 flex-1 bg-blue-100 border-blue-300"> 👤 Individual </button> <button onclick="selectPurchaseType('empresa')" id="btn-empresa" class="btn-secondary text-xs px-3 py-1 flex-1"> 🏢 Empresa </button>
          </div>
         </div>
+       </div><!-- Mobile Actions -->
+       <div class="lg:hidden space-y-2"><button onclick="clearCanvas()" class="btn-secondary w-full text-sm"> 🗑️ Limpiar Todo </button> <button onclick="downloadDesign()" class="btn-primary w-full text-sm"> 📥 Descargar Diseño </button>
        </div>
        <div class="text-xs text-gray-500 text-center">
         Nuestros diseñadores profesionales crearán una versión mejorada de tu diseño
@@ -674,7 +707,7 @@
                 designArea: { x: 180, y: 120, width: 140, height: 180 },
                 template: `<path d="M150 100 L150 80 Q150 70 160 70 L340 70 Q350 70 350 80 L350 100 L380 120 L380 180 L360 180 L360 450 Q360 460 350 460 L150 460 Q140 460 140 450 L140 180 L120 180 L120 120 Z" 
                           fill="#f8f9fa" stroke="#ddd" stroke-width="2"/>
-                          <rect x="180" y="120" width="140" height="180" fill="none" stroke="#007bff" stroke-width="2" stroke-dasharray="5,5" class="design-area"/>`
+                          <rect x="180" y="120" width="140" height="180" fill="none" stroke="#007bff" stroke-width="2" stroke-dasharray="5,5" class="design-area" id="design-area"/>`
             },
             mug: {
                 name: 'Taza',
@@ -729,6 +762,36 @@
                                 fill="#f8f9fa" stroke="#ddd" stroke-width="2"/>
                           <ellipse cx="250" cy="200" rx="80" ry="15" fill="none" stroke="#007bff" stroke-width="2" stroke-dasharray="5,5" class="design-area"/>
                           <rect x="200" y="180" width="100" height="80" fill="none" stroke="#007bff" stroke-width="2" stroke-dasharray="5,5" class="design-area"/>`
+            },
+            backpack: {
+                name: 'Mochila',
+                icon: '🎒',
+                description: 'Mochila escolar/deportiva',
+                designArea: { x: 190, y: 140, width: 120, height: 160 },
+                template: `<ellipse cx="250" cy="420" rx="70" ry="20" fill="#ddd"/>
+                          <rect x="180" y="120" width="140" height="280" rx="15" fill="#f8f9fa" stroke="#ddd" stroke-width="2"/>
+                          <rect x="170" y="110" width="160" height="30" rx="15" fill="#8B4513"/>
+                          <rect x="200" y="90" width="100" height="40" rx="8" fill="#f8f9fa" stroke="#ddd" stroke-width="2"/>
+                          <circle cx="200" cy="150" r="3" fill="#333"/>
+                          <circle cx="300" cy="150" r="3" fill="#333"/>
+                          <path d="M220 100 Q250 85 280 100" fill="none" stroke="#8B4513" stroke-width="4"/>
+                          <rect x="190" y="140" width="120" height="160" fill="none" stroke="#007bff" stroke-width="2" stroke-dasharray="5,5" class="design-area"/>`
+            },
+            lunchbox: {
+                name: 'Lonchera',
+                icon: '🍱',
+                description: 'Lonchera térmica',
+                designArea: { x: 170, y: 180, width: 160, height: 100 },
+                template: `<ellipse cx="250" cy="350" rx="90" ry="15" fill="#ddd"/>
+                          <rect x="150" y="160" width="200" height="120" rx="12" fill="#f8f9fa" stroke="#ddd" stroke-width="2"/>
+                          <rect x="145" y="155" width="210" height="20" rx="10" fill="#8B4513"/>
+                          <circle cx="180" cy="165" r="4" fill="#CD853F"/>
+                          <circle cx="320" cy="165" r="4" fill="#CD853F"/>
+                          <path d="M200 165 Q250 150 300 165" fill="none" stroke="#CD853F" stroke-width="3"/>
+                          <rect x="160" y="190" width="40" height="60" rx="5" fill="none" stroke="#ddd" stroke-width="1"/>
+                          <rect x="210" y="190" width="80" height="60" rx="5" fill="none" stroke="#ddd" stroke-width="1"/>
+                          <rect x="300" y="190" width="40" height="60" rx="5" fill="none" stroke="#ddd" stroke-width="1"/>
+                          <rect x="170" y="180" width="160" height="100" fill="none" stroke="#007bff" stroke-width="2" stroke-dasharray="5,5" class="design-area"/>`
             }
         };
 
@@ -1015,7 +1078,17 @@
 
         // Show image controls
         function showImageControls() {
-            document.getElementById('image-controls').style.display = 'block';
+            // Desktop controls
+            const desktopControls = document.getElementById('image-controls');
+            if (desktopControls) {
+                desktopControls.style.display = 'block';
+            }
+            
+            // Mobile controls
+            const mobileControls = document.getElementById('mobile-image-controls');
+            if (mobileControls) {
+                mobileControls.style.display = 'block';
+            }
         }
 
         // Update image controls
@@ -1027,16 +1100,57 @@
             const currentWidth = parseFloat(selectedImage.style.width);
             const scale = Math.round((currentWidth / originalWidth) * 100);
             
-            document.getElementById('size-slider').value = scale;
-            document.getElementById('size-value').textContent = scale + '%';
+            // Update desktop controls
+            const sizeSlider = document.getElementById('size-slider');
+            const sizeValue = document.getElementById('size-value');
+            if (sizeSlider && sizeValue) {
+                sizeSlider.value = scale;
+                sizeValue.textContent = scale + '%';
+            }
+            
+            // Update mobile controls
+            const mobileSizeSlider = document.getElementById('mobile-size-slider');
+            const mobileSizeValue = document.getElementById('mobile-size-value');
+            if (mobileSizeSlider && mobileSizeValue) {
+                mobileSizeSlider.value = scale;
+                mobileSizeValue.textContent = scale + '%';
+            }
             
             const rotation = selectedImage.dataset.rotation || '0';
-            document.getElementById('rotation-slider').value = rotation;
-            document.getElementById('rotation-value').textContent = rotation + '°';
+            
+            // Desktop rotation
+            const rotationSlider = document.getElementById('rotation-slider');
+            const rotationValue = document.getElementById('rotation-value');
+            if (rotationSlider && rotationValue) {
+                rotationSlider.value = rotation;
+                rotationValue.textContent = rotation + '°';
+            }
+            
+            // Mobile rotation
+            const mobileRotationSlider = document.getElementById('mobile-rotation-slider');
+            const mobileRotationValue = document.getElementById('mobile-rotation-value');
+            if (mobileRotationSlider && mobileRotationValue) {
+                mobileRotationSlider.value = rotation;
+                mobileRotationValue.textContent = rotation + '°';
+            }
             
             const opacity = Math.round(parseFloat(selectedImage.style.opacity || 1) * 100);
-            document.getElementById('opacity-slider').value = opacity;
-            document.getElementById('opacity-value').textContent = opacity + '%';
+            
+            // Desktop opacity
+            const opacitySlider = document.getElementById('opacity-slider');
+            const opacityValue = document.getElementById('opacity-value');
+            if (opacitySlider && opacityValue) {
+                opacitySlider.value = opacity;
+                opacityValue.textContent = opacity + '%';
+            }
+            
+            // Mobile opacity
+            const mobileOpacitySlider = document.getElementById('mobile-opacity-slider');
+            const mobileOpacityValue = document.getElementById('mobile-opacity-value');
+            if (mobileOpacitySlider && mobileOpacityValue) {
+                mobileOpacitySlider.value = opacity;
+                mobileOpacityValue.textContent = opacity + '%';
+            }
         }
 
         // Update image size
@@ -1053,7 +1167,17 @@
             selectedImage.style.width = newWidth + 'px';
             selectedImage.style.height = newHeight + 'px';
             
-            document.getElementById('size-value').textContent = value + '%';
+            // Update both desktop and mobile displays
+            const sizeValue = document.getElementById('size-value');
+            const mobileSizeValue = document.getElementById('mobile-size-value');
+            if (sizeValue) sizeValue.textContent = value + '%';
+            if (mobileSizeValue) mobileSizeValue.textContent = value + '%';
+            
+            // Sync sliders
+            const sizeSlider = document.getElementById('size-slider');
+            const mobileSizeSlider = document.getElementById('mobile-size-slider');
+            if (sizeSlider) sizeSlider.value = value;
+            if (mobileSizeSlider) mobileSizeSlider.value = value;
         }
 
         // Update image rotation
@@ -1063,7 +1187,17 @@
             selectedImage.style.transform = `rotate(${value}deg)`;
             selectedImage.dataset.rotation = value;
             
-            document.getElementById('rotation-value').textContent = value + '°';
+            // Update both desktop and mobile displays
+            const rotationValue = document.getElementById('rotation-value');
+            const mobileRotationValue = document.getElementById('mobile-rotation-value');
+            if (rotationValue) rotationValue.textContent = value + '°';
+            if (mobileRotationValue) mobileRotationValue.textContent = value + '°';
+            
+            // Sync sliders
+            const rotationSlider = document.getElementById('rotation-slider');
+            const mobileRotationSlider = document.getElementById('mobile-rotation-slider');
+            if (rotationSlider) rotationSlider.value = value;
+            if (mobileRotationSlider) mobileRotationSlider.value = value;
         }
 
         // Update image opacity
@@ -1071,7 +1205,18 @@
             if (!selectedImage) return;
             
             selectedImage.style.opacity = value / 100;
-            document.getElementById('opacity-value').textContent = value + '%';
+            
+            // Update both desktop and mobile displays
+            const opacityValue = document.getElementById('opacity-value');
+            const mobileOpacityValue = document.getElementById('mobile-opacity-value');
+            if (opacityValue) opacityValue.textContent = value + '%';
+            if (mobileOpacityValue) mobileOpacityValue.textContent = value + '%';
+            
+            // Sync sliders
+            const opacitySlider = document.getElementById('opacity-slider');
+            const mobileOpacitySlider = document.getElementById('mobile-opacity-slider');
+            if (opacitySlider) opacitySlider.value = value;
+            if (mobileOpacitySlider) mobileOpacitySlider.value = value;
         }
 
         // Flip image
@@ -1104,7 +1249,12 @@
             images = images.filter(img => img !== selectedImage);
             selectedImage = null;
             
-            document.getElementById('image-controls').style.display = 'none';
+            // Hide controls
+            const desktopControls = document.getElementById('image-controls');
+            const mobileControls = document.getElementById('mobile-image-controls');
+            if (desktopControls) desktopControls.style.display = 'none';
+            if (mobileControls) mobileControls.style.display = 'none';
+            
             updateStats();
             
             showNotification('Imagen eliminada', 'success');
@@ -1154,7 +1304,13 @@
             document.querySelectorAll('.user-image').forEach(img => img.remove());
             images = [];
             selectedImage = null;
-            document.getElementById('image-controls').style.display = 'none';
+            
+            // Hide controls
+            const desktopControls = document.getElementById('image-controls');
+            const mobileControls = document.getElementById('mobile-image-controls');
+            if (desktopControls) desktopControls.style.display = 'none';
+            if (mobileControls) mobileControls.style.display = 'none';
+            
             updateStats();
             
             showNotification('Diseño limpiado', 'success');
@@ -1417,6 +1573,86 @@
                     ctx.closePath();
                     ctx.fill();
                     ctx.stroke();
+                    break;
+                    
+                case 'backpack':
+                    // Backpack base shadow
+                    ctx.fillStyle = '#ddd';
+                    ctx.beginPath();
+                    ctx.ellipse(250, 420, 70, 20, 0, 0, 2 * Math.PI);
+                    ctx.fill();
+                    
+                    // Backpack body
+                    ctx.fillStyle = '#f8f9fa';
+                    ctx.fillRect(180, 120, 140, 280);
+                    ctx.strokeRect(180, 120, 140, 280);
+                    
+                    // Top flap
+                    ctx.fillStyle = '#8B4513';
+                    ctx.fillRect(170, 110, 160, 30);
+                    
+                    // Front pocket
+                    ctx.fillStyle = '#f8f9fa';
+                    ctx.fillRect(200, 90, 100, 40);
+                    ctx.strokeRect(200, 90, 100, 40);
+                    
+                    // Buckles
+                    ctx.fillStyle = '#333';
+                    ctx.beginPath();
+                    ctx.arc(200, 150, 3, 0, 2 * Math.PI);
+                    ctx.fill();
+                    ctx.beginPath();
+                    ctx.arc(300, 150, 3, 0, 2 * Math.PI);
+                    ctx.fill();
+                    
+                    // Handle
+                    ctx.strokeStyle = '#8B4513';
+                    ctx.lineWidth = 4;
+                    ctx.beginPath();
+                    ctx.moveTo(220, 100);
+                    ctx.quadraticCurveTo(250, 85, 280, 100);
+                    ctx.stroke();
+                    break;
+                    
+                case 'lunchbox':
+                    // Lunchbox base shadow
+                    ctx.fillStyle = '#ddd';
+                    ctx.beginPath();
+                    ctx.ellipse(250, 350, 90, 15, 0, 0, 2 * Math.PI);
+                    ctx.fill();
+                    
+                    // Lunchbox body
+                    ctx.fillStyle = '#f8f9fa';
+                    ctx.fillRect(150, 160, 200, 120);
+                    ctx.strokeRect(150, 160, 200, 120);
+                    
+                    // Lid
+                    ctx.fillStyle = '#8B4513';
+                    ctx.fillRect(145, 155, 210, 20);
+                    
+                    // Latches
+                    ctx.fillStyle = '#CD853F';
+                    ctx.beginPath();
+                    ctx.arc(180, 165, 4, 0, 2 * Math.PI);
+                    ctx.fill();
+                    ctx.beginPath();
+                    ctx.arc(320, 165, 4, 0, 2 * Math.PI);
+                    ctx.fill();
+                    
+                    // Handle
+                    ctx.strokeStyle = '#CD853F';
+                    ctx.lineWidth = 3;
+                    ctx.beginPath();
+                    ctx.moveTo(200, 165);
+                    ctx.quadraticCurveTo(250, 150, 300, 165);
+                    ctx.stroke();
+                    
+                    // Compartments
+                    ctx.strokeStyle = '#ddd';
+                    ctx.lineWidth = 1;
+                    ctx.strokeRect(160, 190, 40, 60);
+                    ctx.strokeRect(210, 190, 80, 60);
+                    ctx.strokeRect(300, 190, 40, 60);
                     break;
             }
             
@@ -1692,7 +1928,12 @@ ${new Date().toLocaleString()}
                     });
                 });
                 selectedImage = null;
-                document.getElementById('image-controls').style.display = 'none';
+                
+                // Hide controls
+                const desktopControls = document.getElementById('image-controls');
+                const mobileControls = document.getElementById('mobile-image-controls');
+                if (desktopControls) desktopControls.style.display = 'none';
+                if (mobileControls) mobileControls.style.display = 'none';
             }
         }
 
@@ -1762,7 +2003,12 @@ ${new Date().toLocaleString()}
                     });
                 });
                 selectedImage = null;
-                document.getElementById('image-controls').style.display = 'none';
+                
+                // Hide controls
+                const desktopControls = document.getElementById('image-controls');
+                const mobileControls = document.getElementById('mobile-image-controls');
+                if (desktopControls) desktopControls.style.display = 'none';
+                if (mobileControls) mobileControls.style.display = 'none';
             }
         }
 
@@ -1885,7 +2131,6 @@ ${new Date().toLocaleString()}
 
         // Update stats
         function updateStats() {
-            document.getElementById('images-count').textContent = images.length;
             document.getElementById('info-images').textContent = images.length;
             updatePreview();
         }
@@ -1932,7 +2177,7 @@ ${new Date().toLocaleString()}
                 
                 // Add version info
                 ctx.font = '12px Arial';
-                ctx.fillText('v1.067', 150, 220);
+                ctx.fillText('v1.069', 150, 220);
                 
                 // Add decorative elements
                 ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
@@ -1996,5 +2241,5 @@ ${new Date().toLocaleString()}
             }, 5000);
         }
     </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9920e342d5ba00e0',t:'MTc2MTA1MTEwMC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9920fc63a4c500e0',t:'MTc2MTA1MjEzMC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
