@@ -1,0 +1,1491 @@
+<!doctype html>
+<html lang="es">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panu Design Editor - Editor de Diseños Personalizados</title>
+  <script src="/_sdk/element_sdk.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+        body {
+            box-sizing: border-box;
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+        
+        .glass-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(222, 184, 135, 0.3);
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .glass-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+            border-color: rgba(139, 69, 19, 0.4);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #8B4513, #A0522D, #CD853F);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn-primary::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+        
+        .btn-primary:hover::before {
+            left: 100%;
+        }
+        
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #A0522D, #CD853F, #DEB887);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(139, 69, 19, 0.4);
+        }
+        
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.9);
+            color: #8B4513;
+            border: 2px solid #8B4513;
+            padding: 10px 20px;
+            border-radius: 12px;
+            font-weight: 600;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+        }
+        
+        .btn-secondary:hover {
+            background: #8B4513;
+            color: white;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(139, 69, 19, 0.3);
+        }
+        
+        .canvas-container {
+            position: relative;
+            background: #f8f9fa;
+            border: 3px solid #ddd;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .design-canvas {
+            position: relative;
+            width: 100%;
+            height: 500px;
+            background: white;
+            overflow: hidden;
+            cursor: crosshair;
+        }
+        
+        .product-template {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 10;
+        }
+        
+        .design-area {
+            position: absolute;
+            border: 2px dashed #007bff;
+            background: rgba(0, 123, 255, 0.1);
+            z-index: 5;
+        }
+        
+        .user-image {
+            position: absolute;
+            cursor: move;
+            border: 2px solid transparent;
+            transition: all 0.2s ease;
+            z-index: 15;
+        }
+        
+        .user-image:hover {
+            border-color: #007bff;
+            box-shadow: 0 0 10px rgba(0, 123, 255, 0.3);
+        }
+        
+        .user-image.selected {
+            border-color: #007bff;
+            box-shadow: 0 0 15px rgba(0, 123, 255, 0.5);
+        }
+        
+        .resize-handle {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            background: #007bff;
+            border: 2px solid white;
+            border-radius: 50%;
+            cursor: nw-resize;
+        }
+        
+        .resize-handle.se {
+            bottom: -6px;
+            right: -6px;
+            cursor: se-resize;
+        }
+        
+        .resize-handle.sw {
+            bottom: -6px;
+            left: -6px;
+            cursor: sw-resize;
+        }
+        
+        .resize-handle.ne {
+            top: -6px;
+            right: -6px;
+            cursor: ne-resize;
+        }
+        
+        .resize-handle.nw {
+            top: -6px;
+            left: -6px;
+            cursor: nw-resize;
+        }
+        
+        .product-selector {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .product-option {
+            background: white;
+            border: 3px solid transparent;
+            border-radius: 12px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .product-option:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+        
+        .product-option.active {
+            border-color: #8B4513;
+            background: rgba(139, 69, 19, 0.1);
+            transform: translateY(-3px);
+        }
+        
+        .product-icon {
+            font-size: 2.5rem;
+            margin-bottom: 8px;
+            display: block;
+        }
+        
+        .tools-panel {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .tool-group {
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        }
+        
+        .tool-group:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+        
+        .tool-label {
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 12px;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .slider-container {
+            margin: 10px 0;
+        }
+        
+        .slider {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: #ddd;
+            outline: none;
+            -webkit-appearance: none;
+        }
+        
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #8B4513;
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+        }
+        
+        .slider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #8B4513;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+        }
+        
+        .color-picker {
+            width: 100%;
+            height: 40px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        
+        .preview-panel {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            border-left: 4px solid;
+            border-radius: 12px;
+            padding: 16px 20px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+        }
+        
+        .notification.show {
+            transform: translateX(0);
+        }
+        
+        .notification.success {
+            border-left-color: #10b981;
+        }
+        
+        .notification.error {
+            border-left-color: #ef4444;
+        }
+        
+        .notification.info {
+            border-left-color: #3b82f6;
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.6s ease;
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .design-canvas {
+                height: 400px;
+            }
+            
+            .product-selector {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 10px;
+            }
+            
+            .product-option {
+                padding: 10px;
+            }
+            
+            .product-icon {
+                font-size: 1.8rem;
+                margin-bottom: 4px;
+            }
+            
+            .tools-panel {
+                padding: 15px;
+            }
+            
+            .tool-group {
+                margin-bottom: 20px;
+                padding-bottom: 15px;
+            }
+            
+            .btn-primary, .btn-secondary {
+                padding: 14px 20px;
+                font-size: 0.9rem;
+                touch-action: manipulation;
+            }
+            
+            .resize-handle {
+                width: 16px;
+                height: 16px;
+                border: 3px solid white;
+            }
+            
+            .resize-handle.se {
+                bottom: -8px;
+                right: -8px;
+            }
+            
+            .resize-handle.sw {
+                bottom: -8px;
+                left: -8px;
+            }
+            
+            .resize-handle.ne {
+                top: -8px;
+                right: -8px;
+            }
+            
+            .resize-handle.nw {
+                top: -8px;
+                left: -8px;
+            }
+            
+            .user-image {
+                min-width: 40px;
+                min-height: 40px;
+            }
+            
+            .slider {
+                height: 8px;
+            }
+            
+            .slider::-webkit-slider-thumb {
+                width: 24px;
+                height: 24px;
+            }
+            
+            .slider::-moz-range-thumb {
+                width: 24px;
+                height: 24px;
+            }
+            
+            .notification {
+                right: 10px;
+                left: 10px;
+                top: 10px;
+                transform: translateY(-100px);
+            }
+            
+            .notification.show {
+                transform: translateY(0);
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .design-canvas {
+                height: 300px;
+            }
+            
+            .product-selector {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .grid.lg\\:grid-cols-4 {
+                grid-template-columns: 1fr;
+            }
+            
+            .tools-panel {
+                order: 2;
+                margin-top: 20px;
+            }
+            
+            .lg\\:col-span-2 {
+                order: 1;
+            }
+            
+            .lg\\:col-span-1:last-child {
+                order: 3;
+                margin-top: 20px;
+            }
+        }
+    </style>
+  <style>@view-transition { navigation: auto; }</style>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+ </head>
+ <body><!-- Header -->
+  <header class="bg-gradient-to-r from-slate-800 via-slate-700 to-slate-600 text-white shadow-2xl">
+   <div class="max-w-7xl mx-auto px-4 py-6">
+    <div class="flex items-center justify-between">
+     <div class="flex items-center space-x-6"><img src="https://aurical.org/images/PanuLogo.png" alt="Panu Logo" class="w-16 h-16 rounded-full bg-white p-3 shadow-lg" onerror="this.style.display='none';">
+      <div>
+       <h1 class="text-3xl md:text-4xl font-bold" id="editor-title">Panu Design Editor</h1>
+       <p class="text-slate-200 text-base md:text-lg font-medium">Editor de Diseños Personalizados</p>
+       <div class="flex items-center space-x-4 mt-2"><span class="text-xs bg-green-500 px-2 py-1 rounded-full">🎨 Editor Activo</span> <span class="text-xs text-slate-300" id="current-product">Remera</span>
+       </div>
+      </div>
+     </div>
+     <div class="flex items-center space-x-3 md:space-x-6">
+      <div class="hidden md:flex items-center space-x-4 bg-white bg-opacity-10 rounded-lg px-4 py-2">
+       <div class="text-center">
+        <div class="text-lg font-bold" id="images-count">
+         0
+        </div>
+        <div class="text-xs text-slate-300">
+         Imágenes
+        </div>
+       </div>
+       <div class="text-center">
+        <div class="text-lg font-bold" id="design-status">
+         Nuevo
+        </div>
+        <div class="text-xs text-slate-300">
+         Estado
+        </div>
+       </div>
+      </div>
+      <div class="flex items-center space-x-2"><span class="text-sm text-slate-300" id="contact-info">WhatsApp: +1234567890</span>
+      </div>
+     </div>
+    </div>
+   </div>
+  </header><!-- Main Content -->
+  <main class="max-w-7xl mx-auto px-4 py-8"><!-- Product Selection -->
+   <section class="glass-card p-6 mb-8 fade-in">
+    <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">🛍️ Selecciona tu Producto</h2>
+    <div class="product-selector">
+     <div class="product-option active" onclick="selectProduct('tshirt', this)"><span class="product-icon">👕</span>
+      <div class="font-semibold">
+       Remera
+      </div>
+     </div>
+     <div class="product-option" onclick="selectProduct('mug', this)"><span class="product-icon">☕</span>
+      <div class="font-semibold">
+       Taza
+      </div>
+     </div>
+     <div class="product-option" onclick="selectProduct('hoppie', this)"><span class="product-icon">🥤</span>
+      <div class="font-semibold">
+       Hoppie
+      </div>
+     </div>
+     <div class="product-option" onclick="selectProduct('notebook', this)"><span class="product-icon">📓</span>
+      <div class="font-semibold">
+       Cuadernito
+      </div>
+     </div>
+     <div class="product-option" onclick="selectProduct('mousepad', this)"><span class="product-icon">🖱️</span>
+      <div class="font-semibold">
+       Mouse Pad
+      </div>
+     </div>
+     <div class="product-option" onclick="selectProduct('cap', this)"><span class="product-icon">🧢</span>
+      <div class="font-semibold">
+       Gorra
+      </div>
+     </div>
+    </div>
+   </section><!-- Editor Layout -->
+   <div class="grid grid-cols-1 lg:grid-cols-4 gap-8"><!-- Tools Panel -->
+    <div class="lg:col-span-1">
+     <div class="tools-panel fade-in">
+      <h3 class="text-xl font-bold text-gray-800 mb-6 flex items-center">🛠️ Herramientas</h3><!-- Image Upload -->
+      <div class="tool-group">
+       <div class="tool-label">
+        📷 Subir Imagen
+       </div><input type="file" id="image-upload" accept="image/*" multiple class="hidden" onchange="handleImageUpload(event)"> <button onclick="document.getElementById('image-upload').click()" class="btn-primary w-full mb-3"> 📁 Seleccionar Imágenes </button> <button onclick="addTestImage()" class="btn-secondary w-full mb-3 text-sm"> 🧪 Imagen de Prueba </button>
+       <div class="text-xs text-gray-500">
+        Formatos: JPG, PNG, GIF<br>
+         Tamaño máximo: 5MB
+       </div>
+      </div><!-- Image Controls -->
+      <div class="tool-group" id="image-controls" style="display: none;">
+       <div class="tool-label">
+        🎛️ Controles de Imagen
+       </div>
+       <div class="mb-4"><label class="block text-sm font-medium mb-2">Tamaño</label>
+        <div class="slider-container"><input type="range" id="size-slider" class="slider" min="10" max="200" value="100" oninput="updateImageSize(this.value)">
+         <div class="flex justify-between text-xs text-gray-500 mt-1"><span>10%</span> <span id="size-value">100%</span> <span>200%</span>
+         </div>
+        </div>
+       </div>
+       <div class="mb-4"><label class="block text-sm font-medium mb-2">Rotación</label>
+        <div class="slider-container"><input type="range" id="rotation-slider" class="slider" min="0" max="360" value="0" oninput="updateImageRotation(this.value)">
+         <div class="flex justify-between text-xs text-gray-500 mt-1"><span>0°</span> <span id="rotation-value">0°</span> <span>360°</span>
+         </div>
+        </div>
+       </div>
+       <div class="mb-4"><label class="block text-sm font-medium mb-2">Opacidad</label>
+        <div class="slider-container"><input type="range" id="opacity-slider" class="slider" min="10" max="100" value="100" oninput="updateImageOpacity(this.value)">
+         <div class="flex justify-between text-xs text-gray-500 mt-1"><span>10%</span> <span id="opacity-value">100%</span> <span>100%</span>
+         </div>
+        </div>
+       </div>
+       <div class="grid grid-cols-2 gap-2 mb-4"><button onclick="flipImage('horizontal')" class="btn-secondary text-sm"> ↔️ Voltear H </button> <button onclick="flipImage('vertical')" class="btn-secondary text-sm"> ↕️ Voltear V </button>
+       </div><button onclick="deleteSelectedImage()" class="btn-secondary w-full text-sm bg-red-500 text-white border-red-500 hover:bg-red-600"> 🗑️ Eliminar Imagen </button>
+      </div><!-- Layer Controls -->
+      <div class="tool-group">
+       <div class="tool-label">
+        📚 Capas
+       </div>
+       <div class="grid grid-cols-2 gap-2"><button onclick="moveLayer('front')" class="btn-secondary text-sm"> ⬆️ Al Frente </button> <button onclick="moveLayer('back')" class="btn-secondary text-sm"> ⬇️ Atrás </button>
+       </div>
+      </div><!-- Actions -->
+      <div class="tool-group">
+       <div class="tool-label">
+        ⚡ Acciones
+       </div><button onclick="clearCanvas()" class="btn-secondary w-full mb-2 text-sm"> 🗑️ Limpiar Todo </button> <button onclick="resetCanvas()" class="btn-secondary w-full mb-2 text-sm"> 🔄 Reiniciar </button> <button onclick="downloadDesign()" class="btn-primary w-full text-sm"> 💾 Descargar Diseño </button>
+      </div>
+     </div>
+    </div><!-- Canvas Area -->
+    <div class="lg:col-span-2">
+     <div class="glass-card p-6 fade-in">
+      <div class="flex items-center justify-between mb-6">
+       <h3 class="text-xl font-bold text-gray-800 flex items-center">🎨 Área de Diseño</h3>
+       <div class="flex items-center space-x-4"><button onclick="zoomCanvas('in')" class="btn-secondary text-sm"> 🔍 Zoom + </button> <button onclick="zoomCanvas('out')" class="btn-secondary text-sm"> 🔍 Zoom - </button> <button onclick="zoomCanvas('fit')" class="btn-secondary text-sm"> 📐 Ajustar </button>
+       </div>
+      </div>
+      <div class="canvas-container">
+       <div class="design-canvas" id="design-canvas"><!-- Product Template -->
+        <svg class="product-template" id="product-template" viewbox="0 0 500 500"><!-- T-shirt template --> <g id="tshirt-template">
+          <path d="M150 100 L150 80 Q150 70 160 70 L340 70 Q350 70 350 80 L350 100 L380 120 L380 180 L360 180 L360 450 Q360 460 350 460 L150 460 Q140 460 140 450 L140 180 L120 180 L120 120 Z" fill="#f8f9fa" stroke="#ddd" stroke-width="2" />
+          <rect x="180" y="120" width="140" height="180" fill="none" stroke="#007bff" stroke-width="2" stroke-dasharray="5,5" class="design-area" id="design-area" />
+         </g>
+        </svg><!-- User images will be added here -->
+       </div>
+      </div>
+      <div class="mt-4 text-center text-sm text-gray-600">
+       💡 <strong>Tip:</strong> Arrastra y suelta imágenes directamente en el área de diseño
+      </div>
+     </div>
+    </div><!-- Preview Panel -->
+    <div class="lg:col-span-1">
+     <div class="preview-panel fade-in">
+      <h3 class="text-xl font-bold text-gray-800 mb-6 flex items-center">👁️ Vista Previa</h3>
+      <div class="mb-6">
+       <div class="bg-gray-100 rounded-lg p-4 text-center">
+        <div class="text-4xl mb-2" id="preview-icon">
+         👕
+        </div>
+        <div class="font-semibold" id="preview-name">
+         Remera
+        </div>
+        <div class="text-sm text-gray-600" id="preview-description">
+         Remera de algodón 100%
+        </div>
+       </div>
+      </div><!-- Design Info -->
+      <div class="space-y-4">
+       <div class="bg-blue-50 rounded-lg p-4">
+        <h4 class="font-semibold text-blue-800 mb-2">📊 Información del Diseño</h4>
+        <div class="text-sm space-y-1">
+         <div>
+          Producto: <span id="info-product">Remera</span>
+         </div>
+         <div>
+          Imágenes: <span id="info-images">0</span>
+         </div>
+         <div>
+          Dimensiones: <span id="info-dimensions">500x500px</span>
+         </div>
+        </div>
+       </div>
+       <div class="bg-green-50 rounded-lg p-4">
+        <h4 class="font-semibold text-green-800 mb-2">✅ Estado del Diseño</h4>
+        <div class="text-sm" id="design-status-info">
+         Listo para enviar a nuestros diseñadores
+        </div>
+       </div><button onclick="sendToDesigners()" class="btn-primary w-full"> 📤 Enviar a Diseñadores </button>
+       <div class="text-xs text-gray-500 text-center">
+        Nuestros diseñadores profesionales crearán una versión mejorada de tu diseño
+       </div>
+      </div>
+     </div>
+    </div>
+   </div>
+  </main><!-- Hidden canvas for export -->
+  <canvas id="export-canvas" style="display: none;"></canvas>
+  <script>
+        // Global variables
+        let currentProduct = 'tshirt';
+        let selectedImage = null;
+        let imageCounter = 0;
+        let isDragging = false;
+        let isResizing = false;
+        let dragOffset = { x: 0, y: 0 };
+        let canvasZoom = 1;
+        let images = [];
+
+        // Configuration
+        const defaultConfig = {
+            editor_title: "Panu Design Editor",
+            contact_info: "WhatsApp: +1234567890"
+        };
+
+        // Product templates
+        const productTemplates = {
+            tshirt: {
+                name: 'Remera',
+                icon: '👕',
+                description: 'Remera de algodón 100%',
+                designArea: { x: 180, y: 120, width: 140, height: 180 },
+                template: `<path d="M150 100 L150 80 Q150 70 160 70 L340 70 Q350 70 350 80 L350 100 L380 120 L380 180 L360 180 L360 450 Q360 460 350 460 L150 460 Q140 460 140 450 L140 180 L120 180 L120 120 Z" 
+                          fill="#f8f9fa" stroke="#ddd" stroke-width="2"/>
+                          <rect x="180" y="120" width="140" height="180" fill="none" stroke="#007bff" stroke-width="2" stroke-dasharray="5,5" class="design-area"/>`
+            },
+            mug: {
+                name: 'Taza',
+                icon: '☕',
+                description: 'Taza de cerámica 11oz',
+                designArea: { x: 200, y: 150, width: 100, height: 120 },
+                template: `<ellipse cx="250" cy="350" rx="80" ry="20" fill="#ddd"/>
+                          <rect x="170" y="150" width="160" height="200" rx="10" fill="#f8f9fa" stroke="#ddd" stroke-width="2"/>
+                          <path d="M330 200 Q350 200 350 220 L350 280 Q350 300 330 300" fill="none" stroke="#ddd" stroke-width="3"/>
+                          <rect x="200" y="150" width="100" height="120" fill="none" stroke="#007bff" stroke-width="2" stroke-dasharray="5,5" class="design-area"/>`
+            },
+            hoppie: {
+                name: 'Hoppie Térmico',
+                icon: '🥤',
+                description: 'Vaso térmico tipo Stanley',
+                designArea: { x: 210, y: 120, width: 80, height: 140 },
+                template: `<ellipse cx="250" cy="380" rx="50" ry="15" fill="#ddd"/>
+                          <rect x="200" y="100" width="100" height="280" rx="8" fill="#f8f9fa" stroke="#ddd" stroke-width="2"/>
+                          <rect x="195" y="95" width="110" height="25" rx="12" fill="#333"/>
+                          <circle cx="320" cy="150" r="8" fill="none" stroke="#ddd" stroke-width="2"/>
+                          <path d="M320 142 L340 150 L320 158" fill="none" stroke="#ddd" stroke-width="2"/>
+                          <rect x="210" y="120" width="80" height="140" fill="none" stroke="#007bff" stroke-width="2" stroke-dasharray="5,5" class="design-area"/>`
+            },
+            notebook: {
+                name: 'Cuadernito',
+                icon: '📓',
+                description: 'Agenda personalizada A5',
+                designArea: { x: 170, y: 100, width: 160, height: 220 },
+                template: `<rect x="150" y="80" width="200" height="280" rx="8" fill="#f8f9fa" stroke="#ddd" stroke-width="2"/>
+                          <rect x="150" y="80" width="200" height="40" fill="#8B4513"/>
+                          <line x1="160" y1="140" x2="340" y2="140" stroke="#ddd" stroke-width="1"/>
+                          <line x1="160" y1="160" x2="340" y2="160" stroke="#ddd" stroke-width="1"/>
+                          <line x1="160" y1="180" x2="340" y2="180" stroke="#ddd" stroke-width="1"/>
+                          <line x1="160" y1="200" x2="340" y2="200" stroke="#ddd" stroke-width="1"/>
+                          <rect x="170" y="100" width="160" height="220" fill="none" stroke="#007bff" stroke-width="2" stroke-dasharray="5,5" class="design-area"/>`
+            },
+            mousepad: {
+                name: 'Mouse Pad',
+                icon: '🖱️',
+                description: 'Mouse pad rectangular',
+                designArea: { x: 100, y: 150, width: 300, height: 200 },
+                template: `<rect x="80" y="130" width="340" height="240" rx="20" fill="#f8f9fa" stroke="#ddd" stroke-width="2"/>
+                          <rect x="100" y="150" width="300" height="200" fill="none" stroke="#007bff" stroke-width="2" stroke-dasharray="5,5" class="design-area"/>`
+            },
+            cap: {
+                name: 'Gorra',
+                icon: '🧢',
+                description: 'Gorra ajustable',
+                designArea: { x: 200, y: 180, width: 100, height: 80 },
+                template: `<ellipse cx="250" cy="350" rx="120" ry="30" fill="#ddd"/>
+                          <path d="M130 250 Q130 150 250 150 Q370 150 370 250 L370 300 Q370 320 350 320 L150 320 Q130 320 130 300 Z" 
+                                fill="#f8f9fa" stroke="#ddd" stroke-width="2"/>
+                          <ellipse cx="250" cy="200" rx="80" ry="15" fill="none" stroke="#007bff" stroke-width="2" stroke-dasharray="5,5" class="design-area"/>
+                          <rect x="200" y="180" width="100" height="80" fill="none" stroke="#007bff" stroke-width="2" stroke-dasharray="5,5" class="design-area"/>`
+            }
+        };
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeEditor();
+            setupEventListeners();
+        });
+
+        // Initialize editor
+        function initializeEditor() {
+            updateProductTemplate();
+            updatePreview();
+            
+            // Initialize Element SDK
+            if (window.elementSdk) {
+                window.elementSdk.init({
+                    defaultConfig: defaultConfig,
+                    render: async (config) => {
+                        document.getElementById('editor-title').textContent = config.editor_title || defaultConfig.editor_title;
+                        document.getElementById('contact-info').textContent = config.contact_info || defaultConfig.contact_info;
+                    },
+                    mapToCapabilities: (config) => ({
+                        recolorables: [],
+                        borderables: [],
+                        fontEditable: undefined,
+                        fontSizeable: undefined
+                    }),
+                    mapToEditPanelValues: (config) => new Map([
+                        ["editor_title", config.editor_title || defaultConfig.editor_title],
+                        ["contact_info", config.contact_info || defaultConfig.contact_info]
+                    ])
+                });
+            }
+        }
+
+        // Setup event listeners
+        function setupEventListeners() {
+            const canvas = document.getElementById('design-canvas');
+            
+            // Drag and drop
+            canvas.addEventListener('dragover', handleDragOver);
+            canvas.addEventListener('drop', handleDrop);
+            
+            // Mouse events
+            canvas.addEventListener('mousedown', handleMouseDown);
+            canvas.addEventListener('mousemove', handleMouseMove);
+            canvas.addEventListener('mouseup', handleMouseUp);
+            
+            // Touch events for mobile
+            canvas.addEventListener('touchstart', handleTouchStart);
+            canvas.addEventListener('touchmove', handleTouchMove);
+            canvas.addEventListener('touchend', handleTouchEnd);
+        }
+
+        // Product selection
+        function selectProduct(productType, element) {
+            currentProduct = productType;
+            
+            // Update active state
+            document.querySelectorAll('.product-option').forEach(option => {
+                option.classList.remove('active');
+            });
+            element.classList.add('active');
+            
+            // Update template and preview
+            updateProductTemplate();
+            updatePreview();
+            updateCurrentProduct();
+            
+            showNotification(`Producto seleccionado: ${productTemplates[productType].name}`, 'success');
+        }
+
+        // Update product template
+        function updateProductTemplate() {
+            const template = productTemplates[currentProduct];
+            const templateElement = document.getElementById('product-template');
+            
+            templateElement.innerHTML = template.template;
+        }
+
+        // Update preview
+        function updatePreview() {
+            const template = productTemplates[currentProduct];
+            
+            document.getElementById('preview-icon').textContent = template.icon;
+            document.getElementById('preview-name').textContent = template.name;
+            document.getElementById('preview-description').textContent = template.description;
+            document.getElementById('info-product').textContent = template.name;
+            document.getElementById('info-images').textContent = images.length;
+        }
+
+        // Update current product display
+        function updateCurrentProduct() {
+            const template = productTemplates[currentProduct];
+            document.getElementById('current-product').textContent = template.name;
+        }
+
+        // Handle image upload
+        function handleImageUpload(event) {
+            const files = event.target.files;
+            
+            for (let file of files) {
+                if (file.type.startsWith('image/')) {
+                    if (file.size > 5 * 1024 * 1024) {
+                        showNotification('Imagen muy grande. Máximo 5MB.', 'error');
+                        continue;
+                    }
+                    
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        addImageToCanvas(e.target.result);
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    showNotification('Formato no válido. Use JPG, PNG o GIF.', 'error');
+                }
+            }
+        }
+
+        // Add image to canvas
+        function addImageToCanvas(imageSrc) {
+            const canvas = document.getElementById('design-canvas');
+            const template = productTemplates[currentProduct];
+            const designArea = template.designArea;
+            
+            const img = document.createElement('img');
+            img.src = imageSrc;
+            img.className = 'user-image';
+            img.draggable = false;
+            img.style.position = 'absolute';
+            img.style.cursor = 'move';
+            img.style.border = '2px solid transparent';
+            img.style.transition = 'all 0.2s ease';
+            img.style.zIndex = '8';
+            
+            img.onload = function() {
+                // Calculate initial size and position
+                const canvasRect = canvas.getBoundingClientRect();
+                const maxWidth = designArea.width * 0.6;
+                const maxHeight = designArea.height * 0.6;
+                
+                let width = this.naturalWidth;
+                let height = this.naturalHeight;
+                
+                // Scale to fit design area
+                if (width > maxWidth || height > maxHeight) {
+                    const scaleX = maxWidth / width;
+                    const scaleY = maxHeight / height;
+                    const scale = Math.min(scaleX, scaleY);
+                    
+                    width *= scale;
+                    height *= scale;
+                }
+                
+                // Ensure minimum size for mobile
+                const minSize = 50;
+                if (width < minSize) {
+                    const scale = minSize / width;
+                    width *= scale;
+                    height *= scale;
+                }
+                
+                // Position in center of design area
+                const x = designArea.x + (designArea.width - width) / 2;
+                const y = designArea.y + (designArea.height - height) / 2;
+                
+                img.style.left = x + 'px';
+                img.style.top = y + 'px';
+                img.style.width = width + 'px';
+                img.style.height = height + 'px';
+                img.style.transform = 'rotate(0deg)';
+                img.style.opacity = '1';
+                
+                // Add data attributes
+                img.dataset.id = 'img_' + (++imageCounter);
+                img.dataset.originalWidth = width;
+                img.dataset.originalHeight = height;
+                img.dataset.rotation = '0';
+                img.dataset.flipH = 'false';
+                img.dataset.flipV = 'false';
+                
+                // Add touch and click handlers
+                img.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    selectImage(this);
+                });
+                
+                img.addEventListener('touchstart', function(e) {
+                    e.stopPropagation();
+                    selectImage(this);
+                });
+                
+                canvas.appendChild(img);
+                addResizeHandles(img);
+                
+                images.push(img);
+                selectImage(img);
+                updateStats();
+                
+                showNotification('✅ Imagen agregada al diseño', 'success');
+            };
+            
+            img.onerror = function() {
+                showNotification('❌ Error al cargar la imagen', 'error');
+            };
+        }
+
+        // Add resize handles to image
+        function addResizeHandles(img) {
+            const handles = ['nw', 'ne', 'sw', 'se'];
+            
+            handles.forEach(position => {
+                const handle = document.createElement('div');
+                handle.className = `resize-handle ${position}`;
+                handle.dataset.position = position;
+                
+                handle.addEventListener('mousedown', function(e) {
+                    e.stopPropagation();
+                    startResize(e, img, position);
+                });
+                
+                img.appendChild(handle);
+            });
+        }
+
+        // Select image
+        function selectImage(img) {
+            // Deselect all images
+            document.querySelectorAll('.user-image').forEach(image => {
+                image.classList.remove('selected');
+                image.querySelectorAll('.resize-handle').forEach(handle => {
+                    handle.style.display = 'none';
+                });
+            });
+            
+            // Select this image
+            img.classList.add('selected');
+            img.querySelectorAll('.resize-handle').forEach(handle => {
+                handle.style.display = 'block';
+            });
+            
+            selectedImage = img;
+            showImageControls();
+            updateImageControls();
+        }
+
+        // Show image controls
+        function showImageControls() {
+            document.getElementById('image-controls').style.display = 'block';
+        }
+
+        // Update image controls
+        function updateImageControls() {
+            if (!selectedImage) return;
+            
+            const rect = selectedImage.getBoundingClientRect();
+            const originalWidth = parseFloat(selectedImage.dataset.originalWidth);
+            const currentWidth = parseFloat(selectedImage.style.width);
+            const scale = Math.round((currentWidth / originalWidth) * 100);
+            
+            document.getElementById('size-slider').value = scale;
+            document.getElementById('size-value').textContent = scale + '%';
+            
+            const rotation = selectedImage.dataset.rotation || '0';
+            document.getElementById('rotation-slider').value = rotation;
+            document.getElementById('rotation-value').textContent = rotation + '°';
+            
+            const opacity = Math.round(parseFloat(selectedImage.style.opacity || 1) * 100);
+            document.getElementById('opacity-slider').value = opacity;
+            document.getElementById('opacity-value').textContent = opacity + '%';
+        }
+
+        // Update image size
+        function updateImageSize(value) {
+            if (!selectedImage) return;
+            
+            const originalWidth = parseFloat(selectedImage.dataset.originalWidth);
+            const originalHeight = parseFloat(selectedImage.dataset.originalHeight);
+            
+            const scale = value / 100;
+            const newWidth = originalWidth * scale;
+            const newHeight = originalHeight * scale;
+            
+            selectedImage.style.width = newWidth + 'px';
+            selectedImage.style.height = newHeight + 'px';
+            
+            document.getElementById('size-value').textContent = value + '%';
+        }
+
+        // Update image rotation
+        function updateImageRotation(value) {
+            if (!selectedImage) return;
+            
+            selectedImage.style.transform = `rotate(${value}deg)`;
+            selectedImage.dataset.rotation = value;
+            
+            document.getElementById('rotation-value').textContent = value + '°';
+        }
+
+        // Update image opacity
+        function updateImageOpacity(value) {
+            if (!selectedImage) return;
+            
+            selectedImage.style.opacity = value / 100;
+            document.getElementById('opacity-value').textContent = value + '%';
+        }
+
+        // Flip image
+        function flipImage(direction) {
+            if (!selectedImage) return;
+            
+            let scaleX = selectedImage.dataset.flipH === 'true' ? -1 : 1;
+            let scaleY = selectedImage.dataset.flipV === 'true' ? -1 : 1;
+            
+            if (direction === 'horizontal') {
+                scaleX *= -1;
+                selectedImage.dataset.flipH = scaleX === -1 ? 'true' : 'false';
+            } else {
+                scaleY *= -1;
+                selectedImage.dataset.flipV = scaleY === -1 ? 'true' : 'false';
+            }
+            
+            const rotation = selectedImage.dataset.rotation || '0';
+            selectedImage.style.transform = `rotate(${rotation}deg) scaleX(${scaleX}) scaleY(${scaleY})`;
+        }
+
+        // Delete selected image
+        function deleteSelectedImage() {
+            if (!selectedImage) {
+                showNotification('Selecciona una imagen primero', 'error');
+                return;
+            }
+            
+            selectedImage.remove();
+            images = images.filter(img => img !== selectedImage);
+            selectedImage = null;
+            
+            document.getElementById('image-controls').style.display = 'none';
+            updateStats();
+            
+            showNotification('Imagen eliminada', 'success');
+        }
+
+        // Move layer
+        function moveLayer(direction) {
+            if (!selectedImage) {
+                showNotification('Selecciona una imagen primero', 'error');
+                return;
+            }
+            
+            if (direction === 'front') {
+                selectedImage.style.zIndex = '9';
+            } else {
+                selectedImage.style.zIndex = '7';
+            }
+            
+            showNotification(`Imagen movida al ${direction === 'front' ? 'frente' : 'fondo'}`, 'success');
+        }
+
+        // Clear canvas
+        function clearCanvas() {
+            // Create inline confirmation
+            const confirmOverlay = document.createElement('div');
+            confirmOverlay.className = 'fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center';
+            confirmOverlay.innerHTML = `
+                <div class="glass-card p-6 max-w-md mx-4">
+                    <h3 class="text-lg font-bold mb-4">🗑️ Limpiar Todo</h3>
+                    <p class="text-gray-600 mb-6">¿Estás seguro de que quieres eliminar todas las imágenes del diseño?</p>
+                    <div class="flex space-x-4">
+                        <button onclick="this.closest('.bg-black').remove()" class="btn-secondary flex-1">
+                            ❌ Cancelar
+                        </button>
+                        <button onclick="confirmClearCanvas(this)" class="btn-primary flex-1 bg-red-500 hover:bg-red-600">
+                            🗑️ Limpiar
+                        </button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(confirmOverlay);
+        }
+
+        function confirmClearCanvas(buttonElement) {
+            buttonElement.closest('.bg-black').remove();
+            
+            document.querySelectorAll('.user-image').forEach(img => img.remove());
+            images = [];
+            selectedImage = null;
+            document.getElementById('image-controls').style.display = 'none';
+            updateStats();
+            
+            showNotification('Diseño limpiado', 'success');
+        }
+
+        // Reset canvas
+        function resetCanvas() {
+            clearCanvas();
+            canvasZoom = 1;
+            updateProductTemplate();
+        }
+
+        // Zoom canvas
+        function zoomCanvas(action) {
+            const canvas = document.getElementById('design-canvas');
+            
+            if (action === 'in') {
+                canvasZoom = Math.min(canvasZoom * 1.2, 3);
+            } else if (action === 'out') {
+                canvasZoom = Math.max(canvasZoom / 1.2, 0.5);
+            } else if (action === 'fit') {
+                canvasZoom = 1;
+            }
+            
+            canvas.style.transform = `scale(${canvasZoom})`;
+            canvas.style.transformOrigin = 'center center';
+        }
+
+        // Download design
+        function downloadDesign() {
+            const canvas = document.getElementById('export-canvas');
+            const ctx = canvas.getContext('2d');
+            
+            canvas.width = 500;
+            canvas.height = 500;
+            
+            // Draw background
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw product template (simplified)
+            const template = productTemplates[currentProduct];
+            ctx.strokeStyle = '#ddd';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(template.designArea.x, template.designArea.y, template.designArea.width, template.designArea.height);
+            
+            // Draw images
+            let loadedImages = 0;
+            const totalImages = images.length;
+            
+            if (totalImages === 0) {
+                downloadCanvas(canvas);
+                return;
+            }
+            
+            images.forEach(img => {
+                const newImg = new Image();
+                newImg.crossOrigin = 'anonymous';
+                newImg.onload = function() {
+                    const x = parseFloat(img.style.left);
+                    const y = parseFloat(img.style.top);
+                    const width = parseFloat(img.style.width);
+                    const height = parseFloat(img.style.height);
+                    const rotation = parseFloat(img.dataset.rotation || 0);
+                    const opacity = parseFloat(img.style.opacity || 1);
+                    
+                    ctx.save();
+                    ctx.globalAlpha = opacity;
+                    ctx.translate(x + width/2, y + height/2);
+                    ctx.rotate(rotation * Math.PI / 180);
+                    ctx.drawImage(this, -width/2, -height/2, width, height);
+                    ctx.restore();
+                    
+                    loadedImages++;
+                    if (loadedImages === totalImages) {
+                        downloadCanvas(canvas);
+                    }
+                };
+                newImg.src = img.src;
+            });
+        }
+
+        function downloadCanvas(canvas) {
+            const link = document.createElement('a');
+            link.download = `panu-design-${currentProduct}-${Date.now()}.png`;
+            link.href = canvas.toDataURL();
+            link.click();
+            
+            showNotification('Diseño descargado', 'success');
+        }
+
+        // Send to designers
+        function sendToDesigners() {
+            if (images.length === 0) {
+                showNotification('Agrega al menos una imagen antes de enviar', 'error');
+                return;
+            }
+            
+            // Create success message
+            const successOverlay = document.createElement('div');
+            successOverlay.className = 'fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center';
+            successOverlay.innerHTML = `
+                <div class="glass-card p-8 max-w-lg mx-4 text-center">
+                    <div class="text-6xl mb-4">🎉</div>
+                    <h3 class="text-2xl font-bold mb-4">¡Diseño Enviado!</h3>
+                    <p class="text-gray-600 mb-6">Tu diseño ha sido enviado a nuestros diseñadores profesionales. Te contactaremos pronto con una propuesta mejorada.</p>
+                    <div class="bg-blue-50 rounded-lg p-4 mb-6">
+                        <div class="font-semibold text-blue-800">Detalles del envío:</div>
+                        <div class="text-sm text-blue-600 mt-2">
+                            Producto: ${productTemplates[currentProduct].name}<br>
+                            Imágenes: ${images.length}<br>
+                            Fecha: ${new Date().toLocaleDateString()}
+                        </div>
+                    </div>
+                    <button onclick="this.closest('.bg-black').remove()" class="btn-primary">
+                        ✅ Entendido
+                    </button>
+                </div>
+            `;
+            document.body.appendChild(successOverlay);
+            
+            // Update design status
+            document.getElementById('design-status').textContent = 'Enviado';
+            document.getElementById('design-status-info').textContent = 'Diseño enviado a nuestros profesionales';
+        }
+
+        // Mouse event handlers
+        function handleMouseDown(e) {
+            const target = e.target;
+            
+            if (target.classList.contains('user-image')) {
+                selectImage(target);
+                startDrag(e, target);
+            } else if (target.classList.contains('resize-handle')) {
+                // Handled by resize handle event listener
+            } else {
+                // Deselect all images
+                document.querySelectorAll('.user-image').forEach(img => {
+                    img.classList.remove('selected');
+                    img.querySelectorAll('.resize-handle').forEach(handle => {
+                        handle.style.display = 'none';
+                    });
+                });
+                selectedImage = null;
+                document.getElementById('image-controls').style.display = 'none';
+            }
+        }
+
+        function handleMouseMove(e) {
+            if (isDragging && selectedImage) {
+                const rect = document.getElementById('design-canvas').getBoundingClientRect();
+                const x = e.clientX - rect.left - dragOffset.x;
+                const y = e.clientY - rect.top - dragOffset.y;
+                
+                selectedImage.style.left = x + 'px';
+                selectedImage.style.top = y + 'px';
+            }
+        }
+
+        function handleMouseUp(e) {
+            isDragging = false;
+            isResizing = false;
+        }
+
+        // Touch event handlers
+        function handleTouchStart(e) {
+            const touch = e.touches[0];
+            const target = document.elementFromPoint(touch.clientX, touch.clientY);
+            
+            if (target && target.classList.contains('user-image')) {
+                e.preventDefault();
+                selectImage(target);
+                startDrag({ clientX: touch.clientX, clientY: touch.clientY }, target);
+            } else if (target && target.classList.contains('resize-handle')) {
+                e.preventDefault();
+                const img = target.closest('.user-image');
+                if (img) {
+                    startResize({ clientX: touch.clientX, clientY: touch.clientY, preventDefault: () => {} }, img, target.dataset.position);
+                }
+            } else {
+                // Deselect all images
+                document.querySelectorAll('.user-image').forEach(img => {
+                    img.classList.remove('selected');
+                    img.querySelectorAll('.resize-handle').forEach(handle => {
+                        handle.style.display = 'none';
+                    });
+                });
+                selectedImage = null;
+                document.getElementById('image-controls').style.display = 'none';
+            }
+        }
+
+        function handleTouchMove(e) {
+            if (isDragging || isResizing) {
+                e.preventDefault();
+                const touch = e.touches[0];
+                const mouseEvent = {
+                    clientX: touch.clientX,
+                    clientY: touch.clientY
+                };
+                
+                if (isDragging) {
+                    handleMouseMove(mouseEvent);
+                }
+            }
+        }
+
+        function handleTouchEnd(e) {
+            e.preventDefault();
+            isDragging = false;
+            isResizing = false;
+        }
+
+        // Drag and drop handlers
+        function handleDragOver(e) {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'copy';
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            const files = e.dataTransfer.files;
+            
+            for (let file of files) {
+                if (file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        addImageToCanvas(e.target.result);
+                    };
+                    reader.readAsDataURL(file);
+                }
+            }
+        }
+
+        // Start drag
+        function startDrag(e, img) {
+            isDragging = true;
+            const rect = img.getBoundingClientRect();
+            const canvasRect = document.getElementById('design-canvas').getBoundingClientRect();
+            
+            dragOffset.x = e.clientX - rect.left;
+            dragOffset.y = e.clientY - rect.top;
+        }
+
+        // Start resize
+        function startResize(e, img, position) {
+            e.preventDefault();
+            isResizing = true;
+            selectedImage = img;
+            
+            const startX = e.clientX;
+            const startY = e.clientY;
+            const startWidth = parseFloat(img.style.width);
+            const startHeight = parseFloat(img.style.height);
+            const startLeft = parseFloat(img.style.left);
+            const startTop = parseFloat(img.style.top);
+            
+            function resize(e) {
+                if (!isResizing) return;
+                
+                const deltaX = e.clientX - startX;
+                const deltaY = e.clientY - startY;
+                
+                let newWidth = startWidth;
+                let newHeight = startHeight;
+                let newLeft = startLeft;
+                let newTop = startTop;
+                
+                const aspectRatio = startWidth / startHeight;
+                
+                if (position.includes('e')) {
+                    newWidth = Math.max(20, startWidth + deltaX);
+                    newHeight = newWidth / aspectRatio;
+                }
+                if (position.includes('w')) {
+                    newWidth = Math.max(20, startWidth - deltaX);
+                    newHeight = newWidth / aspectRatio;
+                    newLeft = startLeft + (startWidth - newWidth);
+                }
+                if (position.includes('s')) {
+                    newHeight = Math.max(20, startHeight + deltaY);
+                    newWidth = newHeight * aspectRatio;
+                }
+                if (position.includes('n')) {
+                    newHeight = Math.max(20, startHeight - deltaY);
+                    newWidth = newHeight * aspectRatio;
+                    newTop = startTop + (startHeight - newHeight);
+                }
+                
+                img.style.width = newWidth + 'px';
+                img.style.height = newHeight + 'px';
+                img.style.left = newLeft + 'px';
+                img.style.top = newTop + 'px';
+                
+                updateImageControls();
+            }
+            
+            function stopResize() {
+                isResizing = false;
+                document.removeEventListener('mousemove', resize);
+                document.removeEventListener('mouseup', stopResize);
+            }
+            
+            document.addEventListener('mousemove', resize);
+            document.addEventListener('mouseup', stopResize);
+        }
+
+        // Update stats
+        function updateStats() {
+            document.getElementById('images-count').textContent = images.length;
+            document.getElementById('info-images').textContent = images.length;
+            updatePreview();
+        }
+
+        // Add test image
+        function addTestImage() {
+            // Create a simple test image using canvas
+            const canvas = document.createElement('canvas');
+            canvas.width = 200;
+            canvas.height = 200;
+            const ctx = canvas.getContext('2d');
+            
+            // Create gradient background
+            const gradient = ctx.createLinearGradient(0, 0, 200, 200);
+            gradient.addColorStop(0, '#8B4513');
+            gradient.addColorStop(0.5, '#CD853F');
+            gradient.addColorStop(1, '#DEB887');
+            
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, 200, 200);
+            
+            // Add text
+            ctx.fillStyle = 'white';
+            ctx.font = 'bold 24px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('PANU', 100, 80);
+            ctx.font = '16px Arial';
+            ctx.fillText('Diseño', 100, 110);
+            ctx.fillText('Personalizado', 100, 130);
+            
+            // Add decorative elements
+            ctx.strokeStyle = 'white';
+            ctx.lineWidth = 3;
+            ctx.strokeRect(20, 20, 160, 160);
+            
+            // Convert to data URL and add to canvas
+            const dataURL = canvas.toDataURL('image/png');
+            addImageToCanvas(dataURL);
+        }
+
+        // Show notification
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.innerHTML = `
+                <div class="flex items-center justify-between">
+                    <p class="font-medium">${message}</p>
+                    <button onclick="this.parentElement.parentElement.remove()" class="text-gray-500 hover:text-gray-700 ml-4">×</button>
+                </div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // Show notification
+            setTimeout(() => {
+                notification.classList.add('show');
+            }, 100);
+            
+            // Auto remove after 5 seconds
+            setTimeout(() => {
+                if (notification.parentElement) {
+                    notification.classList.remove('show');
+                    setTimeout(() => {
+                        notification.remove();
+                    }, 300);
+                }
+            }, 5000);
+        }
+    </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'991ca61a550f00e0',t:'MTc2MTAwNjY1Mi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
