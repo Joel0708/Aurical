@@ -245,6 +245,7 @@
             background: #ddd;
             outline: none;
             -webkit-appearance: none;
+            appearance: none;
         }
         
         .slider::-webkit-slider-thumb {
@@ -865,56 +866,57 @@
             img.style.zIndex = '50';
             
             img.onload = function() {
-                // Calculate initial size and position
-                const maxWidth = designArea.width * 0.7;
-                const maxHeight = designArea.height * 0.7;
-                
-                let width = this.naturalWidth;
-                let height = this.naturalHeight;
-                
-                // Scale to fit design area
-                if (width > maxWidth || height > maxHeight) {
-                    const scaleX = maxWidth / width;
-                    const scaleY = maxHeight / height;
-                    const scale = Math.min(scaleX, scaleY);
+                // Wait for canvas to be fully rendered
+                setTimeout(() => {
+                    // Calculate initial size and position
+                    const maxWidth = designArea.width * 0.7;
+                    const maxHeight = designArea.height * 0.7;
                     
-                    width *= scale;
-                    height *= scale;
-                }
-                
-                // Ensure minimum size for mobile
-                const minSize = 60;
-                if (width < minSize) {
-                    const scale = minSize / width;
-                    width *= scale;
-                    height *= scale;
-                }
-                
-                // Position perfectly centered in design area
-                // Convert SVG coordinates to actual canvas pixels
-                const canvasRect = canvas.getBoundingClientRect();
-                const svgRect = document.getElementById('product-template').getBoundingClientRect();
-                
-                // Calculate scale factor between SVG viewBox and actual rendered size
-                const scaleX = canvasRect.width / 500; // SVG viewBox is 500x500
-                const scaleY = canvasRect.height / 500;
-                
-                // Apply scale to design area coordinates
-                const actualDesignX = designArea.x * scaleX;
-                const actualDesignY = designArea.y * scaleY;
-                const actualDesignWidth = designArea.width * scaleX;
-                const actualDesignHeight = designArea.height * scaleY;
-                
-                // Center in the actual scaled design area
-                const x = actualDesignX + (actualDesignWidth - width) / 2;
-                const y = actualDesignY + (actualDesignHeight - height) / 2;
-                
-                img.style.left = x + 'px';
-                img.style.top = y + 'px';
-                img.style.width = width + 'px';
-                img.style.height = height + 'px';
-                img.style.transform = 'rotate(0deg)';
-                img.style.opacity = '1';
+                    let width = this.naturalWidth;
+                    let height = this.naturalHeight;
+                    
+                    // Scale to fit design area
+                    if (width > maxWidth || height > maxHeight) {
+                        const scaleX = maxWidth / width;
+                        const scaleY = maxHeight / height;
+                        const scale = Math.min(scaleX, scaleY);
+                        
+                        width *= scale;
+                        height *= scale;
+                    }
+                    
+                    // Ensure minimum size for mobile
+                    const minSize = 60;
+                    if (width < minSize) {
+                        const scale = minSize / width;
+                        width *= scale;
+                        height *= scale;
+                    }
+                    
+                    // Get fresh canvas dimensions after any layout changes
+                    const canvasRect = canvas.getBoundingClientRect();
+                    
+                    // Calculate scale factor between SVG viewBox (500x500) and actual rendered size
+                    const scaleFactorX = canvasRect.width / 500;
+                    const scaleFactorY = canvasRect.height / 500;
+                    
+                    // Apply scale to design area coordinates
+                    const actualDesignX = designArea.x * scaleFactorX;
+                    const actualDesignY = designArea.y * scaleFactorY;
+                    const actualDesignWidth = designArea.width * scaleFactorX;
+                    const actualDesignHeight = designArea.height * scaleFactorY;
+                    
+                    // Center perfectly in the actual scaled design area
+                    const x = actualDesignX + (actualDesignWidth - width) / 2;
+                    const y = actualDesignY + (actualDesignHeight - height) / 2;
+                    
+                    img.style.left = Math.round(x) + 'px';
+                    img.style.top = Math.round(y) + 'px';
+                    img.style.width = Math.round(width) + 'px';
+                    img.style.height = Math.round(height) + 'px';
+                    img.style.transform = 'rotate(0deg)';
+                    img.style.opacity = '1';
+                }, 50); // Small delay to ensure layout is complete
                 
                 // Add data attributes
                 img.dataset.id = 'img_' + (++imageCounter);
@@ -1914,5 +1916,5 @@ ${new Date().toLocaleString()}
             }, 5000);
         }
     </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9920b968e69800e0',t:'MTc2MTA0OTM4Ni4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9920c6ccb0bec02b',t:'MTc2MTA0OTkzNS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
