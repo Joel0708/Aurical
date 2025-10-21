@@ -245,7 +245,6 @@
             background: #ddd;
             outline: none;
             -webkit-appearance: none;
-            appearance: none;
         }
         
         .slider::-webkit-slider-thumb {
@@ -586,7 +585,7 @@
        </div>
        <div class="mb-3"><strong>📱 Móvil:</strong> Para mover imágenes, desliza tu dedo <em>cerca</em> de la imagen (no directamente sobre ella)
        </div>
-       <div class="text-xs text-gray-500 border-t pt-2"><strong>Panu Design Editor v1.066</strong><br>
+       <div class="text-xs text-gray-500 border-t pt-2"><strong>Panu Design Editor v1.067</strong><br>
          Built by <strong>Joel Páez</strong> and <strong>Ren_q (Alexa Ferreira)</strong>
        </div>
       </div>
@@ -1200,10 +1199,32 @@
                 const newImg = new Image();
                 newImg.crossOrigin = 'anonymous';
                 newImg.onload = function() {
-                    const x = parseFloat(img.style.left) * scale + offsetX;
-                    const y = parseFloat(img.style.top) * scale + offsetY;
-                    const width = parseFloat(img.style.width) * scale;
-                    const height = parseFloat(img.style.height) * scale;
+                    // Get the current canvas dimensions for proper scaling
+                    const canvasElement = document.getElementById('design-canvas');
+                    const canvasRect = canvasElement.getBoundingClientRect();
+                    
+                    // Calculate the scale factor between the actual canvas size and SVG viewBox (500x500)
+                    const canvasScaleX = canvasRect.width / 500;
+                    const canvasScaleY = canvasRect.height / 500;
+                    
+                    // Convert image position from screen coordinates to SVG coordinates
+                    const imgLeft = parseFloat(img.style.left);
+                    const imgTop = parseFloat(img.style.top);
+                    const imgWidth = parseFloat(img.style.width);
+                    const imgHeight = parseFloat(img.style.height);
+                    
+                    // Convert to SVG coordinate system first
+                    const svgX = imgLeft / canvasScaleX;
+                    const svgY = imgTop / canvasScaleY;
+                    const svgWidth = imgWidth / canvasScaleX;
+                    const svgHeight = imgHeight / canvasScaleY;
+                    
+                    // Now apply export canvas scaling
+                    const x = svgX * scale + offsetX;
+                    const y = svgY * scale + offsetY;
+                    const width = svgWidth * scale;
+                    const height = svgHeight * scale;
+                    
                     const rotation = parseFloat(img.dataset.rotation || 0);
                     const opacity = parseFloat(img.style.opacity || 1);
                     
@@ -1916,5 +1937,5 @@ ${new Date().toLocaleString()}
             }, 5000);
         }
     </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9920c6ccb0bec02b',t:'MTc2MTA0OTkzNS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9920dbfff25600e0',t:'MTc2MTA1MDgwMy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
