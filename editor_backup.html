@@ -121,7 +121,7 @@
             cursor: move;
             border: 2px solid transparent;
             transition: all 0.2s ease;
-            z-index: 8;
+            z-index: 15;
         }
         
         .user-image:hover {
@@ -327,15 +327,120 @@
         
         @media (max-width: 768px) {
             .design-canvas {
-                height: 350px;
+                height: 400px;
             }
             
             .product-selector {
                 grid-template-columns: repeat(3, 1fr);
+                gap: 10px;
+            }
+            
+            .product-option {
+                padding: 10px;
             }
             
             .product-icon {
-                font-size: 2rem;
+                font-size: 1.8rem;
+                margin-bottom: 4px;
+            }
+            
+            .tools-panel {
+                padding: 15px;
+            }
+            
+            .tool-group {
+                margin-bottom: 20px;
+                padding-bottom: 15px;
+            }
+            
+            .btn-primary, .btn-secondary {
+                padding: 14px 20px;
+                font-size: 0.9rem;
+                touch-action: manipulation;
+            }
+            
+            .resize-handle {
+                width: 16px;
+                height: 16px;
+                border: 3px solid white;
+            }
+            
+            .resize-handle.se {
+                bottom: -8px;
+                right: -8px;
+            }
+            
+            .resize-handle.sw {
+                bottom: -8px;
+                left: -8px;
+            }
+            
+            .resize-handle.ne {
+                top: -8px;
+                right: -8px;
+            }
+            
+            .resize-handle.nw {
+                top: -8px;
+                left: -8px;
+            }
+            
+            .user-image {
+                min-width: 40px;
+                min-height: 40px;
+            }
+            
+            .slider {
+                height: 8px;
+            }
+            
+            .slider::-webkit-slider-thumb {
+                width: 24px;
+                height: 24px;
+            }
+            
+            .slider::-moz-range-thumb {
+                width: 24px;
+                height: 24px;
+            }
+            
+            .notification {
+                right: 10px;
+                left: 10px;
+                top: 10px;
+                transform: translateY(-100px);
+            }
+            
+            .notification.show {
+                transform: translateY(0);
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .design-canvas {
+                height: 300px;
+            }
+            
+            .product-selector {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .grid.lg\\:grid-cols-4 {
+                grid-template-columns: 1fr;
+            }
+            
+            .tools-panel {
+                order: 2;
+                margin-top: 20px;
+            }
+            
+            .lg\\:col-span-2 {
+                order: 1;
+            }
+            
+            .lg\\:col-span-1:last-child {
+                order: 3;
+                margin-top: 20px;
             }
         }
     </style>
@@ -350,7 +455,7 @@
       <div>
        <h1 class="text-3xl md:text-4xl font-bold" id="editor-title">Panu Design Editor</h1>
        <p class="text-slate-200 text-base md:text-lg font-medium">Editor de Diseños Personalizados</p>
-       <div class="flex items-center space-x-4 mt-2"><span class="text-xs bg-green-500 px-2 py-1 rounded-full">🎨 Editor Activo</span> <span class="text-xs text-slate-300" id="current-product">Remera Básica</span>
+       <div class="flex items-center space-x-4 mt-2"><span class="text-xs bg-green-500 px-2 py-1 rounded-full">🎨 Editor Activo</span> <span class="text-xs text-slate-300" id="current-product">Remera</span>
        </div>
       </div>
      </div>
@@ -393,19 +498,19 @@
        Taza
       </div>
      </div>
-     <div class="product-option" onclick="selectProduct('calendar', this)"><span class="product-icon">📅</span>
+     <div class="product-option" onclick="selectProduct('hoppie', this)"><span class="product-icon">🥤</span>
       <div class="font-semibold">
-       Calendario
+       Hoppie
+      </div>
+     </div>
+     <div class="product-option" onclick="selectProduct('notebook', this)"><span class="product-icon">📓</span>
+      <div class="font-semibold">
+       Cuadernito
       </div>
      </div>
      <div class="product-option" onclick="selectProduct('mousepad', this)"><span class="product-icon">🖱️</span>
       <div class="font-semibold">
        Mouse Pad
-      </div>
-     </div>
-     <div class="product-option" onclick="selectProduct('pillow', this)"><span class="product-icon">🛏️</span>
-      <div class="font-semibold">
-       Almohada
       </div>
      </div>
      <div class="product-option" onclick="selectProduct('cap', this)"><span class="product-icon">🧢</span>
@@ -422,7 +527,7 @@
       <div class="tool-group">
        <div class="tool-label">
         📷 Subir Imagen
-       </div><input type="file" id="image-upload" accept="image/*" multiple class="hidden" onchange="handleImageUpload(event)"> <button onclick="document.getElementById('image-upload').click()" class="btn-primary w-full mb-3"> 📁 Seleccionar Imágenes </button>
+       </div><input type="file" id="image-upload" accept="image/*" multiple class="hidden" onchange="handleImageUpload(event)"> <button onclick="document.getElementById('image-upload').click()" class="btn-primary w-full mb-3"> 📁 Seleccionar Imágenes </button> <button onclick="addTestImage()" class="btn-secondary w-full mb-3 text-sm"> 🧪 Imagen de Prueba </button>
        <div class="text-xs text-gray-500">
         Formatos: JPG, PNG, GIF<br>
          Tamaño máximo: 5MB
@@ -497,7 +602,7 @@
          👕
         </div>
         <div class="font-semibold" id="preview-name">
-         Remera Básica
+         Remera
         </div>
         <div class="text-sm text-gray-600" id="preview-description">
          Remera de algodón 100%
@@ -554,7 +659,7 @@
         // Product templates
         const productTemplates = {
             tshirt: {
-                name: 'Remera Básica',
+                name: 'Remera',
                 icon: '👕',
                 description: 'Remera de algodón 100%',
                 designArea: { x: 180, y: 120, width: 140, height: 180 },
@@ -563,7 +668,7 @@
                           <rect x="180" y="120" width="140" height="180" fill="none" stroke="#007bff" stroke-width="2" stroke-dasharray="5,5" class="design-area"/>`
             },
             mug: {
-                name: 'Taza Personalizada',
+                name: 'Taza',
                 icon: '☕',
                 description: 'Taza de cerámica 11oz',
                 designArea: { x: 200, y: 150, width: 100, height: 120 },
@@ -572,22 +677,30 @@
                           <path d="M330 200 Q350 200 350 220 L350 280 Q350 300 330 300" fill="none" stroke="#ddd" stroke-width="3"/>
                           <rect x="200" y="150" width="100" height="120" fill="none" stroke="#007bff" stroke-width="2" stroke-dasharray="5,5" class="design-area"/>`
             },
-            calendar: {
-                name: 'Calendario Personalizado',
-                icon: '📅',
-                description: 'Calendario de pared A4',
-                designArea: { x: 150, y: 80, width: 200, height: 150 },
-                template: `<rect x="120" y="50" width="260" height="350" rx="10" fill="#f8f9fa" stroke="#ddd" stroke-width="2"/>
-                          <rect x="120" y="50" width="260" height="40" fill="#333"/>
-                          <rect x="150" y="80" width="200" height="150" fill="none" stroke="#007bff" stroke-width="2" stroke-dasharray="5,5" class="design-area"/>
-                          <g fill="#ddd">
-                            <rect x="140" y="250" width="30" height="30" rx="3"/>
-                            <rect x="180" y="250" width="30" height="30" rx="3"/>
-                            <rect x="220" y="250" width="30" height="30" rx="3"/>
-                            <rect x="260" y="250" width="30" height="30" rx="3"/>
-                            <rect x="300" y="250" width="30" height="30" rx="3"/>
-                            <rect x="340" y="250" width="30" height="30" rx="3"/>
-                          </g>`
+            hoppie: {
+                name: 'Hoppie Térmico',
+                icon: '🥤',
+                description: 'Vaso térmico tipo Stanley',
+                designArea: { x: 210, y: 120, width: 80, height: 140 },
+                template: `<ellipse cx="250" cy="380" rx="50" ry="15" fill="#ddd"/>
+                          <rect x="200" y="100" width="100" height="280" rx="8" fill="#f8f9fa" stroke="#ddd" stroke-width="2"/>
+                          <rect x="195" y="95" width="110" height="25" rx="12" fill="#333"/>
+                          <circle cx="320" cy="150" r="8" fill="none" stroke="#ddd" stroke-width="2"/>
+                          <path d="M320 142 L340 150 L320 158" fill="none" stroke="#ddd" stroke-width="2"/>
+                          <rect x="210" y="120" width="80" height="140" fill="none" stroke="#007bff" stroke-width="2" stroke-dasharray="5,5" class="design-area"/>`
+            },
+            notebook: {
+                name: 'Cuadernito',
+                icon: '📓',
+                description: 'Agenda personalizada A5',
+                designArea: { x: 170, y: 100, width: 160, height: 220 },
+                template: `<rect x="150" y="80" width="200" height="280" rx="8" fill="#f8f9fa" stroke="#ddd" stroke-width="2"/>
+                          <rect x="150" y="80" width="200" height="40" fill="#8B4513"/>
+                          <line x1="160" y1="140" x2="340" y2="140" stroke="#ddd" stroke-width="1"/>
+                          <line x1="160" y1="160" x2="340" y2="160" stroke="#ddd" stroke-width="1"/>
+                          <line x1="160" y1="180" x2="340" y2="180" stroke="#ddd" stroke-width="1"/>
+                          <line x1="160" y1="200" x2="340" y2="200" stroke="#ddd" stroke-width="1"/>
+                          <rect x="170" y="100" width="160" height="220" fill="none" stroke="#007bff" stroke-width="2" stroke-dasharray="5,5" class="design-area"/>`
             },
             mousepad: {
                 name: 'Mouse Pad',
@@ -597,16 +710,8 @@
                 template: `<rect x="80" y="130" width="340" height="240" rx="20" fill="#f8f9fa" stroke="#ddd" stroke-width="2"/>
                           <rect x="100" y="150" width="300" height="200" fill="none" stroke="#007bff" stroke-width="2" stroke-dasharray="5,5" class="design-area"/>`
             },
-            pillow: {
-                name: 'Almohada Decorativa',
-                icon: '🛏️',
-                description: 'Almohada 40x40cm',
-                designArea: { x: 150, y: 150, width: 200, height: 200 },
-                template: `<rect x="130" y="130" width="240" height="240" rx="15" fill="#f8f9fa" stroke="#ddd" stroke-width="2"/>
-                          <rect x="150" y="150" width="200" height="200" fill="none" stroke="#007bff" stroke-width="2" stroke-dasharray="5,5" class="design-area"/>`
-            },
             cap: {
-                name: 'Gorra Personalizada',
+                name: 'Gorra',
                 icon: '🧢',
                 description: 'Gorra ajustable',
                 designArea: { x: 200, y: 180, width: 100, height: 80 },
@@ -745,11 +850,17 @@
             img.src = imageSrc;
             img.className = 'user-image';
             img.draggable = false;
+            img.style.position = 'absolute';
+            img.style.cursor = 'move';
+            img.style.border = '2px solid transparent';
+            img.style.transition = 'all 0.2s ease';
+            img.style.zIndex = '50';
             
             img.onload = function() {
                 // Calculate initial size and position
-                const maxWidth = designArea.width * 0.8;
-                const maxHeight = designArea.height * 0.8;
+                const canvasRect = canvas.getBoundingClientRect();
+                const maxWidth = designArea.width * 0.6;
+                const maxHeight = designArea.height * 0.6;
                 
                 let width = this.naturalWidth;
                 let height = this.naturalHeight;
@@ -760,6 +871,14 @@
                     const scaleY = maxHeight / height;
                     const scale = Math.min(scaleX, scaleY);
                     
+                    width *= scale;
+                    height *= scale;
+                }
+                
+                // Ensure minimum size for mobile
+                const minSize = 50;
+                if (width < minSize) {
+                    const scale = minSize / width;
                     width *= scale;
                     height *= scale;
                 }
@@ -783,8 +902,13 @@
                 img.dataset.flipH = 'false';
                 img.dataset.flipV = 'false';
                 
-                // Add click handler
+                // Add touch and click handlers
                 img.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    selectImage(this);
+                });
+                
+                img.addEventListener('touchstart', function(e) {
                     e.stopPropagation();
                     selectImage(this);
                 });
@@ -796,7 +920,11 @@
                 selectImage(img);
                 updateStats();
                 
-                showNotification('Imagen agregada al diseño', 'success');
+                showNotification('✅ Imagen agregada al diseño', 'success');
+            };
+            
+            img.onerror = function() {
+                showNotification('❌ Error al cargar la imagen', 'error');
             };
         }
 
@@ -944,9 +1072,9 @@
             }
             
             if (direction === 'front') {
-                selectedImage.style.zIndex = '9';
+                selectedImage.style.zIndex = '60';
             } else {
-                selectedImage.style.zIndex = '7';
+                selectedImage.style.zIndex = '40';
             }
             
             showNotification(`Imagen movida al ${direction === 'front' ? 'frente' : 'fondo'}`, 'success');
@@ -1147,28 +1275,51 @@
 
         // Touch event handlers
         function handleTouchStart(e) {
-            e.preventDefault();
             const touch = e.touches[0];
-            const mouseEvent = new MouseEvent('mousedown', {
-                clientX: touch.clientX,
-                clientY: touch.clientY
-            });
-            handleMouseDown(mouseEvent);
+            const target = document.elementFromPoint(touch.clientX, touch.clientY);
+            
+            if (target && target.classList.contains('user-image')) {
+                e.preventDefault();
+                selectImage(target);
+                startDrag({ clientX: touch.clientX, clientY: touch.clientY }, target);
+            } else if (target && target.classList.contains('resize-handle')) {
+                e.preventDefault();
+                const img = target.closest('.user-image');
+                if (img) {
+                    startResize({ clientX: touch.clientX, clientY: touch.clientY, preventDefault: () => {} }, img, target.dataset.position);
+                }
+            } else {
+                // Deselect all images
+                document.querySelectorAll('.user-image').forEach(img => {
+                    img.classList.remove('selected');
+                    img.querySelectorAll('.resize-handle').forEach(handle => {
+                        handle.style.display = 'none';
+                    });
+                });
+                selectedImage = null;
+                document.getElementById('image-controls').style.display = 'none';
+            }
         }
 
         function handleTouchMove(e) {
-            e.preventDefault();
-            const touch = e.touches[0];
-            const mouseEvent = new MouseEvent('mousemove', {
-                clientX: touch.clientX,
-                clientY: touch.clientY
-            });
-            handleMouseMove(mouseEvent);
+            if (isDragging || isResizing) {
+                e.preventDefault();
+                const touch = e.touches[0];
+                const mouseEvent = {
+                    clientX: touch.clientX,
+                    clientY: touch.clientY
+                };
+                
+                if (isDragging) {
+                    handleMouseMove(mouseEvent);
+                }
+            }
         }
 
         function handleTouchEnd(e) {
             e.preventDefault();
-            handleMouseUp(e);
+            isDragging = false;
+            isResizing = false;
         }
 
         // Drag and drop handlers
@@ -1272,6 +1423,42 @@
             updatePreview();
         }
 
+        // Add test image
+        function addTestImage() {
+            // Create a simple test image using canvas
+            const canvas = document.createElement('canvas');
+            canvas.width = 200;
+            canvas.height = 200;
+            const ctx = canvas.getContext('2d');
+            
+            // Create gradient background
+            const gradient = ctx.createLinearGradient(0, 0, 200, 200);
+            gradient.addColorStop(0, '#8B4513');
+            gradient.addColorStop(0.5, '#CD853F');
+            gradient.addColorStop(1, '#DEB887');
+            
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, 200, 200);
+            
+            // Add text
+            ctx.fillStyle = 'white';
+            ctx.font = 'bold 24px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('PANU', 100, 80);
+            ctx.font = '16px Arial';
+            ctx.fillText('Diseño', 100, 110);
+            ctx.fillText('Personalizado', 100, 130);
+            
+            // Add decorative elements
+            ctx.strokeStyle = 'white';
+            ctx.lineWidth = 3;
+            ctx.strokeRect(20, 20, 160, 160);
+            
+            // Convert to data URL and add to canvas
+            const dataURL = canvas.toDataURL('image/png');
+            addImageToCanvas(dataURL);
+        }
+
         // Show notification
         function showNotification(message, type = 'info') {
             const notification = document.createElement('div');
@@ -1301,5 +1488,5 @@
             }, 5000);
         }
     </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'991c7c35d61e01ac',t:'MTc2MTAwNDkzNi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'991cac9a770000e0',t:'MTc2MTAwNjkxOC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
