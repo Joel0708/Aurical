@@ -241,6 +241,7 @@
             background: #ddd;
             outline: none;
             -webkit-appearance: none;
+            appearance: none;
         }
         
         .slider::-webkit-slider-thumb {
@@ -454,30 +455,13 @@
       <div>
        <h1 class="text-3xl md:text-4xl font-bold" id="editor-title">Panu Design Editor</h1>
        <p class="text-slate-200 text-base md:text-lg font-medium">Editor de Diseños Personalizados</p>
-       <div class="flex items-center space-x-4 mt-2"><span class="text-xs bg-green-500 px-2 py-1 rounded-full">🎨 Editor Activo</span> <span class="text-xs text-slate-300" id="current-product">Remera</span>
-       </div>
       </div>
      </div>
-     <div class="flex items-center space-x-3 md:space-x-6">
-      <div class="hidden md:flex items-center space-x-4 bg-white bg-opacity-10 rounded-lg px-4 py-2">
-       <div class="text-center">
-        <div class="text-lg font-bold" id="images-count">
-         0
-        </div>
-        <div class="text-xs text-slate-300">
-         Imágenes
-        </div>
-       </div>
-       <div class="text-center">
-        <div class="text-lg font-bold" id="design-status">
-         Nuevo
-        </div>
-        <div class="text-xs text-slate-300">
-         Estado
-        </div>
-       </div>
+     <div class="text-right">
+      <div class="text-sm text-slate-200" id="contact-info"><a href="https://wa.me/595985501874" target="_blank" rel="noopener noreferrer" class="hover:text-green-400 transition-colors">WhatsApp: +595985501874</a> | <a href="mailto:aurical@panu.org?subject=Consulta%20sobre%20Panu%20Design%20Editor" target="_blank" rel="noopener noreferrer" class="hover:text-blue-400 transition-colors">aurical@panu.org</a>
       </div>
-      <div class="flex items-center space-x-2"><span class="text-sm text-slate-300" id="contact-info">WhatsApp: +1234567890</span>
+      <div class="text-xs text-slate-400">
+       Contacto directo
       </div>
      </div>
     </div>
@@ -522,11 +506,11 @@
    <div class="grid grid-cols-1 lg:grid-cols-4 gap-8"><!-- Tools Panel -->
     <div class="lg:col-span-1">
      <div class="tools-panel fade-in">
-      <h3 class="text-xl font-bold text-gray-800 mb-6 flex items-center">🛠️ Herramientas</h3><!-- Image Upload -->
+      <h3 class="text-lg font-bold text-gray-800 mb-4">Herramientas</h3><!-- Image Upload -->
       <div class="tool-group">
        <div class="tool-label">
-        📷 Subir Imagen
-       </div><input type="file" id="image-upload" accept="image/*" multiple class="hidden" onchange="handleImageUpload(event)"> <button onclick="document.getElementById('image-upload').click()" class="btn-primary w-full mb-3"> 📁 Seleccionar Imágenes </button> <button onclick="addTestImage()" class="btn-secondary w-full mb-3 text-sm"> 🧪 Imagen de Prueba </button>
+        Subir Imagen
+       </div><input type="file" id="image-upload" accept="image/*" multiple class="hidden" onchange="handleImageUpload(event)"> <button onclick="document.getElementById('image-upload').click()" class="btn-primary w-full mb-3"> Seleccionar Imágenes </button> <button onclick="addTestImage()" class="btn-secondary w-full mb-3 text-sm"> Imagen de Prueba </button>
        <div class="text-xs text-gray-500">
         Formatos: JPG, PNG, GIF<br>
          Tamaño máximo: 5MB
@@ -534,7 +518,7 @@
       </div><!-- Image Controls -->
       <div class="tool-group" id="image-controls" style="display: none;">
        <div class="tool-label">
-        🎛️ Controles de Imagen
+        Controles de Imagen
        </div>
        <div class="mb-4"><label class="block text-sm font-medium mb-2">Tamaño</label>
         <div class="slider-container"><input type="range" id="size-slider" class="slider" min="10" max="200" value="100" oninput="updateImageSize(this.value)">
@@ -554,28 +538,28 @@
          </div>
         </div>
        </div>
-       <div class="grid grid-cols-2 gap-2 mb-4"><button onclick="flipImage('horizontal')" class="btn-secondary text-sm"> ↔️ Voltear H </button> <button onclick="flipImage('vertical')" class="btn-secondary text-sm"> ↕️ Voltear V </button>
-       </div><button onclick="deleteSelectedImage()" class="btn-secondary w-full text-sm bg-red-500 text-white border-red-500 hover:bg-red-600"> 🗑️ Eliminar Imagen </button>
+       <div class="grid grid-cols-2 gap-2 mb-4"><button onclick="flipImage('horizontal')" class="btn-secondary text-sm"> Voltear H </button> <button onclick="flipImage('vertical')" class="btn-secondary text-sm"> Voltear V </button>
+       </div><button onclick="deleteSelectedImage()" class="btn-secondary w-full text-sm bg-red-500 text-white border-red-500 hover:bg-red-600"> Eliminar Imagen </button>
       </div><!-- Layer Controls -->
       <div class="tool-group">
        <div class="tool-label">
-        📚 Capas
+        Capas
        </div>
-       <div class="grid grid-cols-2 gap-2"><button onclick="moveLayer('front')" class="btn-secondary text-sm"> ⬆️ Al Frente </button> <button onclick="moveLayer('back')" class="btn-secondary text-sm"> ⬇️ Atrás </button>
+       <div class="grid grid-cols-2 gap-2"><button onclick="moveLayer('front')" class="btn-secondary text-sm"> Al Frente </button> <button onclick="moveLayer('back')" class="btn-secondary text-sm"> Atrás </button>
        </div>
       </div><!-- Actions -->
       <div class="tool-group">
        <div class="tool-label">
-        ⚡ Acciones
-       </div><button onclick="clearCanvas()" class="btn-secondary w-full mb-2 text-sm"> 🗑️ Limpiar Todo </button> <button onclick="resetCanvas()" class="btn-secondary w-full mb-2 text-sm"> 🔄 Reiniciar </button> <button onclick="downloadDesign()" class="btn-primary w-full text-sm"> 💾 Descargar Diseño </button>
+        Acciones
+       </div><button onclick="clearCanvas()" class="btn-secondary w-full mb-2 text-sm"> Limpiar Todo </button> <button onclick="resetCanvas()" class="btn-secondary w-full mb-2 text-sm"> Reiniciar </button> <button onclick="downloadDesign()" class="btn-primary w-full text-sm"> 📥 Descargar con Marca de Agua </button>
       </div>
      </div>
     </div><!-- Canvas Area -->
     <div class="lg:col-span-2">
      <div class="glass-card p-6 fade-in">
       <div class="flex items-center justify-between mb-6">
-       <h3 class="text-xl font-bold text-gray-800 flex items-center">🎨 Área de Diseño</h3>
-       <div class="flex items-center space-x-4"><button onclick="zoomCanvas('in')" class="btn-secondary text-sm"> 🔍 Zoom + </button> <button onclick="zoomCanvas('out')" class="btn-secondary text-sm"> 🔍 Zoom - </button> <button onclick="zoomCanvas('fit')" class="btn-secondary text-sm"> 📐 Ajustar </button>
+       <h3 class="text-lg font-bold text-gray-800">Área de Diseño</h3>
+       <div class="flex items-center space-x-4"><button onclick="zoomCanvas('in')" class="btn-secondary text-sm"> Zoom + </button> <button onclick="zoomCanvas('out')" class="btn-secondary text-sm"> Zoom - </button> <button onclick="zoomCanvas('fit')" class="btn-secondary text-sm"> Ajustar </button>
        </div>
       </div>
       <div class="canvas-container">
@@ -587,8 +571,7 @@
         </svg><!-- User images will be added here -->
        </div>
       </div>
-      <div class="mt-4 text-center text-sm text-gray-600">
-       💡 <strong>Tip:</strong> Arrastra y suelta imágenes directamente en el área de diseño
+      <div class="mt-4 text-center text-sm text-gray-600"><strong>Tip:</strong> Arrastra y suelta imágenes directamente en el área de diseño
       </div>
      </div>
     </div><!-- Preview Panel -->
@@ -628,7 +611,16 @@
         <div class="text-sm" id="design-status-info">
          Listo para enviar a nuestros diseñadores
         </div>
-       </div><button onclick="sendToDesigners()" class="btn-primary w-full"> 📤 Enviar a Diseñadores </button>
+       </div>
+       <div class="space-y-3"><button onclick="sendToDesigners()" class="btn-primary w-full"> 📤 Enviar a Diseñadores </button>
+        <div class="text-center">
+         <div class="text-xs text-gray-600 mb-2">
+          Tipo de compra:
+         </div>
+         <div class="flex space-x-2"><button onclick="selectPurchaseType('individual')" id="btn-individual" class="btn-secondary text-xs px-3 py-1 flex-1 bg-blue-100 border-blue-300"> 👤 Individual </button> <button onclick="selectPurchaseType('empresa')" id="btn-empresa" class="btn-secondary text-xs px-3 py-1 flex-1"> 🏢 Empresa </button>
+         </div>
+        </div>
+       </div>
        <div class="text-xs text-gray-500 text-center">
         Nuestros diseñadores profesionales crearán una versión mejorada de tu diseño
        </div>
@@ -648,6 +640,7 @@
         let dragOffset = { x: 0, y: 0 };
         let canvasZoom = 1;
         let images = [];
+        let purchaseType = 'individual'; // 'individual' or 'empresa'
 
         // Configuration
         const defaultConfig = {
@@ -853,7 +846,7 @@
             img.style.cursor = 'move';
             img.style.border = '2px solid transparent';
             img.style.transition = 'all 0.2s ease';
-            img.style.zIndex = '8';
+            img.style.zIndex = '50';
             
             img.onload = function() {
                 // Calculate initial size and position
@@ -1071,9 +1064,9 @@
             }
             
             if (direction === 'front') {
-                selectedImage.style.zIndex = '9';
+                selectedImage.style.zIndex = '60';
             } else {
-                selectedImage.style.zIndex = '7';
+                selectedImage.style.zIndex = '40';
             }
             
             showNotification(`Imagen movida al ${direction === 'front' ? 'frente' : 'fondo'}`, 'success');
@@ -1136,30 +1129,59 @@
             canvas.style.transformOrigin = 'center center';
         }
 
-        // Download design
-        function downloadDesign() {
+        // Generate design with watermark for download
+        function generateDesignWithWatermark(callback) {
             const canvas = document.getElementById('export-canvas');
             const ctx = canvas.getContext('2d');
             
-            canvas.width = 500;
-            canvas.height = 500;
+            canvas.width = 800;
+            canvas.height = 800;
             
             // Draw background
             ctx.fillStyle = '#ffffff';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
             
-            // Draw product template (simplified)
+            // Add header with branding
+            ctx.fillStyle = '#8B4513';
+            ctx.fillRect(0, 0, canvas.width, 80);
+            
+            // Add AURICAL ART design branding
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 28px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('AURICAL ART DESIGN', canvas.width/2, 35);
+            ctx.font = '16px Arial';
+            ctx.fillText('Diseño Personalizado', canvas.width/2, 60);
+            
+            // Add product info
+            ctx.fillStyle = '#333';
+            ctx.font = '18px Arial';
+            ctx.fillText(`Producto: ${productTemplates[currentProduct].name}`, canvas.width/2, 110);
+            ctx.font = '14px Arial';
+            ctx.fillText(`Fecha: ${new Date().toLocaleDateString()}`, canvas.width/2, 130);
+            
+            // Scale design area to fit canvas
             const template = productTemplates[currentProduct];
+            const scale = 1.4;
+            const offsetX = (canvas.width - 500 * scale) / 2;
+            const offsetY = 160;
+            
+            // Draw product template outline
             ctx.strokeStyle = '#ddd';
             ctx.lineWidth = 2;
-            ctx.strokeRect(template.designArea.x, template.designArea.y, template.designArea.width, template.designArea.height);
+            ctx.strokeRect(
+                offsetX + template.designArea.x * scale, 
+                offsetY + template.designArea.y * scale, 
+                template.designArea.width * scale, 
+                template.designArea.height * scale
+            );
             
             // Draw images
             let loadedImages = 0;
             const totalImages = images.length;
             
             if (totalImages === 0) {
-                downloadCanvas(canvas);
+                addWatermarkAndFinish();
                 return;
             }
             
@@ -1167,10 +1189,10 @@
                 const newImg = new Image();
                 newImg.crossOrigin = 'anonymous';
                 newImg.onload = function() {
-                    const x = parseFloat(img.style.left);
-                    const y = parseFloat(img.style.top);
-                    const width = parseFloat(img.style.width);
-                    const height = parseFloat(img.style.height);
+                    const x = parseFloat(img.style.left) * scale + offsetX;
+                    const y = parseFloat(img.style.top) * scale + offsetY;
+                    const width = parseFloat(img.style.width) * scale;
+                    const height = parseFloat(img.style.height) * scale;
                     const rotation = parseFloat(img.dataset.rotation || 0);
                     const opacity = parseFloat(img.style.opacity || 1);
                     
@@ -1178,25 +1200,80 @@
                     ctx.globalAlpha = opacity;
                     ctx.translate(x + width/2, y + height/2);
                     ctx.rotate(rotation * Math.PI / 180);
+                    
+                    // Handle flips
+                    const flipH = img.dataset.flipH === 'true' ? -1 : 1;
+                    const flipV = img.dataset.flipV === 'true' ? -1 : 1;
+                    ctx.scale(flipH, flipV);
+                    
                     ctx.drawImage(this, -width/2, -height/2, width, height);
                     ctx.restore();
                     
                     loadedImages++;
                     if (loadedImages === totalImages) {
-                        downloadCanvas(canvas);
+                        addWatermarkAndFinish();
                     }
                 };
                 newImg.src = img.src;
             });
+            
+            function addWatermarkAndFinish() {
+                // Add diagonal watermark in the center
+                ctx.save();
+                ctx.translate(canvas.width/2, canvas.height/2);
+                ctx.rotate(-Math.PI/6); // -30 degrees
+                ctx.fillStyle = 'rgba(139, 69, 19, 0.15)';
+                ctx.font = 'bold 48px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText('AURICAL ART', 0, -20);
+                ctx.font = 'bold 32px Arial';
+                ctx.fillText('DESIGN', 0, 20);
+                ctx.restore();
+                
+                // Add footer
+                ctx.fillStyle = '#8B4513';
+                ctx.fillRect(0, canvas.height - 60, canvas.width, 60);
+                ctx.fillStyle = '#ffffff';
+                ctx.font = '14px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText('AURICAL ART DESIGN - Diseños Personalizados', canvas.width/2, canvas.height - 35);
+                ctx.fillText('WhatsApp: +595985501874 | aurical@panu.org', canvas.width/2, canvas.height - 15);
+                
+                const dataURL = canvas.toDataURL('image/jpeg', 0.9);
+                callback(dataURL);
+            }
         }
 
-        function downloadCanvas(canvas) {
-            const link = document.createElement('a');
-            link.download = `panu-design-${currentProduct}-${Date.now()}.png`;
-            link.href = canvas.toDataURL();
-            link.click();
+        // Download design with watermark
+        function downloadDesign() {
+            if (images.length === 0) {
+                showNotification('Agrega al menos una imagen antes de descargar', 'error');
+                return;
+            }
             
-            showNotification('Diseño descargado', 'success');
+            generateDesignWithWatermark((dataURL) => {
+                const link = document.createElement('a');
+                link.download = `aurical-design-${currentProduct}-${Date.now()}.jpg`;
+                link.href = dataURL;
+                link.click();
+                
+                showNotification('✅ Diseño descargado con marca de agua', 'success');
+            });
+        }
+
+        // Select purchase type
+        function selectPurchaseType(type) {
+            purchaseType = type;
+            
+            // Update button styles
+            document.getElementById('btn-individual').className = 'btn-secondary text-xs px-3 py-1 flex-1';
+            document.getElementById('btn-empresa').className = 'btn-secondary text-xs px-3 py-1 flex-1';
+            
+            if (type === 'individual') {
+                document.getElementById('btn-individual').className += ' bg-blue-100 border-blue-300';
+            } else {
+                document.getElementById('btn-empresa').className += ' bg-blue-100 border-blue-300';
+            }
         }
 
         // Send to designers
@@ -1206,32 +1283,182 @@
                 return;
             }
             
-            // Create success message
+            if (purchaseType === 'individual') {
+                sendToWhatsApp();
+            } else {
+                showContactOptions();
+            }
+        }
+
+        // Send to WhatsApp (for individual purchases)
+        function sendToWhatsApp() {
+            const designInfo = `
+🎨 *Nuevo Diseño - AURICAL ART DESIGN*
+
+📦 *Producto:* ${productTemplates[currentProduct].name}
+🖼️ *Imágenes:* ${images.length}
+📅 *Fecha:* ${new Date().toLocaleDateString()}
+💼 *Tipo:* Compra Individual
+
+¡Hola! He creado un diseño personalizado usando su editor y me gustaría que sus diseñadores profesionales lo mejoren.
+
+📎 *Voy a enviar el diseño por separado desde mi galería*
+
+¿Podrían ayudarme con una cotización para este producto personalizado?
+
+¡Gracias!
+            `.trim();
+            
+            const whatsappUrl = `https://wa.me/595985501874?text=${encodeURIComponent(designInfo)}`;
+            window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
+            
+            showSuccessMessage('WhatsApp', 'individual');
+        }
+
+        // Show contact options (for empresa purchases)
+        function showContactOptions() {
+            const optionsOverlay = document.createElement('div');
+            optionsOverlay.className = 'fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center';
+            optionsOverlay.innerHTML = `
+                <div class="glass-card p-8 max-w-lg mx-4 text-center">
+                    <div class="text-4xl mb-4">🏢</div>
+                    <h3 class="text-2xl font-bold mb-4">Compra Empresarial</h3>
+                    <p class="text-gray-600 mb-6">Elige cómo prefieres contactarnos para tu cotización empresarial:</p>
+                    
+                    <div class="space-y-4 mb-6">
+                        <button onclick="sendEmpresaWhatsApp(); this.closest('.bg-black').remove();" class="btn-primary w-full flex items-center justify-center space-x-2">
+                            <span>💬</span>
+                            <span>WhatsApp Empresarial</span>
+                        </button>
+                        
+                        <button onclick="sendEmpresaEmail(); this.closest('.bg-black').remove();" class="btn-secondary w-full flex items-center justify-center space-x-2">
+                            <span>📧</span>
+                            <span>Correo Electrónico</span>
+                        </button>
+                    </div>
+                    
+                    <button onclick="this.closest('.bg-black').remove()" class="text-gray-500 hover:text-gray-700 text-sm">
+                        ❌ Cancelar
+                    </button>
+                </div>
+            `;
+            document.body.appendChild(optionsOverlay);
+        }
+
+        // Send empresa WhatsApp
+        function sendEmpresaWhatsApp() {
+            const designInfo = `
+🏢 *Cotización Empresarial - AURICAL ART DESIGN*
+
+📦 *Producto:* ${productTemplates[currentProduct].name}
+🖼️ *Imágenes:* ${images.length}
+📅 *Fecha:* ${new Date().toLocaleDateString()}
+💼 *Tipo:* Compra Empresarial
+
+¡Hola! Represento a una empresa y estamos interesados en un diseño personalizado. He creado un boceto inicial usando su editor y nos gustaría:
+
+• Cotización para producción empresarial
+• Mejoras profesionales del diseño
+• Opciones de cantidad y precios
+• Tiempos de entrega
+
+📎 *Voy a enviar el diseño por separado desde mi galería*
+
+¿Podrían contactarnos para discutir los detalles del proyecto?
+
+¡Gracias!
+            `.trim();
+            
+            const whatsappUrl = `https://wa.me/595985501874?text=${encodeURIComponent(designInfo)}`;
+            window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
+            
+            showSuccessMessage('WhatsApp', 'empresa');
+        }
+
+        // Send empresa email
+        function sendEmpresaEmail() {
+            const subject = `Cotización Empresarial - Diseño ${productTemplates[currentProduct].name}`;
+            const body = `
+Estimado equipo de Panu Design,
+
+Represento a una empresa y estamos interesados en solicitar una cotización para producción empresarial.
+
+DETALLES DEL DISEÑO:
+• Producto: ${productTemplates[currentProduct].name}
+• Número de imágenes: ${images.length}
+• Fecha de solicitud: ${new Date().toLocaleDateString()}
+• Tipo: Compra Empresarial
+
+SOLICITUD:
+Hemos creado un diseño inicial usando su editor y nos gustaría:
+
+1. Cotización para diferentes cantidades de producción
+2. Mejoras profesionales del diseño por parte de sus diseñadores
+3. Opciones de personalización adicionales
+4. Tiempos de entrega estimados
+5. Condiciones comerciales para empresas
+
+Por favor, contáctennos para coordinar una reunión y discutir los detalles del proyecto.
+
+Quedamos atentos a su respuesta.
+
+Saludos cordiales.
+
+---
+Generado desde Panu Design Editor
+${new Date().toLocaleString()}
+            `.trim();
+            
+            const mailtoUrl = `mailto:aurical@panu.org?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+            window.open(mailtoUrl, '_blank', 'noopener,noreferrer');
+            
+            showSuccessMessage('Email', 'empresa');
+        }
+
+        // Show success message
+        function showSuccessMessage(contactMethod, type) {
+            const typeText = type === 'individual' ? 'Individual' : 'Empresarial';
+            const icon = contactMethod === 'WhatsApp' ? '💬' : '📧';
+            
             const successOverlay = document.createElement('div');
             successOverlay.className = 'fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center';
             successOverlay.innerHTML = `
                 <div class="glass-card p-8 max-w-lg mx-4 text-center">
-                    <div class="text-6xl mb-4">🎉</div>
-                    <h3 class="text-2xl font-bold mb-4">¡Diseño Enviado!</h3>
-                    <p class="text-gray-600 mb-6">Tu diseño ha sido enviado a nuestros diseñadores profesionales. Te contactaremos pronto con una propuesta mejorada.</p>
+                    <div class="text-6xl mb-4">${icon}</div>
+                    <h3 class="text-2xl font-bold mb-4">¡Mensaje Enviado!</h3>
+                    <p class="text-gray-600 mb-4">Tu mensaje ${typeText.toLowerCase()} ha sido enviado por ${contactMethod}.</p>
+                    
+                    <div class="bg-orange-50 rounded-lg p-4 mb-6 border-l-4 border-orange-400">
+                        <div class="font-semibold text-orange-800 mb-2">📎 Siguiente Paso:</div>
+                        <div class="text-sm text-orange-700">
+                            <strong>Envía tu diseño desde la galería</strong><br>
+                            El diseño se descargó con marca de agua "AURICAL ART DESIGN".<br>
+                            Compártelo por WhatsApp para completar tu solicitud.
+                        </div>
+                    </div>
+                    
                     <div class="bg-blue-50 rounded-lg p-4 mb-6">
                         <div class="font-semibold text-blue-800">Detalles del envío:</div>
                         <div class="text-sm text-blue-600 mt-2">
                             Producto: ${productTemplates[currentProduct].name}<br>
                             Imágenes: ${images.length}<br>
+                            Tipo: Compra ${typeText}<br>
+                            Método: ${contactMethod}<br>
                             Fecha: ${new Date().toLocaleDateString()}
                         </div>
                     </div>
-                    <button onclick="this.closest('.bg-black').remove()" class="btn-primary">
-                        ✅ Entendido
-                    </button>
+                    
+                    <div class="flex space-x-3">
+                        <button onclick="downloadDesign(); this.closest('.bg-black').remove();" class="btn-secondary flex-1">
+                            📥 Descargar Diseño
+                        </button>
+                        <button onclick="this.closest('.bg-black').remove()" class="btn-primary flex-1">
+                            ✅ Entendido
+                        </button>
+                    </div>
                 </div>
             `;
             document.body.appendChild(successOverlay);
-            
-            // Update design status
-            document.getElementById('design-status').textContent = 'Enviado';
-            document.getElementById('design-status-info').textContent = 'Diseño enviado a nuestros profesionales';
         }
 
         // Mouse event handlers
@@ -1487,5 +1714,5 @@
             }, 5000);
         }
     </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'991ca61a550f00e0',t:'MTc2MTAwNjY1Mi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'991cc90e10eb00e0',t:'MTc2MTAwODA4NC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
