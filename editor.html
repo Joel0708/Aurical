@@ -245,7 +245,6 @@
             background: #ddd;
             outline: none;
             -webkit-appearance: none;
-            appearance: none;
         }
         
         .slider::-webkit-slider-thumb {
@@ -867,7 +866,6 @@
             
             img.onload = function() {
                 // Calculate initial size and position
-                const canvasRect = canvas.getBoundingClientRect();
                 const maxWidth = designArea.width * 0.7;
                 const maxHeight = designArea.height * 0.7;
                 
@@ -893,8 +891,23 @@
                 }
                 
                 // Position perfectly centered in design area
-                const x = designArea.x + (designArea.width - width) / 2;
-                const y = designArea.y + (designArea.height - height) / 2;
+                // Convert SVG coordinates to actual canvas pixels
+                const canvasRect = canvas.getBoundingClientRect();
+                const svgRect = document.getElementById('product-template').getBoundingClientRect();
+                
+                // Calculate scale factor between SVG viewBox and actual rendered size
+                const scaleX = canvasRect.width / 500; // SVG viewBox is 500x500
+                const scaleY = canvasRect.height / 500;
+                
+                // Apply scale to design area coordinates
+                const actualDesignX = designArea.x * scaleX;
+                const actualDesignY = designArea.y * scaleY;
+                const actualDesignWidth = designArea.width * scaleX;
+                const actualDesignHeight = designArea.height * scaleY;
+                
+                // Center in the actual scaled design area
+                const x = actualDesignX + (actualDesignWidth - width) / 2;
+                const y = actualDesignY + (actualDesignHeight - height) / 2;
                 
                 img.style.left = x + 'px';
                 img.style.top = y + 'px';
@@ -1901,5 +1914,5 @@ ${new Date().toLocaleString()}
             }, 5000);
         }
     </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9920ab59e61500e0',t:'MTc2MTA0ODgxMC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9920b1dd169500e0',t:'MTc2MTA0OTA3Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
