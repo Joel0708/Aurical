@@ -93,7 +93,7 @@
         .design-canvas {
             position: relative;
             width: 100%;
-            height: 500px;
+            height: 420px;
             background: white;
             overflow: hidden;
             cursor: crosshair;
@@ -210,13 +210,13 @@
         .tools-panel {
             background: rgba(255, 255, 255, 0.95);
             border-radius: 15px;
-            padding: 20px;
+            padding: 16px;
             box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
         }
         
         .tool-group {
-            margin-bottom: 25px;
-            padding-bottom: 20px;
+            margin-bottom: 20px;
+            padding-bottom: 16px;
             border-bottom: 1px solid rgba(0, 0, 0, 0.1);
         }
         
@@ -280,7 +280,7 @@
         .preview-panel {
             background: white;
             border-radius: 15px;
-            padding: 20px;
+            padding: 16px;
             box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
         }
         
@@ -331,30 +331,30 @@
         
         @media (max-width: 768px) {
             .design-canvas {
-                height: 400px;
+                height: 320px;
             }
             
             .product-selector {
                 grid-template-columns: repeat(3, 1fr);
-                gap: 10px;
+                gap: 8px;
             }
             
             .product-option {
-                padding: 10px;
+                padding: 8px;
             }
             
             .product-icon {
-                font-size: 1.8rem;
-                margin-bottom: 4px;
+                font-size: 1.6rem;
+                margin-bottom: 3px;
             }
             
             .tools-panel {
-                padding: 15px;
+                padding: 12px;
             }
             
             .tool-group {
-                margin-bottom: 20px;
-                padding-bottom: 15px;
+                margin-bottom: 16px;
+                padding-bottom: 12px;
             }
             
             .btn-primary, .btn-secondary {
@@ -459,16 +459,16 @@
  </head>
  <body><!-- Header -->
   <header class="bg-gradient-to-r from-slate-800 via-slate-700 to-slate-600 text-white shadow-2xl">
-   <div class="max-w-7xl mx-auto px-4 py-6">
+   <div class="max-w-7xl mx-auto px-3 py-4">
     <div class="flex items-center justify-between">
-     <div class="flex items-center space-x-6"><img src="https://aurical.org/images/PanuLogo.png" alt="Panu Logo" class="w-16 h-16 rounded-full bg-white p-3 shadow-lg" onerror="this.style.display='none';">
+     <div class="flex items-center space-x-4"><img src="https://aurical.org/images/PanuLogo.png" alt="Panu Logo" class="w-12 h-12 rounded-full bg-white p-2 shadow-lg" onerror="this.style.display='none';">
       <div>
-       <h1 class="text-3xl md:text-4xl font-bold" id="editor-title">Panu Design Editor</h1>
-       <p class="text-slate-200 text-base md:text-lg font-medium">Editor de Diseños Personalizados</p>
+       <h1 class="text-2xl md:text-3xl font-bold" id="editor-title">Panu Design Editor</h1>
+       <p class="text-slate-200 text-sm md:text-base font-medium">Editor de Diseños Personalizados</p>
       </div>
      </div>
      <div class="text-right">
-      <div class="text-sm text-slate-200" id="contact-info"><a href="https://wa.me/595985501874" target="_blank" rel="noopener noreferrer" class="hover:text-green-400 transition-colors">WhatsApp: +595985501874</a> | <a href="mailto:aurical@panu.org?subject=Consulta%20sobre%20Panu%20Design%20Editor" target="_blank" rel="noopener noreferrer" class="hover:text-blue-400 transition-colors">aurical@panu.org</a>
+      <div class="text-xs text-slate-200" id="contact-info"><a href="https://wa.me/595985501874" target="_blank" rel="noopener noreferrer" class="hover:text-green-400 transition-colors">WhatsApp: +595985501874</a> | <a href="mailto:aurical@panu.org?subject=Consulta%20sobre%20Panu%20Design%20Editor" target="_blank" rel="noopener noreferrer" class="hover:text-blue-400 transition-colors">aurical@panu.org</a>
       </div>
       <div class="text-xs text-slate-400">
        Contacto directo
@@ -477,9 +477,9 @@
     </div>
    </div>
   </header><!-- Main Content -->
-  <main class="max-w-7xl mx-auto px-4 py-8"><!-- Product Selection -->
-   <section class="glass-card p-6 mb-8 fade-in">
-    <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">🛍️ Selecciona tu Producto</h2>
+  <main class="max-w-7xl mx-auto px-3 py-6"><!-- Product Selection -->
+   <section class="glass-card p-4 mb-6 fade-in">
+    <h2 class="text-xl font-bold text-gray-800 mb-4 flex items-center">🛍️ Selecciona tu Producto</h2>
     <div class="product-selector">
      <div class="product-option active" onclick="selectProduct('tshirt', this)"><span class="product-icon">👕</span>
       <div class="font-semibold">
@@ -513,10 +513,10 @@
      </div>
     </div>
    </section><!-- Editor Layout -->
-   <div class="grid grid-cols-1 lg:grid-cols-4 gap-8"><!-- Tools Panel -->
+   <div class="grid grid-cols-1 lg:grid-cols-4 gap-6"><!-- Tools Panel -->
     <div class="lg:col-span-1">
      <div class="tools-panel fade-in">
-      <h3 class="text-lg font-bold text-gray-800 mb-4">Herramientas</h3><!-- Image Upload -->
+      <h3 class="text-base font-bold text-gray-800 mb-3">Herramientas</h3><!-- Image Upload -->
       <div class="tool-group">
        <div class="tool-label">
         Subir Imagen
@@ -566,9 +566,9 @@
      </div>
     </div><!-- Canvas Area -->
     <div class="lg:col-span-2">
-     <div class="glass-card p-6 fade-in">
-      <div class="flex items-center justify-between mb-6">
-       <h3 class="text-lg font-bold text-gray-800">Área de Diseño</h3>
+     <div class="glass-card p-4 fade-in">
+      <div class="flex items-center justify-between mb-4">
+       <h3 class="text-base font-bold text-gray-800">Área de Diseño</h3>
        <div class="flex items-center space-x-4"><button onclick="zoomCanvas('in')" class="btn-secondary text-sm"> Zoom + </button> <button onclick="zoomCanvas('out')" class="btn-secondary text-sm"> Zoom - </button> <button onclick="zoomCanvas('fit')" class="btn-secondary text-sm"> Ajustar </button>
        </div>
       </div>
@@ -587,8 +587,8 @@
     </div><!-- Preview Panel -->
     <div class="lg:col-span-1">
      <div class="preview-panel fade-in">
-      <h3 class="text-xl font-bold text-gray-800 mb-6 flex items-center">👁️ Vista Previa</h3>
-      <div class="mb-6">
+      <h3 class="text-base font-bold text-gray-800 mb-4 flex items-center">👁️ Vista Previa</h3>
+      <div class="mb-4">
        <div class="bg-gray-100 rounded-lg p-4 text-center">
         <div class="text-4xl mb-2" id="preview-icon">
          👕
@@ -1645,89 +1645,77 @@ ${new Date().toLocaleString()}
 
         // Touch event handlers
         function handleTouchStart(e) {
-            const touch = e.touches[0];
-            let target = e.target;
+            e.preventDefault();
+            e.stopPropagation();
             
-            // If we didn't get the right target, try elementFromPoint
-            if (!target.classList.contains('user-image') && !target.classList.contains('resize-handle')) {
-                target = document.elementFromPoint(touch.clientX, touch.clientY);
+            const touch = e.touches[0];
+            const canvasRect = document.getElementById('design-canvas').getBoundingClientRect();
+            const touchX = touch.clientX - canvasRect.left;
+            const touchY = touch.clientY - canvasRect.top;
+            
+            // Find the topmost image at touch point with generous padding
+            const images = Array.from(document.querySelectorAll('.user-image')).reverse(); // Check from top to bottom
+            let touchedImage = null;
+            
+            for (let img of images) {
+                const imgRect = {
+                    left: parseFloat(img.style.left) || 0,
+                    top: parseFloat(img.style.top) || 0,
+                    width: parseFloat(img.style.width) || img.offsetWidth,
+                    height: parseFloat(img.style.height) || img.offsetHeight
+                };
+                
+                // Generous touch area - 20px padding on all sides
+                const padding = 20;
+                if (touchX >= imgRect.left - padding && 
+                    touchX <= imgRect.left + imgRect.width + padding && 
+                    touchY >= imgRect.top - padding && 
+                    touchY <= imgRect.top + imgRect.height + padding) {
+                    touchedImage = img;
+                    break;
+                }
             }
             
-            if (target && target.classList.contains('user-image')) {
-                e.preventDefault();
-                e.stopPropagation();
-                selectImage(target);
-                startDrag({ clientX: touch.clientX, clientY: touch.clientY }, target);
-            } else if (target && target.classList.contains('resize-handle')) {
-                e.preventDefault();
-                e.stopPropagation();
-                const img = target.closest('.user-image');
-                if (img) {
-                    startResize({ clientX: touch.clientX, clientY: touch.clientY, preventDefault: () => {} }, img, target.dataset.position);
+            if (touchedImage) {
+                selectImage(touchedImage);
+                startDrag({ clientX: touch.clientX, clientY: touch.clientY }, touchedImage);
+                
+                // Haptic feedback
+                if (navigator.vibrate) {
+                    navigator.vibrate(50);
                 }
             } else {
-                // Check if touch is within any image bounds (more forgiving detection)
-                const images = document.querySelectorAll('.user-image');
-                let touchedImage = null;
-                
-                for (let img of images) {
-                    const rect = img.getBoundingClientRect();
-                    const canvasRect = document.getElementById('design-canvas').getBoundingClientRect();
-                    
-                    // Add padding for easier touch detection
-                    const padding = 10;
-                    if (touch.clientX >= rect.left - padding && 
-                        touch.clientX <= rect.right + padding && 
-                        touch.clientY >= rect.top - padding && 
-                        touch.clientY <= rect.bottom + padding) {
-                        touchedImage = img;
-                        break;
-                    }
-                }
-                
-                if (touchedImage) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    selectImage(touchedImage);
-                    startDrag({ clientX: touch.clientX, clientY: touch.clientY }, touchedImage);
-                } else {
-                    // Deselect all images
-                    document.querySelectorAll('.user-image').forEach(img => {
-                        img.classList.remove('selected');
-                        img.querySelectorAll('.resize-handle').forEach(handle => {
-                            handle.style.display = 'none';
-                        });
+                // Deselect all images
+                document.querySelectorAll('.user-image').forEach(img => {
+                    img.classList.remove('selected');
+                    img.querySelectorAll('.resize-handle').forEach(handle => {
+                        handle.style.display = 'none';
                     });
-                    selectedImage = null;
-                    document.getElementById('image-controls').style.display = 'none';
-                }
+                });
+                selectedImage = null;
+                document.getElementById('image-controls').style.display = 'none';
             }
         }
 
         function handleTouchMove(e) {
-            if (isDragging || isResizing) {
+            if (isDragging && selectedImage) {
                 e.preventDefault();
                 e.stopPropagation();
-                const touch = e.touches[0];
                 
-                if (isDragging && selectedImage) {
-                    const rect = document.getElementById('design-canvas').getBoundingClientRect();
-                    const x = touch.clientX - rect.left - dragOffset.x;
-                    const y = touch.clientY - rect.top - dragOffset.y;
-                    
-                    // Smooth movement with requestAnimationFrame
-                    requestAnimationFrame(() => {
-                        if (selectedImage) {
-                            selectedImage.style.left = x + 'px';
-                            selectedImage.style.top = y + 'px';
-                        }
-                    });
-                }
+                const touch = e.touches[0];
+                const rect = document.getElementById('design-canvas').getBoundingClientRect();
+                const x = touch.clientX - rect.left - dragOffset.x;
+                const y = touch.clientY - rect.top - dragOffset.y;
+                
+                // Direct update for better responsiveness
+                selectedImage.style.left = x + 'px';
+                selectedImage.style.top = y + 'px';
             }
         }
 
         function handleTouchEnd(e) {
             e.preventDefault();
+            e.stopPropagation();
             isDragging = false;
             isResizing = false;
         }
@@ -1898,5 +1886,5 @@ ${new Date().toLocaleString()}
             }, 5000);
         }
     </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'991cdbdd44cf1161',t:'MTc2MTAwODg1NC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'992053519310116c',t:'MTc2MTA0NTIwNS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
