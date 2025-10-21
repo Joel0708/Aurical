@@ -543,6 +543,10 @@
         
         // Initialize Supabase client
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+// 🔒 Verificar sesión antes de mostrar el panel
+if (localStorage.getItem('panu_admin_login') !== 'true') {
+  window.location.href = 'login.html'; // redirige al login
+}
 
         // Global variables
         let currentProducts = [];
