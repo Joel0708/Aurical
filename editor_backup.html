@@ -93,7 +93,7 @@
         .design-canvas {
             position: relative;
             width: 100%;
-            height: 500px;
+            height: 420px;
             background: white;
             overflow: hidden;
             cursor: crosshair;
@@ -122,6 +122,10 @@
             border: 2px solid transparent;
             transition: all 0.2s ease;
             z-index: 15;
+            touch-action: none;
+            user-select: none;
+            -webkit-user-select: none;
+            -webkit-touch-callout: none;
         }
         
         .user-image:hover {
@@ -206,13 +210,13 @@
         .tools-panel {
             background: rgba(255, 255, 255, 0.95);
             border-radius: 15px;
-            padding: 20px;
+            padding: 16px;
             box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
         }
         
         .tool-group {
-            margin-bottom: 25px;
-            padding-bottom: 20px;
+            margin-bottom: 20px;
+            padding-bottom: 16px;
             border-bottom: 1px solid rgba(0, 0, 0, 0.1);
         }
         
@@ -276,7 +280,7 @@
         .preview-panel {
             background: white;
             border-radius: 15px;
-            padding: 20px;
+            padding: 16px;
             box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
         }
         
@@ -327,30 +331,30 @@
         
         @media (max-width: 768px) {
             .design-canvas {
-                height: 400px;
+                height: 320px;
             }
             
             .product-selector {
                 grid-template-columns: repeat(3, 1fr);
-                gap: 10px;
+                gap: 8px;
             }
             
             .product-option {
-                padding: 10px;
+                padding: 8px;
             }
             
             .product-icon {
-                font-size: 1.8rem;
-                margin-bottom: 4px;
+                font-size: 1.6rem;
+                margin-bottom: 3px;
             }
             
             .tools-panel {
-                padding: 15px;
+                padding: 12px;
             }
             
             .tool-group {
-                margin-bottom: 20px;
-                padding-bottom: 15px;
+                margin-bottom: 16px;
+                padding-bottom: 12px;
             }
             
             .btn-primary, .btn-secondary {
@@ -360,34 +364,40 @@
             }
             
             .resize-handle {
-                width: 16px;
-                height: 16px;
+                width: 20px;
+                height: 20px;
                 border: 3px solid white;
+                touch-action: none;
             }
             
             .resize-handle.se {
-                bottom: -8px;
-                right: -8px;
+                bottom: -10px;
+                right: -10px;
             }
             
             .resize-handle.sw {
-                bottom: -8px;
-                left: -8px;
+                bottom: -10px;
+                left: -10px;
             }
             
             .resize-handle.ne {
-                top: -8px;
-                right: -8px;
+                top: -10px;
+                right: -10px;
             }
             
             .resize-handle.nw {
-                top: -8px;
-                left: -8px;
+                top: -10px;
+                left: -10px;
             }
             
             .user-image {
-                min-width: 40px;
-                min-height: 40px;
+                min-width: 60px;
+                min-height: 60px;
+            }
+            
+            .design-canvas {
+                touch-action: none;
+                -webkit-overflow-scrolling: touch;
             }
             
             .slider {
@@ -449,16 +459,16 @@
  </head>
  <body><!-- Header -->
   <header class="bg-gradient-to-r from-slate-800 via-slate-700 to-slate-600 text-white shadow-2xl">
-   <div class="max-w-7xl mx-auto px-4 py-6">
+   <div class="max-w-7xl mx-auto px-3 py-4">
     <div class="flex items-center justify-between">
-     <div class="flex items-center space-x-6"><img src="https://aurical.org/images/PanuLogo.png" alt="Panu Logo" class="w-16 h-16 rounded-full bg-white p-3 shadow-lg" onerror="this.style.display='none';">
+     <div class="flex items-center space-x-4"><a href="panu.html" class="btn-primary text-sm px-4 py-2 flex items-center space-x-2 hover:scale-105 transition-transform no-underline"> <span>🏠</span> <span class="hidden sm:inline">Inicio</span> </a> <img src="https://aurical.org/images/PanuLogo.png" alt="Panu Logo" class="w-12 h-12 rounded-full bg-white p-2 shadow-lg" onerror="this.style.display='none';">
       <div>
-       <h1 class="text-3xl md:text-4xl font-bold" id="editor-title">Panu Design Editor</h1>
-       <p class="text-slate-200 text-base md:text-lg font-medium">Editor de Diseños Personalizados</p>
+       <h1 class="text-2xl md:text-3xl font-bold" id="editor-title">Panu Design Editor</h1>
+       <p class="text-slate-200 text-sm md:text-base font-medium">Editor de Diseños Personalizados</p>
       </div>
      </div>
      <div class="text-right">
-      <div class="text-sm text-slate-200" id="contact-info"><a href="https://wa.me/595985501874" target="_blank" rel="noopener noreferrer" class="hover:text-green-400 transition-colors">WhatsApp: +595985501874</a> | <a href="mailto:aurical@panu.org?subject=Consulta%20sobre%20Panu%20Design%20Editor" target="_blank" rel="noopener noreferrer" class="hover:text-blue-400 transition-colors">aurical@panu.org</a>
+      <div class="text-xs text-slate-200" id="contact-info"><a href="https://wa.me/595985501874" target="_blank" rel="noopener noreferrer" class="hover:text-green-400 transition-colors">WhatsApp: +595985501874</a> | <a href="mailto:aurical@panu.org?subject=Consulta%20sobre%20Panu%20Design%20Editor" target="_blank" rel="noopener noreferrer" class="hover:text-blue-400 transition-colors">aurical@panu.org</a>
       </div>
       <div class="text-xs text-slate-400">
        Contacto directo
@@ -467,9 +477,9 @@
     </div>
    </div>
   </header><!-- Main Content -->
-  <main class="max-w-7xl mx-auto px-4 py-8"><!-- Product Selection -->
-   <section class="glass-card p-6 mb-8 fade-in">
-    <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">🛍️ Selecciona tu Producto</h2>
+  <main class="max-w-7xl mx-auto px-3 py-6"><!-- Product Selection -->
+   <section class="glass-card p-4 mb-6 fade-in">
+    <h2 class="text-xl font-bold text-gray-800 mb-4 flex items-center">🛍️ Selecciona tu Producto</h2>
     <div class="product-selector">
      <div class="product-option active" onclick="selectProduct('tshirt', this)"><span class="product-icon">👕</span>
       <div class="font-semibold">
@@ -503,10 +513,10 @@
      </div>
     </div>
    </section><!-- Editor Layout -->
-   <div class="grid grid-cols-1 lg:grid-cols-4 gap-8"><!-- Tools Panel -->
+   <div class="grid grid-cols-1 lg:grid-cols-4 gap-6"><!-- Tools Panel -->
     <div class="lg:col-span-1">
      <div class="tools-panel fade-in">
-      <h3 class="text-lg font-bold text-gray-800 mb-4">Herramientas</h3><!-- Image Upload -->
+      <h3 class="text-base font-bold text-gray-800 mb-3">Herramientas</h3><!-- Image Upload -->
       <div class="tool-group">
        <div class="tool-label">
         Subir Imagen
@@ -551,14 +561,14 @@
       <div class="tool-group">
        <div class="tool-label">
         Acciones
-       </div><button onclick="clearCanvas()" class="btn-secondary w-full mb-2 text-sm"> Limpiar Todo </button> <button onclick="resetCanvas()" class="btn-secondary w-full mb-2 text-sm"> Reiniciar </button> <button onclick="downloadDesign()" class="btn-primary w-full text-sm"> 📥 Descargar con Marca de Agua </button>
+       </div><button onclick="clearCanvas()" class="btn-secondary w-full mb-2 text-sm"> Limpiar Todo </button> <button onclick="resetCanvas()" class="btn-secondary w-full mb-2 text-sm"> Reiniciar </button> <button onclick="downloadDesign()" class="btn-primary w-full text-sm"> 📥 Descargar Diseño </button>
       </div>
      </div>
     </div><!-- Canvas Area -->
     <div class="lg:col-span-2">
-     <div class="glass-card p-6 fade-in">
-      <div class="flex items-center justify-between mb-6">
-       <h3 class="text-lg font-bold text-gray-800">Área de Diseño</h3>
+     <div class="glass-card p-4 fade-in">
+      <div class="flex items-center justify-between mb-4">
+       <h3 class="text-base font-bold text-gray-800">Área de Diseño</h3>
        <div class="flex items-center space-x-4"><button onclick="zoomCanvas('in')" class="btn-secondary text-sm"> Zoom + </button> <button onclick="zoomCanvas('out')" class="btn-secondary text-sm"> Zoom - </button> <button onclick="zoomCanvas('fit')" class="btn-secondary text-sm"> Ajustar </button>
        </div>
       </div>
@@ -571,14 +581,21 @@
         </svg><!-- User images will be added here -->
        </div>
       </div>
-      <div class="mt-4 text-center text-sm text-gray-600"><strong>Tip:</strong> Arrastra y suelta imágenes directamente en el área de diseño
+      <div class="mt-4 text-center text-sm text-gray-600">
+       <div class="mb-2"><strong>💻 PC:</strong> Arrastra y suelta imágenes directamente en el área de diseño
+       </div>
+       <div class="mb-3"><strong>📱 Móvil:</strong> Para mover imágenes, desliza tu dedo <em>cerca</em> de la imagen (no directamente sobre ella)
+       </div>
+       <div class="text-xs text-gray-500 border-t pt-2"><strong>Panu Design Editor v1.066</strong><br>
+         Built by <strong>Joel Páez</strong> and <strong>Ren_q (Alexa Ferreira)</strong>
+       </div>
       </div>
      </div>
     </div><!-- Preview Panel -->
     <div class="lg:col-span-1">
      <div class="preview-panel fade-in">
-      <h3 class="text-xl font-bold text-gray-800 mb-6 flex items-center">👁️ Vista Previa</h3>
-      <div class="mb-6">
+      <h3 class="text-base font-bold text-gray-800 mb-4 flex items-center">👁️ Vista Previa</h3>
+      <div class="mb-4">
        <div class="bg-gray-100 rounded-lg p-4 text-center">
         <div class="text-4xl mb-2" id="preview-icon">
          👕
@@ -850,9 +867,8 @@
             
             img.onload = function() {
                 // Calculate initial size and position
-                const canvasRect = canvas.getBoundingClientRect();
-                const maxWidth = designArea.width * 0.6;
-                const maxHeight = designArea.height * 0.6;
+                const maxWidth = designArea.width * 0.7;
+                const maxHeight = designArea.height * 0.7;
                 
                 let width = this.naturalWidth;
                 let height = this.naturalHeight;
@@ -868,16 +884,31 @@
                 }
                 
                 // Ensure minimum size for mobile
-                const minSize = 50;
+                const minSize = 60;
                 if (width < minSize) {
                     const scale = minSize / width;
                     width *= scale;
                     height *= scale;
                 }
                 
-                // Position in center of design area
-                const x = designArea.x + (designArea.width - width) / 2;
-                const y = designArea.y + (designArea.height - height) / 2;
+                // Position perfectly centered in design area
+                // Convert SVG coordinates to actual canvas pixels
+                const canvasRect = canvas.getBoundingClientRect();
+                const svgRect = document.getElementById('product-template').getBoundingClientRect();
+                
+                // Calculate scale factor between SVG viewBox and actual rendered size
+                const scaleX = canvasRect.width / 500; // SVG viewBox is 500x500
+                const scaleY = canvasRect.height / 500;
+                
+                // Apply scale to design area coordinates
+                const actualDesignX = designArea.x * scaleX;
+                const actualDesignY = designArea.y * scaleY;
+                const actualDesignWidth = designArea.width * scaleX;
+                const actualDesignHeight = designArea.height * scaleY;
+                
+                // Center in the actual scaled design area
+                const x = actualDesignX + (actualDesignWidth - width) / 2;
+                const y = actualDesignY + (actualDesignHeight - height) / 2;
                 
                 img.style.left = x + 'px';
                 img.style.top = y + 'px';
@@ -957,6 +988,11 @@
             selectedImage = img;
             showImageControls();
             updateImageControls();
+            
+            // Haptic feedback for mobile
+            if (navigator.vibrate) {
+                navigator.vibrate(50);
+            }
         }
 
         // Show image controls
@@ -1137,51 +1173,25 @@
             canvas.width = 800;
             canvas.height = 800;
             
-            // Draw background
+            // Draw clean white background
             ctx.fillStyle = '#ffffff';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
             
-            // Add header with branding
-            ctx.fillStyle = '#8B4513';
-            ctx.fillRect(0, 0, canvas.width, 80);
-            
-            // Add AURICAL ART design branding
-            ctx.fillStyle = '#ffffff';
-            ctx.font = 'bold 28px Arial';
-            ctx.textAlign = 'center';
-            ctx.fillText('AURICAL ART DESIGN', canvas.width/2, 35);
-            ctx.font = '16px Arial';
-            ctx.fillText('Diseño Personalizado', canvas.width/2, 60);
-            
-            // Add product info
-            ctx.fillStyle = '#333';
-            ctx.font = '18px Arial';
-            ctx.fillText(`Producto: ${productTemplates[currentProduct].name}`, canvas.width/2, 110);
-            ctx.font = '14px Arial';
-            ctx.fillText(`Fecha: ${new Date().toLocaleDateString()}`, canvas.width/2, 130);
-            
-            // Scale design area to fit canvas
+            // Scale design area to fit canvas (centered)
             const template = productTemplates[currentProduct];
             const scale = 1.4;
             const offsetX = (canvas.width - 500 * scale) / 2;
-            const offsetY = 160;
+            const offsetY = (canvas.height - 500 * scale) / 2;
             
-            // Draw product template outline
-            ctx.strokeStyle = '#ddd';
-            ctx.lineWidth = 2;
-            ctx.strokeRect(
-                offsetX + template.designArea.x * scale, 
-                offsetY + template.designArea.y * scale, 
-                template.designArea.width * scale, 
-                template.designArea.height * scale
-            );
+            // Draw product template shape (actual product silhouette)
+            drawProductTemplate(ctx, template, scale, offsetX, offsetY);
             
-            // Draw images
+            // Draw user images
             let loadedImages = 0;
             const totalImages = images.length;
             
             if (totalImages === 0) {
-                addWatermarkAndFinish();
+                addCreditsAndFinish();
                 return;
             }
             
@@ -1211,53 +1221,186 @@
                     
                     loadedImages++;
                     if (loadedImages === totalImages) {
-                        addWatermarkAndFinish();
+                        addCreditsAndFinish();
+                    }
+                };
+                newImg.onerror = function() {
+                    console.error('Error loading image for export');
+                    loadedImages++;
+                    if (loadedImages === totalImages) {
+                        addCreditsAndFinish();
                     }
                 };
                 newImg.src = img.src;
             });
             
-            function addWatermarkAndFinish() {
-                // Add diagonal watermark in the center
-                ctx.save();
-                ctx.translate(canvas.width/2, canvas.height/2);
-                ctx.rotate(-Math.PI/6); // -30 degrees
-                ctx.fillStyle = 'rgba(139, 69, 19, 0.15)';
-                ctx.font = 'bold 48px Arial';
-                ctx.textAlign = 'center';
-                ctx.fillText('AURICAL ART', 0, -20);
-                ctx.font = 'bold 32px Arial';
-                ctx.fillText('DESIGN', 0, 20);
-                ctx.restore();
+            function addCreditsAndFinish() {
+                // Add small credits in bottom right corner
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
+                ctx.font = '12px Arial';
+                ctx.textAlign = 'right';
+                ctx.fillText('Panu Design Editor', canvas.width - 15, canvas.height - 15);
                 
-                // Add footer
-                ctx.fillStyle = '#8B4513';
-                ctx.fillRect(0, canvas.height - 60, canvas.width, 60);
-                ctx.fillStyle = '#ffffff';
-                ctx.font = '14px Arial';
-                ctx.textAlign = 'center';
-                ctx.fillText('AURICAL ART DESIGN - Diseños Personalizados', canvas.width/2, canvas.height - 35);
-                ctx.fillText('WhatsApp: +595985501874 | aurical@panu.org', canvas.width/2, canvas.height - 15);
-                
-                const dataURL = canvas.toDataURL('image/jpeg', 0.9);
+                const dataURL = canvas.toDataURL('image/jpeg', 0.95);
                 callback(dataURL);
             }
         }
+        
+        // Draw product template on canvas
+        function drawProductTemplate(ctx, template, scale, offsetX, offsetY) {
+            ctx.save();
+            ctx.translate(offsetX, offsetY);
+            ctx.scale(scale, scale);
+            
+            // Set common styles
+            ctx.fillStyle = '#f8f9fa';
+            ctx.strokeStyle = '#ddd';
+            ctx.lineWidth = 2;
+            
+            // Draw based on product type
+            switch (currentProduct) {
+                case 'tshirt':
+                    // T-shirt shape
+                    ctx.beginPath();
+                    ctx.moveTo(150, 100);
+                    ctx.lineTo(150, 80);
+                    ctx.quadraticCurveTo(150, 70, 160, 70);
+                    ctx.lineTo(340, 70);
+                    ctx.quadraticCurveTo(350, 70, 350, 80);
+                    ctx.lineTo(350, 100);
+                    ctx.lineTo(380, 120);
+                    ctx.lineTo(380, 180);
+                    ctx.lineTo(360, 180);
+                    ctx.lineTo(360, 450);
+                    ctx.quadraticCurveTo(360, 460, 350, 460);
+                    ctx.lineTo(150, 460);
+                    ctx.quadraticCurveTo(140, 460, 140, 450);
+                    ctx.lineTo(140, 180);
+                    ctx.lineTo(120, 180);
+                    ctx.lineTo(120, 120);
+                    ctx.closePath();
+                    ctx.fill();
+                    ctx.stroke();
+                    break;
+                    
+                case 'mug':
+                    // Mug base shadow
+                    ctx.fillStyle = '#ddd';
+                    ctx.beginPath();
+                    ctx.ellipse(250, 350, 80, 20, 0, 0, 2 * Math.PI);
+                    ctx.fill();
+                    
+                    // Mug body
+                    ctx.fillStyle = '#f8f9fa';
+                    ctx.fillRect(170, 150, 160, 200);
+                    ctx.strokeRect(170, 150, 160, 200);
+                    
+                    // Mug handle
+                    ctx.beginPath();
+                    ctx.moveTo(330, 200);
+                    ctx.quadraticCurveTo(350, 200, 350, 220);
+                    ctx.lineTo(350, 280);
+                    ctx.quadraticCurveTo(350, 300, 330, 300);
+                    ctx.stroke();
+                    break;
+                    
+                case 'hoppie':
+                    // Hoppie base shadow
+                    ctx.fillStyle = '#ddd';
+                    ctx.beginPath();
+                    ctx.ellipse(250, 380, 50, 15, 0, 0, 2 * Math.PI);
+                    ctx.fill();
+                    
+                    // Hoppie body
+                    ctx.fillStyle = '#f8f9fa';
+                    ctx.fillRect(200, 100, 100, 280);
+                    ctx.strokeRect(200, 100, 100, 280);
+                    
+                    // Hoppie lid
+                    ctx.fillStyle = '#333';
+                    ctx.fillRect(195, 95, 110, 25);
+                    
+                    // Straw hole
+                    ctx.strokeStyle = '#ddd';
+                    ctx.beginPath();
+                    ctx.arc(320, 150, 8, 0, 2 * Math.PI);
+                    ctx.stroke();
+                    break;
+                    
+                case 'notebook':
+                    // Notebook cover
+                    ctx.fillStyle = '#f8f9fa';
+                    ctx.fillRect(150, 80, 200, 280);
+                    ctx.strokeRect(150, 80, 200, 280);
+                    
+                    // Notebook binding
+                    ctx.fillStyle = '#8B4513';
+                    ctx.fillRect(150, 80, 200, 40);
+                    
+                    // Lines
+                    ctx.strokeStyle = '#ddd';
+                    ctx.lineWidth = 1;
+                    for (let i = 140; i <= 200; i += 20) {
+                        ctx.beginPath();
+                        ctx.moveTo(160, i);
+                        ctx.lineTo(340, i);
+                        ctx.stroke();
+                    }
+                    break;
+                    
+                case 'mousepad':
+                    // Mousepad
+                    ctx.fillStyle = '#f8f9fa';
+                    ctx.beginPath();
+                    ctx.roundRect(80, 130, 340, 240, 20);
+                    ctx.fill();
+                    ctx.stroke();
+                    break;
+                    
+                case 'cap':
+                    // Cap base shadow
+                    ctx.fillStyle = '#ddd';
+                    ctx.beginPath();
+                    ctx.ellipse(250, 350, 120, 30, 0, 0, 2 * Math.PI);
+                    ctx.fill();
+                    
+                    // Cap body
+                    ctx.fillStyle = '#f8f9fa';
+                    ctx.beginPath();
+                    ctx.moveTo(130, 250);
+                    ctx.quadraticCurveTo(130, 150, 250, 150);
+                    ctx.quadraticCurveTo(370, 150, 370, 250);
+                    ctx.lineTo(370, 300);
+                    ctx.quadraticCurveTo(370, 320, 350, 320);
+                    ctx.lineTo(150, 320);
+                    ctx.quadraticCurveTo(130, 320, 130, 300);
+                    ctx.closePath();
+                    ctx.fill();
+                    ctx.stroke();
+                    break;
+            }
+            
+            ctx.restore();
+        }
 
-        // Download design with watermark
+        // Download design preview (manual download)
         function downloadDesign() {
             if (images.length === 0) {
                 showNotification('Agrega al menos una imagen antes de descargar', 'error');
                 return;
             }
             
+            showNotification('📥 Generando diseño...', 'info');
+            
             generateDesignWithWatermark((dataURL) => {
                 const link = document.createElement('a');
-                link.download = `aurical-design-${currentProduct}-${Date.now()}.jpg`;
+                link.download = `panu-design-${currentProduct}-${Date.now()}.jpg`;
                 link.href = dataURL;
+                document.body.appendChild(link);
                 link.click();
+                document.body.removeChild(link);
                 
-                showNotification('✅ Diseño descargado con marca de agua', 'success');
+                showNotification('✅ Diseño descargado correctamente', 'success');
             });
         }
 
@@ -1292,7 +1435,20 @@
 
         // Send to WhatsApp (for individual purchases)
         function sendToWhatsApp() {
-            const designInfo = `
+            showNotification('📥 Descargando diseño automáticamente...', 'info');
+            
+            // First download the design
+            generateDesignWithWatermark((dataURL) => {
+                const link = document.createElement('a');
+                link.download = `panu-design-${currentProduct}-${Date.now()}.jpg`;
+                link.href = dataURL;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                
+                // Then open WhatsApp after a short delay
+                setTimeout(() => {
+                    const designInfo = `
 🎨 *Nuevo Diseño - AURICAL ART DESIGN*
 
 📦 *Producto:* ${productTemplates[currentProduct].name}
@@ -1302,17 +1458,19 @@
 
 ¡Hola! He creado un diseño personalizado usando su editor y me gustaría que sus diseñadores profesionales lo mejoren.
 
-📎 *Voy a enviar el diseño por separado desde mi galería*
+📎 *El diseño se descargó automáticamente en mi dispositivo*
 
 ¿Podrían ayudarme con una cotización para este producto personalizado?
 
 ¡Gracias!
-            `.trim();
-            
-            const whatsappUrl = `https://wa.me/595985501874?text=${encodeURIComponent(designInfo)}`;
-            window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
-            
-            showSuccessMessage('WhatsApp', 'individual');
+                    `.trim();
+                    
+                    const whatsappUrl = `https://wa.me/595985501874?text=${encodeURIComponent(designInfo)}`;
+                    window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
+                    
+                    showSuccessMessage('WhatsApp', 'individual');
+                }, 1000);
+            });
         }
 
         // Show contact options (for empresa purchases)
@@ -1347,7 +1505,20 @@
 
         // Send empresa WhatsApp
         function sendEmpresaWhatsApp() {
-            const designInfo = `
+            showNotification('📥 Descargando diseño automáticamente...', 'info');
+            
+            // First download the design
+            generateDesignWithWatermark((dataURL) => {
+                const link = document.createElement('a');
+                link.download = `panu-design-empresa-${currentProduct}-${Date.now()}.jpg`;
+                link.href = dataURL;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                
+                // Then open WhatsApp after a short delay
+                setTimeout(() => {
+                    const designInfo = `
 🏢 *Cotización Empresarial - AURICAL ART DESIGN*
 
 📦 *Producto:* ${productTemplates[currentProduct].name}
@@ -1362,17 +1533,19 @@
 • Opciones de cantidad y precios
 • Tiempos de entrega
 
-📎 *Voy a enviar el diseño por separado desde mi galería*
+📎 *El diseño se descargó automáticamente en mi dispositivo*
 
 ¿Podrían contactarnos para discutir los detalles del proyecto?
 
 ¡Gracias!
-            `.trim();
-            
-            const whatsappUrl = `https://wa.me/595985501874?text=${encodeURIComponent(designInfo)}`;
-            window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
-            
-            showSuccessMessage('WhatsApp', 'empresa');
+                    `.trim();
+                    
+                    const whatsappUrl = `https://wa.me/595985501874?text=${encodeURIComponent(designInfo)}`;
+                    window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
+                    
+                    showSuccessMessage('WhatsApp', 'empresa');
+                }, 1000);
+            });
         }
 
         // Send empresa email
@@ -1432,7 +1605,7 @@ ${new Date().toLocaleString()}
                         <div class="font-semibold text-orange-800 mb-2">📎 Siguiente Paso:</div>
                         <div class="text-sm text-orange-700">
                             <strong>Envía tu diseño desde la galería</strong><br>
-                            El diseño se descargó con marca de agua "AURICAL ART DESIGN".<br>
+                            El diseño se descargó automáticamente en tu dispositivo.<br>
                             Compártelo por WhatsApp para completar tu solicitud.
                         </div>
                     </div>
@@ -1501,18 +1674,44 @@ ${new Date().toLocaleString()}
 
         // Touch event handlers
         function handleTouchStart(e) {
-            const touch = e.touches[0];
-            const target = document.elementFromPoint(touch.clientX, touch.clientY);
+            e.preventDefault();
+            e.stopPropagation();
             
-            if (target && target.classList.contains('user-image')) {
-                e.preventDefault();
-                selectImage(target);
-                startDrag({ clientX: touch.clientX, clientY: touch.clientY }, target);
-            } else if (target && target.classList.contains('resize-handle')) {
-                e.preventDefault();
-                const img = target.closest('.user-image');
-                if (img) {
-                    startResize({ clientX: touch.clientX, clientY: touch.clientY, preventDefault: () => {} }, img, target.dataset.position);
+            const touch = e.touches[0];
+            const canvasRect = document.getElementById('design-canvas').getBoundingClientRect();
+            const touchX = touch.clientX - canvasRect.left;
+            const touchY = touch.clientY - canvasRect.top;
+            
+            // Find the topmost image at touch point with generous padding
+            const images = Array.from(document.querySelectorAll('.user-image')).reverse(); // Check from top to bottom
+            let touchedImage = null;
+            
+            for (let img of images) {
+                const imgRect = {
+                    left: parseFloat(img.style.left) || 0,
+                    top: parseFloat(img.style.top) || 0,
+                    width: parseFloat(img.style.width) || img.offsetWidth,
+                    height: parseFloat(img.style.height) || img.offsetHeight
+                };
+                
+                // Generous touch area - 20px padding on all sides
+                const padding = 20;
+                if (touchX >= imgRect.left - padding && 
+                    touchX <= imgRect.left + imgRect.width + padding && 
+                    touchY >= imgRect.top - padding && 
+                    touchY <= imgRect.top + imgRect.height + padding) {
+                    touchedImage = img;
+                    break;
+                }
+            }
+            
+            if (touchedImage) {
+                selectImage(touchedImage);
+                startDrag({ clientX: touch.clientX, clientY: touch.clientY }, touchedImage);
+                
+                // Haptic feedback
+                if (navigator.vibrate) {
+                    navigator.vibrate(50);
                 }
             } else {
                 // Deselect all images
@@ -1528,22 +1727,24 @@ ${new Date().toLocaleString()}
         }
 
         function handleTouchMove(e) {
-            if (isDragging || isResizing) {
+            if (isDragging && selectedImage) {
                 e.preventDefault();
-                const touch = e.touches[0];
-                const mouseEvent = {
-                    clientX: touch.clientX,
-                    clientY: touch.clientY
-                };
+                e.stopPropagation();
                 
-                if (isDragging) {
-                    handleMouseMove(mouseEvent);
-                }
+                const touch = e.touches[0];
+                const rect = document.getElementById('design-canvas').getBoundingClientRect();
+                const x = touch.clientX - rect.left - dragOffset.x;
+                const y = touch.clientY - rect.top - dragOffset.y;
+                
+                // Direct update for better responsiveness
+                selectedImage.style.left = x + 'px';
+                selectedImage.style.top = y + 'px';
             }
         }
 
         function handleTouchEnd(e) {
             e.preventDefault();
+            e.stopPropagation();
             isDragging = false;
             isResizing = false;
         }
@@ -1714,5 +1915,5 @@ ${new Date().toLocaleString()}
             }, 5000);
         }
     </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'991cc90e10eb00e0',t:'MTc2MTAwODA4NC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9920b1dd169500e0',t:'MTc2MTA0OTA3Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
