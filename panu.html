@@ -646,11 +646,11 @@
   </section><!-- Tab Navigation -->
   <section class="bg-white shadow-sm">
    <div class="max-w-7xl mx-auto px-4">
-    <div class="tab-nav flex"><button onclick="switchTab('catalog')" id="catalog-tab" class="tab-btn active flex-1 text-center font-medium"> 🛍️ Catálogo </button> <button onclick="switchTab('enterprise')" id="enterprise-tab" class="tab-btn flex-1 text-center font-medium"> 🏢 Empresarial </button>
+        <div class="tab-nav flex"><button onclick="switchTab('merch')" id="merch-tab" class="tab-btn active flex-1 text-center font-medium"> 🛍️ Merch </button> <button onclick="switchTab('gifts')" id="gifts-tab" class="tab-btn flex-1 text-center font-medium"> � Gifts </button>
     </div>
    </div>
   </section><!-- Catalog Tab Content -->
-  <div id="catalog-content" class="tab-content active"><!-- Advanced Filters -->
+    <div id="merch-content" class="tab-content active"><!-- Advanced Filters -->
    <section class="py-6 bg-white bg-opacity-60 backdrop-filter backdrop-blur-lg shadow-sm border-b border-gray-200 border-opacity-30">
     <div class="max-w-7xl mx-auto px-4">
      <div class="flex flex-col lg:flex-row gap-4 items-center justify-between mb-6">
@@ -701,14 +701,14 @@
      <div id="products-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8"><!-- Products will be loaded here -->
      </div>
     </div>
-   </section>
-  </div><!-- Enterprise Tab Content -->
-  <div id="enterprise-content" class="tab-content">
+    </section>
+    </div><!-- Gifts Tab Content -->
+    <div id="gifts-content" class="tab-content">
    <section class="enterprise-section py-12">
     <div class="max-w-7xl mx-auto px-4">
      <div class="text-center mb-12">
-      <h2 class="text-4xl font-bold mb-4">🏢 Compras Empresariales</h2>
-      <p class="text-xl opacity-90 mb-8">Soluciones especiales para empresas y pedidos en cantidad</p>
+            <h2 class="text-4xl font-bold mb-4">� Gifts</h2>
+            <p class="text-xl opacity-90 mb-8">Colección de regalos y productos especiales</p>
      </div>
      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
       <div class="enterprise-card">
@@ -884,6 +884,7 @@
         let currentSort = 'newest';
         let currentView = 'grid';
         let selectedProduct = null;
+    let currentSection = 'merch'; // 'merch' or 'gifts'
         let favorites = JSON.parse(localStorage.getItem('panu-favorites') || '[]');
         let comparisonList = [];
         let showFavoritesOnly = false;
@@ -915,7 +916,8 @@
                 if (allProducts.length === 0) {
                     noProductsDiv.classList.remove('hidden');
                 } else {
-                    displayProducts(filteredProducts);
+                    // Apply filters so section (tipo) and other filters are respected
+                    applyFilters();
                 }
 
                 updateStats();
@@ -1109,6 +1111,11 @@
         function applyFilters() {
             let filtered = [...allProducts];
             
+            // Apply section filter (tipo) - only show products matching currentSection if set
+            if (typeof currentSection !== 'undefined' && currentSection !== 'all') {
+                filtered = filtered.filter(product => ((product.tipo || '').toLowerCase() === currentSection));
+            }
+
             // Apply category filter
             if (currentCategory !== 'all') {
                 filtered = filtered.filter(product => product.categoria === currentCategory);
@@ -1650,6 +1657,12 @@
             // Show selected tab content
             document.getElementById(tabName + '-content').classList.add('active');
             document.getElementById(tabName + '-tab').classList.add('active');
+
+            // Update currentSection for filtering (expect 'merch' or 'gifts')
+            if (tabName === 'merch' || tabName === 'gifts') {
+                currentSection = tabName;
+                applyFilters();
+            }
         }
 
         // Enterprise quote functionality
