@@ -1269,7 +1269,7 @@
         // Misc
         function contactWhatsApp() {
           if (!selectedProduct) return;
-          const message = `Hola! Me interesa el producto: ${selectedProduct.nombre} - Gs. ${Number(selectedProduct.precio||0).toLocaleString()}. ¿Podrías darme más información?`;
+          const message = `Hola Panu! Me interesa el producto: ${selectedProduct.nombre} - Gs. ${Number(selectedProduct.precio||0).toLocaleString()}. ¿Podrías darme más información?`;
           window.open(`https://wa.me/595985501874?text=${encodeURIComponent(message)}`, '_blank');
         }
         function updateStats() {
