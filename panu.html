@@ -1209,7 +1209,7 @@
     </div><!-- Copyright -->
     <div class="footer-bottom">
      <p class="footer-copyright">© 2024 Panu - Sublimaciones Premium. Todos los derechos reservados.</p>
-     <p class="footer-version">v1.040 - Construido por Joel Páez y Ren_q (Alexa Ferreira)</p>
+     <p class="footer-version">v1.041 - Construido por Joel Páez y Ren_q (Alexa Ferreira)</p>
     </div>
    </div>
   </footer>
@@ -1662,7 +1662,7 @@
             currentImages = [];
             console.log('🖼️ Procesando imágenes del producto:', product.nombre);
             console.log('📸 Imagen principal:', product.imagen_principal);
-            console.log('🎨 Imágenes galería:', product.imagenes_galeria);
+            console.log('🎨 Imágenes galería:', product.imagen_galeria);
             console.log('➕ Imágenes adicionales:', product.imagenes_adicionales);
             
             // Agregar imagen principal
@@ -1671,50 +1671,56 @@
                 console.log('✅ Imagen principal agregada');
             }
             
-            // Agregar imágenes de galería (columna principal para imágenes secundarias)
-            if (product.imagenes_galeria) {
-                console.log('🎨 Procesando imagenes_galeria:', typeof product.imagenes_galeria);
-                console.log('🔍 Primeros 100 caracteres:', product.imagenes_galeria.substring(0, 100));
+            // Agregar imágenes de galería (columna imagen_galeria tipo text[])
+            if (product.imagen_galeria) {
+                console.log('🎨 Procesando imagen_galeria:', typeof product.imagen_galeria);
+                console.log('🔍 Contenido completo:', product.imagen_galeria);
                 
                 try {
                     let galleryImages = [];
                     
-                    if (typeof product.imagenes_galeria === 'string') {
-                        // PRIMERO: Verificar si es una imagen base64 completa
-                        if (product.imagenes_galeria.startsWith('data:image/')) {
+                    if (Array.isArray(product.imagen_galeria)) {
+                        // Si ya es un array (PostgreSQL text[] se convierte automáticamente)
+                        galleryImages = product.imagen_galeria;
+                        console.log('📋 ✅ Array PostgreSQL detectado directamente');
+                    } else if (typeof product.imagen_galeria === 'string') {
+                        // Si es string, puede ser:
+                        // 1. Array PostgreSQL serializado como string: "{img1,img2,img3}"
+                        // 2. Imágenes separadas por comas: "img1,img2,img3"
+                        // 3. Una sola imagen base64 larga
+                        
+                        if (product.imagen_galeria.startsWith('data:image/')) {
                             console.log('📸 ✅ IMAGEN BASE64 DIRECTA detectada en galería');
-                            galleryImages = [product.imagenes_galeria];
+                            galleryImages = [product.imagen_galeria];
                         } 
-                        // SEGUNDO: Verificar si es una URL HTTP
-                        else if (product.imagenes_galeria.startsWith('http')) {
+                        else if (product.imagen_galeria.startsWith('http')) {
                             console.log('🌐 ✅ URL HTTP detectada en galería');
-                            galleryImages = [product.imagenes_galeria];
+                            galleryImages = [product.imagen_galeria];
                         }
-                        // TERCERO: Intentar parsear como JSON solo si NO es base64 ni URL
+                        else if (product.imagen_galeria.startsWith('{') && product.imagen_galeria.endsWith('}')) {
+                            // Array PostgreSQL serializado como string: "{img1,img2,img3}"
+                            const cleanString = product.imagen_galeria.slice(1, -1); // Quitar { }
+                            galleryImages = cleanString.split(',').map(img => img.trim());
+                            console.log('🗄️ ✅ Array PostgreSQL parseado desde string');
+                        }
+                        else if (product.imagen_galeria.includes(',')) {
+                            // Imágenes separadas por comas: "img1,img2,img3"
+                            galleryImages = product.imagen_galeria.split(',').map(img => img.trim());
+                            console.log('📋 ✅ String separado por comas parseado');
+                        }
                         else {
-                            try {
-                                const parsed = JSON.parse(product.imagenes_galeria);
-                                if (Array.isArray(parsed)) {
-                                    galleryImages = parsed;
-                                    console.log('📋 ✅ JSON array parseado exitosamente');
-                                } else {
-                                    galleryImages = [parsed];
-                                    console.log('📋 ✅ JSON objeto parseado exitosamente');
-                                }
-                            } catch (jsonError) {
-                                console.log('❌ No es JSON válido, tratando como string/filename');
-                                galleryImages = [product.imagenes_galeria];
-                            }
+                            // Una sola imagen
+                            galleryImages = [product.imagen_galeria];
+                            console.log('📸 ✅ Imagen única detectada');
                         }
-                    } else if (Array.isArray(product.imagenes_galeria)) {
-                        galleryImages = product.imagenes_galeria;
-                        console.log('📋 Array directo de imágenes');
                     } else {
                         console.log('🔄 Convirtiendo objeto a array');
-                        galleryImages = [product.imagenes_galeria];
+                        galleryImages = [product.imagen_galeria];
                     }
                     
                     console.log('🎨 Imágenes de galería procesadas:', galleryImages.length);
+                    console.log('📋 Lista de imágenes:', galleryImages);
+                    
                     galleryImages.forEach((img, index) => {
                         if (img && (typeof img === 'string' ? img.trim() !== '' : true)) {
                             const imageUrl = getImageUrl(img);
@@ -1725,8 +1731,8 @@
                 } catch (e) {
                     console.log('❌ Error procesando imágenes de galería:', e);
                     // Como fallback final, usar el campo completo como una sola imagen
-                    if (product.imagenes_galeria && typeof product.imagenes_galeria === 'string') {
-                        const fallbackUrl = getImageUrl(product.imagenes_galeria);
+                    if (product.imagen_galeria && typeof product.imagen_galeria === 'string') {
+                        const fallbackUrl = getImageUrl(product.imagen_galeria);
                         currentImages.push(fallbackUrl);
                         console.log('🔄 Fallback: usando campo completo como imagen única');
                     }
@@ -2000,6 +2006,6 @@ Me gustaría obtener más información sobre:
         
         // Recargar promociones cada 5 minutos
         setInterval(loadActivePromotion, 5 * 60 * 1000);
-    </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9954586a047a9096',t:'MTc2MTU5MDY3My4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+    </script> ¡Perfecto! Ahora he corregido el código para manejar correctamente la columna `imagen_galeria` de tipo `text[]` de PostgreSQL. **🔧 Los cambios principales:** 1. **Nombre correcto**: Cambié `imagenes_galeria` por `imagen_galeria` (singular) 2. **Detección de arrays PostgreSQL**: Ahora detecta automáticamente si es un array nativo de PostgreSQL 3. **Múltiples formatos soportados**: - Array directo: `["img1.jpg", "img2.jpg", "img3.jpg"]` - String PostgreSQL: `"{img1.jpg,img2.jpg,img3.jpg}"` - String separado por comas: `"img1.jpg,img2.jpg,img3.jpg"` - Imagen base64 única larga - URL HTTP única 4. **Logs detallados**: Ahora muestra exactamente qué tipo de datos encuentra y cómo los procesa **🎯 Ahora debería funcionar correctamente con:** - Productos con una sola imagen en `imagen_principal` - Productos con múltiples imágenes en `imagen_galeria` (array PostgreSQL) - Cualquier combinación de formatos de imagen ¡Prueba abriendo un producto que sepas que tiene múltiples imágenes y revisa la consola para ver los logs detallados! Deberías ver todas las imágenes en la galería con navegación funcionando. 📸✨
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'99546d0354a0116a',t:'MTc2MTU5MTUxNy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
