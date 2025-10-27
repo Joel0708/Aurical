@@ -247,7 +247,7 @@
    <header class="header">
     <h1 class="logo">Panu</h1>
     <p class="subtitle">Merch &amp; Gifts Personalizados</p>
-    <nav class="nav-tabs"><button class="tab-button active" onclick="switchTab('merch')">Merch</button> <button class="tab-button" onclick="switchTab('gifts')">Gifts</button>
+    <nav class="nav-tabs"><button class="tab-button active" onclick="switchTab('merch')">Merch</button> <button class="tab-button" onclick="switchTab('gift')">Gift</button>
     </nav>
    </header>
    <div id="loading" class="loading">
@@ -303,9 +303,9 @@
                 showLoading(true);
                 hideError();
                 
-                console.log('📋 Consultando tabla "Producto"...');
+                console.log('📋 Consultando tabla "producto"...');
                 const { data, error } = await supabase
-                    .from('Producto')
+                    .from('producto')
                     .select('*')
                     .order('fecha_creacion', { ascending: false });
 
@@ -458,5 +458,5 @@
         // Recargar productos cada 30 segundos para mantener actualizado
         setInterval(loadProducts, 30000);
     </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9952becc003d116a',t:'MTc2MTU3Mzg5NS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9952e5eb36099096',t:'MTc2MTU3NTQ5Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
