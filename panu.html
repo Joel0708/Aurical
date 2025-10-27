@@ -1673,43 +1673,93 @@
             
             // Agregar imágenes de galería (columna principal para imágenes secundarias)
             if (product.imagenes_galeria) {
+                console.log('🎨 Procesando imagenes_galeria:', typeof product.imagenes_galeria);
                 try {
                     let galleryImages = [];
+                    
                     if (typeof product.imagenes_galeria === 'string') {
-                        // Si es string, intentar parsear como JSON
-                        galleryImages = JSON.parse(product.imagenes_galeria);
+                        // Si es un string base64 largo, usarlo directamente
+                        if (product.imagenes_galeria.startsWith('data:image/')) {
+                            console.log('📸 Imagen base64 directa en galería');
+                            galleryImages = [product.imagenes_galeria];
+                        } else {
+                            // Intentar parsear como JSON
+                            try {
+                                galleryImages = JSON.parse(product.imagenes_galeria);
+                                console.log('📋 JSON parseado exitosamente');
+                            } catch (jsonError) {
+                                console.log('❌ No es JSON válido, tratando como string simple');
+                                galleryImages = [product.imagenes_galeria];
+                            }
+                        }
                     } else if (Array.isArray(product.imagenes_galeria)) {
-                        // Si ya es array, usar directamente
                         galleryImages = product.imagenes_galeria;
+                        console.log('📋 Array directo de imágenes');
+                    } else {
+                        console.log('🔄 Convirtiendo a array');
+                        galleryImages = [product.imagenes_galeria];
                     }
                     
                     console.log('🎨 Imágenes de galería procesadas:', galleryImages.length);
                     galleryImages.forEach((img, index) => {
-                        currentImages.push(getImageUrl(img));
-                        console.log(`✅ Imagen galería ${index + 1} agregada`);
+                        if (img && img.trim() !== '') {
+                            currentImages.push(getImageUrl(img));
+                            console.log(`✅ Imagen galería ${index + 1} agregada`);
+                        }
                     });
                 } catch (e) {
                     console.log('❌ Error procesando imágenes de galería:', e);
+                    // Como fallback, intentar usar el campo completo como una sola imagen
+                    if (product.imagenes_galeria && typeof product.imagenes_galeria === 'string') {
+                        currentImages.push(getImageUrl(product.imagenes_galeria));
+                        console.log('🔄 Usando campo completo como imagen única');
+                    }
                 }
             }
             
             // Agregar imágenes adicionales como respaldo
             if (product.imagenes_adicionales) {
+                console.log('➕ Procesando imagenes_adicionales:', typeof product.imagenes_adicionales);
                 try {
                     let additionalImages = [];
+                    
                     if (typeof product.imagenes_adicionales === 'string') {
-                        additionalImages = JSON.parse(product.imagenes_adicionales);
+                        // Si es un string base64 largo, usarlo directamente
+                        if (product.imagenes_adicionales.startsWith('data:image/')) {
+                            console.log('📸 Imagen base64 directa en adicionales');
+                            additionalImages = [product.imagenes_adicionales];
+                        } else {
+                            // Intentar parsear como JSON
+                            try {
+                                additionalImages = JSON.parse(product.imagenes_adicionales);
+                                console.log('📋 JSON parseado exitosamente');
+                            } catch (jsonError) {
+                                console.log('❌ No es JSON válido, tratando como string simple');
+                                additionalImages = [product.imagenes_adicionales];
+                            }
+                        }
                     } else if (Array.isArray(product.imagenes_adicionales)) {
                         additionalImages = product.imagenes_adicionales;
+                        console.log('📋 Array directo de imágenes');
+                    } else {
+                        console.log('🔄 Convirtiendo a array');
+                        additionalImages = [product.imagenes_adicionales];
                     }
                     
                     console.log('➕ Imágenes adicionales procesadas:', additionalImages.length);
                     additionalImages.forEach((img, index) => {
-                        currentImages.push(getImageUrl(img));
-                        console.log(`✅ Imagen adicional ${index + 1} agregada`);
+                        if (img && img.trim() !== '') {
+                            currentImages.push(getImageUrl(img));
+                            console.log(`✅ Imagen adicional ${index + 1} agregada`);
+                        }
                     });
                 } catch (e) {
                     console.log('❌ Error procesando imágenes adicionales:', e);
+                    // Como fallback, intentar usar el campo completo como una sola imagen
+                    if (product.imagenes_adicionales && typeof product.imagenes_adicionales === 'string') {
+                        currentImages.push(getImageUrl(product.imagenes_adicionales));
+                        console.log('🔄 Usando campo completo como imagen única');
+                    }
                 }
             }
             
@@ -1935,5 +1985,5 @@ Me gustaría obtener más información sobre:
         // Recargar promociones cada 5 minutos
         setInterval(loadActivePromotion, 5 * 60 * 1000);
     </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'99544d2e04409096',t:'MTc2MTU5MDIxMy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'995452cde19d9096',t:'MTc2MTU5MDQ0My4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
