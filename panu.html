@@ -455,9 +455,128 @@
             to { opacity: 1; }
         }
 
+        /* --- ESTILOS FOOTER --- */
+        .footer {
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.9), rgba(26, 26, 26, 0.9));
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            margin-top: 60px;
+            backdrop-filter: blur(15px);
+        }
+
+        .footer-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px 20px 20px;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 40px;
+            margin-bottom: 30px;
+        }
+
+        .footer-section {
+            color: white;
+        }
+
+        .footer-logo-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .footer-logo {
+            height: 50px;
+            width: auto;
+            filter: drop-shadow(0 2px 4px rgba(255, 255, 255, 0.1));
+        }
+
+        .footer-title {
+            font-size: 2rem;
+            font-weight: 800;
+            color: #ffffff;
+            margin: 0;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .footer-description {
+            font-size: 1rem;
+            color: #cccccc;
+            line-height: 1.6;
+            margin: 0;
+        }
+
+        .footer-section-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 20px;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+        }
+
+        .footer-contact, .footer-schedule {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .footer-contact-item, .footer-schedule-item {
+            font-size: 0.95rem;
+            color: #cccccc;
+            margin: 0;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            transition: color 0.3s ease;
+        }
+
+        .footer-contact-item:hover, .footer-schedule-item:hover {
+            color: #ffffff;
+        }
+
+        .footer-bottom {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 20px;
+            text-align: center;
+        }
+
+        .footer-copyright {
+            font-size: 0.9rem;
+            color: #cccccc;
+            margin: 0 0 10px 0;
+        }
+
+        .footer-version {
+            font-size: 0.8rem;
+            color: #999999;
+            margin: 0;
+            font-style: italic;
+        }
+
         @media (max-width: 768px) {
             .container {
                 padding: 15px;
+            }
+
+            .footer-container {
+                padding: 30px 15px 15px 15px;
+            }
+
+            .footer-content {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+
+            .footer-logo-container {
+                justify-content: center;
+                text-align: center;
+            }
+
+            .footer-title {
+                font-size: 1.5rem;
             }
 
             .header-top {
@@ -541,8 +660,6 @@
      </div>
      <div class="filter-group"><label class="filter-label">Precio Máximo</label> <input type="number" class="filter-input" id="maxPriceFilter" placeholder="Sin límite" min="0">
      </div>
-     <div class="filter-group"><label class="filter-label">Disponibilidad</label> <select class="filter-select" id="availabilityFilter"> <option value="">Todos</option> <option value="true">Disponible</option> <option value="false">No disponible</option> </select>
-     </div>
      <div class="filter-group">
       <div class="filter-buttons"><button class="filter-btn clear-btn" onclick="clearFilters()">Limpiar</button> <button class="filter-btn apply-btn" onclick="applyFilters()">Aplicar</button>
       </div>
@@ -558,7 +675,39 @@
    <div id="no-products" class="no-products" style="display: none;">
     <p>No hay productos disponibles en esta categoría.</p>
    </div>
-  </main>
+  </main><!-- 📄 FOOTER -->
+  <footer class="footer">
+   <div class="footer-container">
+    <div class="footer-content"><!-- Logo y descripción -->
+     <div class="footer-section">
+      <div class="footer-logo-container"><img src="https://aurical.org/images/PanuLogo.png" alt="Panu Logo" class="footer-logo" onerror="this.style.display='none';">
+       <h3 class="footer-title">Panu</h3>
+      </div>
+      <p class="footer-description">Sublimaciones premium con la mejor calidad y atención personalizada.</p>
+     </div><!-- Contacto -->
+     <div class="footer-section">
+      <h4 class="footer-section-title">Contacto</h4>
+      <div class="footer-contact">
+       <p class="footer-contact-item">📱 WhatsApp: +595 985 501 874</p>
+       <p class="footer-contact-item">📧 Email: aurical@panu.org</p>
+       <p class="footer-contact-item">📍 Ñemby, Paraguay</p>
+      </div>
+     </div><!-- Horarios -->
+     <div class="footer-section">
+      <h4 class="footer-section-title">Horarios</h4>
+      <div class="footer-schedule">
+       <p class="footer-schedule-item">🕒 Lunes a Viernes: 8:00 - 18:00</p>
+       <p class="footer-schedule-item">🕒 Sábados: 8:00 - 12:00</p>
+       <p class="footer-schedule-item">🕒 Domingos: Cerrado</p>
+      </div>
+     </div>
+    </div><!-- Copyright -->
+    <div class="footer-bottom">
+     <p class="footer-copyright">© 2024 Panu - Sublimaciones Premium. Todos los derechos reservados.</p>
+     <p class="footer-version">v1.040 - Construido por Joel Páez y Ren_q (Alexa Ferreira)</p>
+    </div>
+   </div>
+  </footer>
   <script>
         // Configuración de Supabase
         const supabaseUrl = 'https://sxihojciyiypolxahoej.supabase.co';
@@ -579,8 +728,7 @@
         let filters = {
             category: '',
             minPrice: '',
-            maxPrice: '',
-            availability: ''
+            maxPrice: ''
         };
 
         // Función para ir al inicio
@@ -630,6 +778,9 @@
                 product.tipo && product.tipo.toLowerCase() === currentTab.toLowerCase()
             );
             
+            // Filtrar solo productos disponibles
+            products = products.filter(product => product.disponible === true);
+            
             // Filtrar por búsqueda
             if (searchTerm) {
                 products = products.filter(product => {
@@ -663,13 +814,7 @@
                 );
             }
             
-            // Filtrar por disponibilidad
-            if (filters.availability !== '') {
-                const isAvailable = filters.availability === 'true';
-                products = products.filter(product => 
-                    product.disponible === isAvailable
-                );
-            }
+
             
             filteredProducts = products;
             console.log(`🔍 Productos después de filtros: ${filteredProducts.length}`);
@@ -681,7 +826,6 @@
             filters.category = document.getElementById('categoryFilter').value;
             filters.minPrice = document.getElementById('minPriceFilter').value;
             filters.maxPrice = document.getElementById('maxPriceFilter').value;
-            filters.availability = document.getElementById('availabilityFilter').value;
             
             console.log('🔧 Aplicando filtros:', filters);
             applyAllFilters();
@@ -692,13 +836,11 @@
             document.getElementById('categoryFilter').value = '';
             document.getElementById('minPriceFilter').value = '';
             document.getElementById('maxPriceFilter').value = '';
-            document.getElementById('availabilityFilter').value = '';
             
             filters = {
                 category: '',
                 minPrice: '',
-                maxPrice: '',
-                availability: ''
+                maxPrice: ''
             };
             
             console.log('🧹 Filtros limpiados');
@@ -820,9 +962,6 @@
                     <p class="product-description">${product.descripcion || 'Sin descripción disponible'}</p>
                     <div class="product-price">$${formatPrice(product.precio)}</div>
                     <span class="product-category">${product.categoria || 'Sin categoría'}</span>
-                    <div class="availability ${product.disponible ? 'available' : 'unavailable'}">
-                        ${product.disponible ? '✓ Disponible' : '✗ No disponible'}
-                    </div>
                 </div>
             `;
             
@@ -1003,5 +1142,5 @@
         // Recargar promociones cada 5 minutos
         setInterval(loadActivePromotion, 5 * 60 * 1000);
     </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'99542aced48e9096',t:'MTc2MTU4ODgwNS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9954315d700a9096',t:'MTc2MTU4OTA3My4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
