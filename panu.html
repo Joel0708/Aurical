@@ -470,46 +470,50 @@
 
         // Función para obtener URL de imagen
         function getImageUrl(imageField) {
-            console.log('🖼️ Procesando imagen:', imageField);
-            console.log('- Tipo:', typeof imageField);
-            console.log('- Valor:', imageField);
+            console.log('🖼️ Procesando imagen:', typeof imageField, imageField ? imageField.substring(0, 50) + '...' : 'null');
             
             if (!imageField) {
                 console.log('❌ Sin imagen, usando placeholder');
                 return 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjI1MCIgdmlld0JveD0iMCAwIDMwMCAyNTAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMjUwIiBmaWxsPSIjRjdGQUZDIi8+CjxwYXRoIGQ9Ik0xMjAgMTAwSDEwMFYxMjBIMTIwVjEwMFoiIGZpbGw9IiNFMkU4RjAiLz4KPHA+dGggZD0iTTE4MCA5MEgxNDBWMTMwSDE4MFY5MFoiIGZpbGw9IiNFMkU4RjAiLz4KPHA+dGggZD0iTTE1MCA2MEwxNzAgODBIMTMwTDE1MCA2MFoiIGZpbGw9IiNFMkU4RjAiLz4KPC9zdmc+';
             }
             
-            // Si es una URL completa, usarla directamente
+            // Si es una URL completa HTTP/HTTPS, usarla directamente
             if (typeof imageField === 'string' && imageField.startsWith('http')) {
-                console.log('✅ URL completa encontrada:', imageField);
+                console.log('✅ URL HTTP encontrada');
+                return imageField;
+            }
+            
+            // Si es una imagen base64, usarla directamente
+            if (typeof imageField === 'string' && imageField.startsWith('data:image/')) {
+                console.log('✅ Imagen base64 encontrada');
                 return imageField;
             }
             
             // Si es un array, tomar el primer elemento
             if (Array.isArray(imageField) && imageField.length > 0) {
-                console.log('📋 Array de imágenes, tomando primera:', imageField[0]);
+                console.log('📋 Array de imágenes, tomando primera');
                 return getImageUrl(imageField[0]);
             }
             
             // Si es un objeto con información del archivo de Supabase
             if (typeof imageField === 'object' && imageField !== null) {
-                console.log('📦 Objeto imagen:', imageField);
+                console.log('📦 Objeto imagen detectado');
                 
                 // Verificar diferentes propiedades posibles
                 if (imageField.name) {
                     const url = `${supabaseUrl}/storage/v1/object/public/productos/${imageField.name}`;
-                    console.log('✅ URL desde objeto.name:', url);
+                    console.log('✅ URL desde objeto.name');
                     return url;
                 }
                 
                 if (imageField.url) {
-                    console.log('✅ URL desde objeto.url:', imageField.url);
+                    console.log('✅ URL desde objeto.url');
                     return imageField.url;
                 }
                 
                 if (imageField.path) {
                     const url = `${supabaseUrl}/storage/v1/object/public/productos/${imageField.path}`;
-                    console.log('✅ URL desde objeto.path:', url);
+                    console.log('✅ URL desde objeto.path');
                     return url;
                 }
                 
@@ -517,17 +521,17 @@
                 const possibleFileName = imageField.filename || imageField.file || imageField.src;
                 if (possibleFileName) {
                     const url = `${supabaseUrl}/storage/v1/object/public/productos/${possibleFileName}`;
-                    console.log('✅ URL desde propiedad alternativa:', url);
+                    console.log('✅ URL desde propiedad alternativa');
                     return url;
                 }
             }
             
-            // Si es solo el nombre del archivo (string)
-            if (typeof imageField === 'string' && imageField.trim() !== '') {
+            // Si es solo el nombre del archivo (string) y NO es base64
+            if (typeof imageField === 'string' && imageField.trim() !== '' && !imageField.startsWith('data:')) {
                 // Limpiar el string de espacios y caracteres especiales
                 const cleanFileName = imageField.trim();
                 const url = `${supabaseUrl}/storage/v1/object/public/productos/${cleanFileName}`;
-                console.log('✅ URL desde string:', url);
+                console.log('✅ URL desde string limpio');
                 return url;
             }
             
@@ -638,5 +642,5 @@
         // Recargar promociones cada 5 minutos
         setInterval(loadActivePromotion, 5 * 60 * 1000);
     </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9952ec6f57af9096',t:'MTc2MTU3NTc2NC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9952f16b900e9096',t:'MTc2MTU3NTk2OC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
