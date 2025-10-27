@@ -281,17 +281,17 @@
 
         .products-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 30px;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 15px;
             margin-bottom: 40px;
         }
 
         .product-card {
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 20px;
+            border-radius: 15px;
             overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
             transition: all 0.3s ease;
             opacity: 0;
             transform: translateY(20px);
@@ -300,8 +300,8 @@
         }
 
         .product-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
             border-color: rgba(255, 255, 255, 0.2);
             background: rgba(255, 255, 255, 0.08);
         }
@@ -315,39 +315,43 @@
 
         .product-image {
             width: 100%;
-            height: 250px;
+            height: 140px;
             object-fit: cover;
             background: #f7fafc;
         }
 
         .product-info {
-            padding: 25px;
+            padding: 12px;
         }
 
         .product-name {
-            font-size: 1.3rem;
+            font-size: 0.95rem;
             font-weight: 700;
             color: #ffffff;
-            margin-bottom: 10px;
-            line-height: 1.3;
+            margin-bottom: 6px;
+            line-height: 1.2;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
         }
 
         .product-description {
             color: #cccccc;
-            font-size: 0.95rem;
-            line-height: 1.5;
-            margin-bottom: 15px;
+            font-size: 0.8rem;
+            line-height: 1.3;
+            margin-bottom: 8px;
             display: -webkit-box;
-            -webkit-line-clamp: 3;
+            -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
             overflow: hidden;
         }
 
         .product-price {
-            font-size: 1.5rem;
+            font-size: 1.1rem;
             font-weight: 800;
             color: #ffffff;
-            margin-bottom: 15px;
+            margin-bottom: 8px;
             text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
         }
 
@@ -355,13 +359,14 @@
             display: inline-block;
             background: rgba(255, 255, 255, 0.1);
             color: #ffffff;
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 0.8rem;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.7rem;
             font-weight: 600;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.3px;
             border: 1px solid rgba(255, 255, 255, 0.2);
+            margin-bottom: 8px;
         }
 
         .availability {
@@ -403,23 +408,23 @@
 
         .view-details-btn {
             width: 100%;
-            padding: 12px 20px;
+            padding: 8px 12px;
             background: rgba(255, 255, 255, 0.1);
             border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 12px;
+            border-radius: 8px;
             color: #ffffff;
             font-weight: 600;
-            font-size: 0.9rem;
+            font-size: 0.75rem;
             cursor: pointer;
             transition: all 0.3s ease;
-            margin-top: 15px;
+            margin-top: 8px;
             backdrop-filter: blur(10px);
         }
 
         .view-details-btn:hover {
             background: rgba(255, 255, 255, 0.2);
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(255, 255, 255, 0.1);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 15px rgba(255, 255, 255, 0.1);
         }
 
         /* --- ESTILOS MODAL PRODUCTO --- */
@@ -1065,8 +1070,8 @@
             }
 
             .products-grid {
-                grid-template-columns: 1fr;
-                gap: 20px;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
             }
 
             .promotion-title { 
@@ -1462,7 +1467,7 @@
                     <p class="product-description">${product.descripcion || 'Sin descripción disponible'}</p>
                     <div class="product-price">$${formatPrice(product.precio)}</div>
                     <span class="product-category">${product.categoria || 'Sin categoría'}</span>
-                    <button class="view-details-btn" onclick="openProductModal('${product.id}')">
+                    <button class="view-details-btn" onclick="openProductModal(${product.id})">
                         👁️ Ver Detalles
                     </button>
                 </div>
@@ -1640,8 +1645,16 @@
 
         // Función para abrir modal de producto
         function openProductModal(productId) {
-            const product = allProducts.find(p => p.id === productId);
-            if (!product) return;
+            console.log('🔍 Abriendo modal para producto ID:', productId);
+            console.log('📋 Productos disponibles:', allProducts.length);
+            
+            const product = allProducts.find(p => p.id == productId);
+            console.log('🎯 Producto encontrado:', product ? product.nombre : 'No encontrado');
+            
+            if (!product) {
+                console.error('❌ Producto no encontrado con ID:', productId);
+                return;
+            }
 
             currentProduct = product;
             
@@ -1887,5 +1900,5 @@ Me gustaría obtener más información sobre:
         // Recargar promociones cada 5 minutos
         setInterval(loadActivePromotion, 5 * 60 * 1000);
     </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'99543a9c65b49096',t:'MTc2MTU4OTQ1Mi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'995447d3a19d9096',t:'MTc2MTU4OTk5My4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
