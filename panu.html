@@ -214,6 +214,58 @@
             text-align: center;
         }
 
+        /* --- ESTILOS PROMOCIÓN SIMPLIFICADA --- */
+        .promotion-banner {
+            background: linear-gradient(135deg, #8B4513, #A0522D);
+            border-radius: 20px;
+            overflow: hidden;
+            position: relative;
+            margin: 1rem auto 2rem auto;
+            box-shadow: 0 12px 40px rgba(139, 69, 19, 0.3);
+            max-width: 1200px;
+        }
+
+        .promotion-media {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+        }
+
+        .promotion-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
+            color: white;
+            padding: 2rem;
+        }
+
+        .promotion-title {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .promotion-description {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
         @media (max-width: 768px) {
             .container {
                 padding: 15px;
@@ -236,6 +288,18 @@
                 grid-template-columns: 1fr;
                 gap: 20px;
             }
+
+            .promotion-title { 
+                font-size: 1.5rem; 
+            }
+            
+            .promotion-description { 
+                font-size: 1rem; 
+            }
+            
+            .promotion-media { 
+                height: 200px; 
+            }
         }
     </style>
   <style>@view-transition { navigation: auto; }</style>
@@ -249,7 +313,10 @@
     <p class="subtitle">Merch &amp; Gifts Personalizados</p>
     <nav class="nav-tabs"><button class="tab-button active" onclick="switchTab('merch')">Merch</button> <button class="tab-button" onclick="switchTab('gift')">Gift</button>
     </nav>
-   </header>
+   </header><!-- 🔥 INICIO SECCIÓN PROMOCIÓN -->
+   <section id="promotion-section" class="hidden">
+    <div id="promotion-content" class="promotion-banner fade-in"></div>
+   </section>
    <div id="loading" class="loading">
     <div class="spinner"></div>
     <p>Cargando productos...</p>
@@ -450,13 +517,83 @@
             document.getElementById('error-container').innerHTML = '';
         }
 
+        // --- FUNCIÓN DE PROMOCIONES SIMPLIFICADA ---
+        let activePromotion = null;
+
+        async function loadActivePromotion() {
+            try {
+                console.log('🎯 Cargando promociones activas...');
+                const { data, error } = await supabase
+                    .from("promociones")
+                    .select("*")
+                    .eq("activa", true)
+                    .single();
+
+                console.log('📊 Respuesta promociones:', { data, error });
+
+                if (error && error.code !== "PGRST116") throw error;
+
+                if (data) {
+                    const isExpired = data.fecha_expiracion && 
+                        new Date(data.fecha_expiracion) < new Date();
+
+                    console.log('⏰ Promoción expirada:', isExpired);
+
+                    if (!isExpired) {
+                        activePromotion = data;
+                        console.log('✅ Promoción activa encontrada:', activePromotion.titulo);
+                        displayPromotion();
+                    } else {
+                        console.log('❌ Promoción expirada, ocultando...');
+                        hidePromotion();
+                    }
+                } else {
+                    console.log('ℹ️ No hay promociones activas');
+                    hidePromotion();
+                }
+            } catch (error) {
+                console.error("💥 Error cargando promoción:", error);
+            }
+        }
+
+        function displayPromotion() {
+            const section = document.getElementById("promotion-section");
+            const content = document.getElementById("promotion-content");
+
+            if (!activePromotion) return hidePromotion();
+
+            const isVideo = activePromotion.tipo_media === "video";
+            const mediaElement = isVideo
+                ? `<video src="${activePromotion.url_media}" class="promotion-media" autoplay muted loop></video>`
+                : `<img src="${activePromotion.url_media}" alt="${activePromotion.titulo}" class="promotion-media">`;
+
+            content.innerHTML = `
+                ${mediaElement}
+                <div class="promotion-overlay">
+                    <h2 class="promotion-title">${activePromotion.titulo}</h2>
+                    ${activePromotion.descripcion ? `<p class="promotion-description">${activePromotion.descripcion}</p>` : ""}
+                </div>
+            `;
+
+            section.classList.remove("hidden");
+            console.log('🎉 Promoción mostrada:', activePromotion.titulo);
+        }
+
+        function hidePromotion() {
+            document.getElementById("promotion-section").classList.add("hidden");
+        }
+
         // Inicializar la aplicación
         document.addEventListener('DOMContentLoaded', function() {
             loadProducts();
+            loadActivePromotion();
         });
 
         // Recargar productos cada 30 segundos para mantener actualizado
         setInterval(loadProducts, 30000);
+        
+        // Recargar promociones cada 5 minutos
+        setInterval(loadActivePromotion, 5 * 60 * 1000);
     </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9952e5eb36099096',t:'MTc2MTU3NTQ5Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9952e8eef1a09096',t:'MTc2MTU3NTYyMS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
