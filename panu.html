@@ -401,6 +401,460 @@
             text-align: center;
         }
 
+        .view-details-btn {
+            width: 100%;
+            padding: 12px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            color: #ffffff;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 15px;
+            backdrop-filter: blur(10px);
+        }
+
+        .view-details-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255, 255, 255, 0.1);
+        }
+
+        /* --- ESTILOS MODAL PRODUCTO --- */
+        .product-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            padding: 20px;
+            backdrop-filter: blur(5px);
+        }
+
+        .product-modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: rgba(0, 0, 0, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            max-width: 900px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            backdrop-filter: blur(15px);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            position: relative;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 30px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .modal-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin: 0;
+        }
+
+        .close-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ffffff;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .close-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.1);
+        }
+
+        .modal-body {
+            padding: 30px;
+        }
+
+        .product-detail-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .product-gallery {
+            position: relative;
+        }
+
+        .main-image {
+            width: 100%;
+            height: 400px;
+            object-fit: cover;
+            border-radius: 15px;
+            background: #f7fafc;
+            margin-bottom: 15px;
+        }
+
+        .image-thumbnails {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            padding: 5px 0;
+        }
+
+        .thumbnail {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 8px;
+            cursor: pointer;
+            opacity: 0.6;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .thumbnail.active {
+            opacity: 1;
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+
+        .thumbnail:hover {
+            opacity: 1;
+            transform: scale(1.05);
+        }
+
+        .gallery-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0, 0, 0, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .gallery-nav:hover {
+            background: rgba(0, 0, 0, 0.9);
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        .gallery-nav.prev {
+            left: 10px;
+        }
+
+        .gallery-nav.next {
+            right: 10px;
+        }
+
+        .product-details {
+            color: white;
+        }
+
+        .product-detail-price {
+            font-size: 2rem;
+            font-weight: 800;
+            color: #ffffff;
+            margin-bottom: 20px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .product-detail-category {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.1);
+            color: #ffffff;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            margin-bottom: 20px;
+        }
+
+        .product-detail-description {
+            color: #cccccc;
+            font-size: 1rem;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+
+        .contact-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .contact-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 15px 25px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .whatsapp-btn {
+            background: #25d366;
+            color: white;
+        }
+
+        .whatsapp-btn:hover {
+            background: #128c7e;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(37, 211, 102, 0.3);
+        }
+
+        .email-btn {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .email-btn:hover {
+            background: #2563eb;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3);
+        }
+
+        .similar-products {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 30px;
+        }
+
+        .similar-products-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        .similar-products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .similar-product-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .similar-product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .similar-product-image {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+        }
+
+        .similar-product-info {
+            padding: 15px;
+        }
+
+        .similar-product-name {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 8px;
+            line-height: 1.3;
+        }
+
+        .similar-product-price {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #ffffff;
+        }
+
+        /* --- ESTILOS MODAL WHATSAPP --- */
+        .whatsapp-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1001;
+            padding: 20px;
+            backdrop-filter: blur(5px);
+        }
+
+        .whatsapp-modal.active {
+            display: flex;
+        }
+
+        .whatsapp-content {
+            background: rgba(0, 0, 0, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            max-width: 500px;
+            width: 100%;
+            backdrop-filter: blur(15px);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        }
+
+        .whatsapp-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 25px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .whatsapp-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #25d366;
+            margin: 0;
+        }
+
+        .whatsapp-body {
+            padding: 25px;
+        }
+
+        .message-preview {
+            background: rgba(37, 211, 102, 0.1);
+            border: 1px solid rgba(37, 211, 102, 0.3);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .message-textarea {
+            width: 100%;
+            min-height: 120px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            color: #ffffff;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            resize: vertical;
+            outline: none;
+            font-family: inherit;
+        }
+
+        .message-textarea::placeholder {
+            color: #cccccc;
+        }
+
+        .message-textarea:focus {
+            border-color: #25d366;
+            box-shadow: 0 0 0 3px rgba(37, 211, 102, 0.1);
+        }
+
+        .whatsapp-actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .whatsapp-cancel {
+            flex: 1;
+            padding: 12px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            color: #ffffff;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .whatsapp-cancel:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .whatsapp-send {
+            flex: 2;
+            padding: 12px 20px;
+            background: #25d366;
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .whatsapp-send:hover {
+            background: #128c7e;
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 768px) {
+            .product-detail-grid {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+
+            .main-image {
+                height: 300px;
+            }
+
+            .modal-content {
+                margin: 10px;
+                max-height: 95vh;
+            }
+
+            .modal-header, .modal-body {
+                padding: 20px;
+            }
+
+            .similar-products-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .contact-buttons {
+                flex-direction: column;
+            }
+        }
+
         /* --- ESTILOS PROMOCIÓN SIMPLIFICADA --- */
         .promotion-banner {
             background: linear-gradient(135deg, rgba(0, 0, 0, 0.8), rgba(26, 26, 26, 0.8));
@@ -675,7 +1129,53 @@
    <div id="no-products" class="no-products" style="display: none;">
     <p>No hay productos disponibles en esta categoría.</p>
    </div>
-  </main><!-- 📄 FOOTER -->
+  </main><!-- 🔍 MODAL PRODUCTO -->
+  <div id="productModal" class="product-modal">
+   <div class="modal-content">
+    <div class="modal-header">
+     <h2 id="modalTitle" class="modal-title"></h2><button class="close-btn" onclick="closeProductModal()">✕</button>
+    </div>
+    <div class="modal-body">
+     <div class="product-detail-grid"><!-- Galería de imágenes -->
+      <div class="product-gallery"><img id="mainImage" class="main-image" src="" alt="">
+       <div class="gallery-nav prev" onclick="previousImage()">
+        ‹
+       </div>
+       <div class="gallery-nav next" onclick="nextImage()">
+        ›
+       </div>
+       <div id="imageThumbnails" class="image-thumbnails"></div>
+      </div><!-- Detalles del producto -->
+      <div class="product-details">
+       <div id="modalPrice" class="product-detail-price"></div><span id="modalCategory" class="product-detail-category"></span>
+       <div id="modalDescription" class="product-detail-description"></div><!-- Botones de contacto -->
+       <div class="contact-buttons"><button id="whatsappBtn" class="contact-btn whatsapp-btn" onclick="openWhatsAppModal()"> 📱 Consultar por WhatsApp </button>
+        <div id="emailBtnContainer"></div>
+       </div>
+      </div>
+     </div><!-- Productos similares -->
+     <div class="similar-products">
+      <h3 class="similar-products-title">Productos Similares</h3>
+      <div id="similarProductsGrid" class="similar-products-grid"></div>
+     </div>
+    </div>
+   </div>
+  </div><!-- 📱 MODAL WHATSAPP -->
+  <div id="whatsappModal" class="whatsapp-modal">
+   <div class="whatsapp-content">
+    <div class="whatsapp-header">
+     <h3 class="whatsapp-title">📱 Mensaje de WhatsApp</h3><button class="close-btn" onclick="closeWhatsAppModal()">✕</button>
+    </div>
+    <div class="whatsapp-body">
+     <div class="message-preview">
+      <p style="color: #25d366; font-weight: 600; margin-bottom: 10px;">Vista previa del mensaje:</p>
+      <div id="messagePreview" style="color: #ffffff; font-size: 0.9rem; line-height: 1.4;"></div>
+     </div><textarea id="messageTextarea" class="message-textarea" placeholder="Personaliza tu mensaje aquí..."></textarea>
+     <div class="whatsapp-actions"><button class="whatsapp-cancel" onclick="closeWhatsAppModal()">Cancelar</button> <button class="whatsapp-send" onclick="sendWhatsAppMessage()">📱 Enviar WhatsApp</button>
+     </div>
+    </div>
+   </div>
+  </div><!-- 📄 FOOTER -->
   <footer class="footer">
    <div class="footer-container">
     <div class="footer-content"><!-- Logo y descripción -->
@@ -962,6 +1462,9 @@
                     <p class="product-description">${product.descripcion || 'Sin descripción disponible'}</p>
                     <div class="product-price">$${formatPrice(product.precio)}</div>
                     <span class="product-category">${product.categoria || 'Sin categoría'}</span>
+                    <button class="view-details-btn" onclick="openProductModal('${product.id}')">
+                        👁️ Ver Detalles
+                    </button>
                 </div>
             `;
             
@@ -1130,6 +1633,248 @@
             document.getElementById("promotion-section").classList.add("hidden");
         }
 
+        // Variables para el modal de producto
+        let currentProduct = null;
+        let currentImages = [];
+        let currentImageIndex = 0;
+
+        // Función para abrir modal de producto
+        function openProductModal(productId) {
+            const product = allProducts.find(p => p.id === productId);
+            if (!product) return;
+
+            currentProduct = product;
+            
+            // Preparar imágenes
+            currentImages = [];
+            if (product.imagen_principal) {
+                currentImages.push(getImageUrl(product.imagen_principal));
+            }
+            if (product.imagenes_adicionales) {
+                try {
+                    let additionalImages = [];
+                    if (typeof product.imagenes_adicionales === 'string') {
+                        additionalImages = JSON.parse(product.imagenes_adicionales);
+                    } else if (Array.isArray(product.imagenes_adicionales)) {
+                        additionalImages = product.imagenes_adicionales;
+                    }
+                    
+                    additionalImages.forEach(img => {
+                        currentImages.push(getImageUrl(img));
+                    });
+                } catch (e) {
+                    console.log('Error procesando imágenes adicionales:', e);
+                }
+            }
+            
+            if (currentImages.length === 0) {
+                currentImages.push('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjI1MCIgdmlld0JveD0iMCAwIDMwMCAyNTAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMjUwIiBmaWxsPSIjRjdGQUZDIi8+CjxwYXRoIGQ9Ik0xMjAgMTAwSDEwMFYxMjBIMTIwVjEwMFoiIGZpbGw9IiNFMkU4RjAiLz4KPHA+dGggZD0iTTE4MCA5MEgxNDBWMTMwSDE4MFY5MFoiIGZpbGw9IiNFMkU4RjAiLz4KPHA+dGggZD0iTTE1MCA2MEwxNzAgODBIMTMwTDE1MCA2MFoiIGZpbGw9IiNFMkU4RjAiLz4KPC9zdmc+');
+            }
+            
+            currentImageIndex = 0;
+            
+            // Llenar datos del modal
+            document.getElementById('modalTitle').textContent = product.nombre;
+            document.getElementById('modalPrice').textContent = `$${formatPrice(product.precio)}`;
+            document.getElementById('modalCategory').textContent = product.categoria || 'Sin categoría';
+            document.getElementById('modalDescription').textContent = product.descripcion || 'Sin descripción disponible';
+            
+            // Configurar galería
+            updateMainImage();
+            updateThumbnails();
+            
+            // Configurar botones de contacto según el tipo
+            setupContactButtons(product);
+            
+            // Cargar productos similares
+            loadSimilarProducts(product);
+            
+            // Mostrar modal
+            document.getElementById('productModal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        // Función para cerrar modal de producto
+        function closeProductModal() {
+            document.getElementById('productModal').classList.remove('active');
+            document.body.style.overflow = 'auto';
+            currentProduct = null;
+        }
+
+        // Función para actualizar imagen principal
+        function updateMainImage() {
+            const mainImage = document.getElementById('mainImage');
+            mainImage.src = currentImages[currentImageIndex];
+            mainImage.alt = currentProduct.nombre;
+        }
+
+        // Función para actualizar thumbnails
+        function updateThumbnails() {
+            const container = document.getElementById('imageThumbnails');
+            container.innerHTML = '';
+            
+            if (currentImages.length <= 1) return;
+            
+            currentImages.forEach((imageUrl, index) => {
+                const thumbnail = document.createElement('img');
+                thumbnail.src = imageUrl;
+                thumbnail.className = `thumbnail ${index === currentImageIndex ? 'active' : ''}`;
+                thumbnail.onclick = () => {
+                    currentImageIndex = index;
+                    updateMainImage();
+                    updateThumbnails();
+                };
+                container.appendChild(thumbnail);
+            });
+        }
+
+        // Función para imagen anterior
+        function previousImage() {
+            if (currentImages.length <= 1) return;
+            currentImageIndex = (currentImageIndex - 1 + currentImages.length) % currentImages.length;
+            updateMainImage();
+            updateThumbnails();
+        }
+
+        // Función para imagen siguiente
+        function nextImage() {
+            if (currentImages.length <= 1) return;
+            currentImageIndex = (currentImageIndex + 1) % currentImages.length;
+            updateMainImage();
+            updateThumbnails();
+        }
+
+        // Función para configurar botones de contacto
+        function setupContactButtons(product) {
+            const emailContainer = document.getElementById('emailBtnContainer');
+            
+            if (product.tipo && product.tipo.toLowerCase() === 'merch') {
+                // Para Merch: WhatsApp + Email
+                emailContainer.innerHTML = `
+                    <a href="mailto:aurical@panu.org?subject=Cotización - ${product.nombre}&body=Hola, me interesa obtener una cotización para el producto: ${product.nombre}%0A%0APrecio: $${formatPrice(product.precio)}%0ACategoria: ${product.categoria || 'Sin categoría'}%0A%0APor favor, envíenme más información sobre disponibilidad, tiempos de entrega y opciones de personalización.%0A%0AGracias." 
+                       class="contact-btn email-btn" target="_blank" rel="noopener noreferrer">
+                        📧 Solicitar Cotización por Email
+                    </a>
+                `;
+            } else {
+                // Para Gifts: Solo WhatsApp
+                emailContainer.innerHTML = '';
+            }
+        }
+
+        // Función para cargar productos similares
+        function loadSimilarProducts(product) {
+            const container = document.getElementById('similarProductsGrid');
+            
+            // Filtrar productos similares (misma categoría, mismo tipo, diferentes al actual)
+            const similarProducts = allProducts.filter(p => 
+                p.id !== product.id &&
+                p.disponible === true &&
+                p.tipo === product.tipo &&
+                p.categoria === product.categoria
+            ).slice(0, 4); // Máximo 4 productos similares
+            
+            container.innerHTML = '';
+            
+            if (similarProducts.length === 0) {
+                container.innerHTML = '<p style="color: #cccccc; text-align: center; grid-column: 1 / -1;">No hay productos similares disponibles.</p>';
+                return;
+            }
+            
+            similarProducts.forEach(similarProduct => {
+                const card = document.createElement('div');
+                card.className = 'similar-product-card';
+                card.onclick = () => {
+                    closeProductModal();
+                    setTimeout(() => openProductModal(similarProduct.id), 100);
+                };
+                
+                const imageUrl = getImageUrl(similarProduct.imagen_principal);
+                
+                card.innerHTML = `
+                    <img src="${imageUrl}" alt="${similarProduct.nombre}" class="similar-product-image"
+                         onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjI1MCIgdmlld0JveD0iMCAwIDMwMCAyNTAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMjUwIiBmaWxsPSIjRjdGQUZDIi8+CjxwYXRoIGQ9Ik0xMjAgMTAwSDEwMFYxMjBIMTIwVjEwMFoiIGZpbGw9IiNFMkU4RjAiLz4KPHA+dGggZD0iTTE4MCA5MEgxNDBWMTMwSDE4MFY5MFoiIGZpbGw9IiNFMkU4RjAiLz4KPHA+dGggZD0iTTE1MCA2MEwxNzAgODBIMTMwTDE1MCA2MFoiIGZpbGw9IiNFMkU4RjAiLz4KPC9zdmc+';">
+                    <div class="similar-product-info">
+                        <h4 class="similar-product-name">${similarProduct.nombre}</h4>
+                        <div class="similar-product-price">$${formatPrice(similarProduct.precio)}</div>
+                    </div>
+                `;
+                
+                container.appendChild(card);
+            });
+        }
+
+        // Función para abrir modal de WhatsApp
+        function openWhatsAppModal() {
+            if (!currentProduct) return;
+            
+            const defaultMessage = `¡Hola! Me interesa el producto: *${currentProduct.nombre}*
+
+💰 Precio: $${formatPrice(currentProduct.precio)}
+🏷️ Categoría: ${currentProduct.categoria || 'Sin categoría'}
+
+Me gustaría obtener más información sobre:
+- Disponibilidad
+- Tiempos de entrega
+- Opciones de personalización
+- Formas de pago
+
+¡Gracias!`;
+            
+            document.getElementById('messageTextarea').value = defaultMessage;
+            updateMessagePreview();
+            
+            document.getElementById('whatsappModal').classList.add('active');
+        }
+
+        // Función para cerrar modal de WhatsApp
+        function closeWhatsAppModal() {
+            document.getElementById('whatsappModal').classList.remove('active');
+        }
+
+        // Función para actualizar vista previa del mensaje
+        function updateMessagePreview() {
+            const textarea = document.getElementById('messageTextarea');
+            const preview = document.getElementById('messagePreview');
+            preview.textContent = textarea.value;
+        }
+
+        // Función para enviar mensaje de WhatsApp
+        function sendWhatsAppMessage() {
+            const message = document.getElementById('messageTextarea').value;
+            const encodedMessage = encodeURIComponent(message);
+            const whatsappUrl = `https://wa.me/595985501874?text=${encodedMessage}`;
+            
+            window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
+            closeWhatsAppModal();
+        }
+
+        // Event listener para actualizar vista previa en tiempo real
+        document.addEventListener('DOMContentLoaded', function() {
+            const textarea = document.getElementById('messageTextarea');
+            if (textarea) {
+                textarea.addEventListener('input', updateMessagePreview);
+            }
+        });
+
+        // Cerrar modales al hacer clic fuera
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('product-modal')) {
+                closeProductModal();
+            }
+            if (e.target.classList.contains('whatsapp-modal')) {
+                closeWhatsAppModal();
+            }
+        });
+
+        // Cerrar modales con tecla Escape
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeProductModal();
+                closeWhatsAppModal();
+            }
+        });
+
         // Inicializar la aplicación
         document.addEventListener('DOMContentLoaded', function() {
             loadProducts();
@@ -1142,5 +1887,5 @@
         // Recargar promociones cada 5 minutos
         setInterval(loadActivePromotion, 5 * 60 * 1000);
     </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9954315d700a9096',t:'MTc2MTU4OTA3My4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'99543a9c65b49096',t:'MTc2MTU4OTQ1Mi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
