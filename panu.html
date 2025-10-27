@@ -12,7 +12,7 @@
             margin: 0;
             padding: 0;
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: linear-gradient(135deg, #000000 0%, #1a1a1a 50%, #000000 100%);
+            background: linear-gradient(135deg, #fafafa 0%, #f5f5f5 50%, #fafafa 100%);
             min-height: 100%;
         }
 
@@ -25,10 +25,10 @@
         .header {
             margin-bottom: 30px;
             padding: 20px 25px;
-            background: rgba(255, 255, 255, 0.12);
+            background: rgba(225, 220, 215, 0.95);
             border-radius: 16px;
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
-            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+            border: 1px solid rgba(205, 200, 195, 0.3);
             backdrop-filter: blur(15px);
             animation: slideInFromTop 1s cubic-bezier(0.25, 0.46, 0.45, 0.94);
         }
@@ -78,11 +78,11 @@
         .logo {
             font-size: 2rem;
             font-weight: 800;
-            color: #ffffff;
+            color: #333333;
             margin: 0;
             text-transform: uppercase;
             letter-spacing: 1.5px;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.5);
         }
 
         .nav-icons {
@@ -107,10 +107,10 @@
             align-items: center;
             gap: 6px;
             padding: 8px 16px;
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(185, 175, 170, 0.4);
+            border: 1px solid rgba(165, 155, 150, 0.5);
             border-radius: 50px;
-            color: #ffffff;
+            color: #333333;
             text-decoration: none;
             font-weight: 600;
             font-size: 0.85rem;
@@ -119,15 +119,15 @@
         }
 
         .nav-icon:hover {
-            background: rgba(255, 255, 255, 0.2);
+            background: rgba(165, 155, 150, 0.6);
             transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
         }
 
         .subtitle {
             text-align: center;
             font-size: 1rem;
-            color: #cccccc;
+            color: #555555;
             margin-bottom: 20px;
             font-weight: 300;
         }
@@ -190,56 +190,88 @@
         }
 
         .tab-button {
-            padding: 15px 30px;
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 50px;
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: #ffffff;
+            padding: 20px 30px;
+            background: rgba(225, 220, 215, 0.9);
+            border: 1px solid rgba(205, 200, 195, 0.4);
+            border-radius: 20px;
             cursor: pointer;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
             backdrop-filter: blur(10px);
+            min-width: 280px;
+        }
+
+        .tab-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            gap: 8px;
+        }
+
+        .tab-icon {
+            font-size: 2rem;
+            margin-bottom: 5px;
+        }
+
+        .tab-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #333333;
+            margin-bottom: 2px;
+        }
+
+        .tab-subtitle {
+            font-size: 0.85rem;
+            color: #666666;
+            font-weight: 400;
+            line-height: 1.3;
         }
 
         .tab-button.active {
-            background: rgba(255, 255, 255, 0.2);
-            color: #ffffff;
+            background: rgba(185, 175, 170, 0.95);
             transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(255, 255, 255, 0.1);
-            border-color: rgba(255, 255, 255, 0.3);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+            border-color: rgba(165, 155, 150, 0.6);
             animation: gentlePulse 2s ease-in-out infinite;
+        }
+
+        .tab-button.active .tab-title {
+            color: #222222;
+        }
+
+        .tab-button.active .tab-subtitle {
+            color: #444444;
         }
 
         @keyframes gentlePulse {
             0%, 100% {
-                box-shadow: 0 8px 25px rgba(255, 255, 255, 0.1);
+                box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
             }
             50% {
-                box-shadow: 0 8px 25px rgba(255, 255, 255, 0.2);
+                box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
             }
         }
 
         .tab-button:hover {
             transform: translateY(-2px);
-            background: rgba(255, 255, 255, 0.15);
-            box-shadow: 0 8px 25px rgba(255, 255, 255, 0.1);
+            background: rgba(205, 200, 195, 0.95);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
         }
 
         .filters-container {
-            background: rgba(255, 255, 255, 0.9);
+            background: rgba(225, 220, 215, 0.95);
             border-radius: 20px;
             padding: 25px;
             margin-bottom: 40px;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            border: 1px solid rgba(205, 200, 195, 0.3);
         }
 
         .filters-title {
             font-size: 1.2rem;
             font-weight: 700;
-            color: #333;
+            color: #333333;
             margin-bottom: 20px;
             text-align: center;
         }
@@ -260,24 +292,24 @@
         .filter-label {
             font-size: 0.9rem;
             font-weight: 600;
-            color: #555;
+            color: #555555;
             margin-bottom: 5px;
         }
 
         .filter-select, .filter-input {
             padding: 12px 15px;
-            border: 2px solid rgba(0, 0, 0, 0.1);
+            border: 2px solid rgba(165, 155, 150, 0.4);
             border-radius: 12px;
             font-size: 0.95rem;
-            color: #333;
-            background: white;
+            color: #333333;
+            background: rgba(245, 240, 235, 0.8);
             outline: none;
             transition: all 0.3s ease;
         }
 
         .filter-select:focus, .filter-input:focus {
-            border-color: #4f46e5;
-            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+            border-color: #6366f1;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
         }
 
         .filter-buttons {
@@ -318,15 +350,15 @@
         .loading {
             text-align: center;
             padding: 60px 20px;
-            color: white;
+            color: #333333;
             font-size: 1.2rem;
         }
 
         .spinner {
             width: 50px;
             height: 50px;
-            border: 4px solid rgba(255, 255, 255, 0.3);
-            border-top: 4px solid white;
+            border: 4px solid rgba(60, 60, 60, 0.3);
+            border-top: 4px solid #333333;
             border-radius: 50%;
             animation: spin 1s linear infinite, spinnerPulse 2s ease-in-out infinite;
             margin: 0 auto 20px;
@@ -354,11 +386,11 @@
         }
 
         .product-card {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(45, 45, 45, 0.95);
+            border: 1px solid rgba(60, 60, 60, 0.3);
             border-radius: 15px;
             overflow: hidden;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
             transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
             opacity: 0;
             transform: translateY(20px);
@@ -368,9 +400,9 @@
 
         .product-card:hover {
             transform: translateY(-8px) scale(1.02);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
-            border-color: rgba(255, 255, 255, 0.3);
-            background: rgba(255, 255, 255, 0.12);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+            border-color: rgba(80, 80, 80, 0.5);
+            background: rgba(55, 55, 55, 0.98);
         }
 
         .product-card:hover .product-image {
@@ -451,15 +483,15 @@
 
         .product-category {
             display: inline-block;
-            background: rgba(255, 255, 255, 0.1);
-            color: #ffffff;
+            background: rgba(80, 80, 80, 0.4);
+            color: #e0e0e0;
             padding: 3px 8px;
             border-radius: 12px;
             font-size: 0.7rem;
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 0.3px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(100, 100, 100, 0.3);
             margin-bottom: 8px;
         }
 
@@ -487,7 +519,7 @@
         .no-products {
             text-align: center;
             padding: 60px 20px;
-            color: white;
+            color: #333333;
             font-size: 1.2rem;
         }
 
@@ -503,8 +535,8 @@
         .view-details-btn {
             width: 100%;
             padding: 8px 12px;
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(80, 80, 80, 0.4);
+            border: 1px solid rgba(100, 100, 100, 0.3);
             border-radius: 8px;
             color: #ffffff;
             font-weight: 600;
@@ -516,9 +548,9 @@
         }
 
         .view-details-btn:hover {
-            background: rgba(255, 255, 255, 0.2);
+            background: rgba(100, 100, 100, 0.6);
             transform: translateY(-1px);
-            box-shadow: 0 6px 15px rgba(255, 255, 255, 0.1);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
         }
 
         /* --- ESTILOS MODAL PRODUCTO --- */
@@ -556,15 +588,15 @@
         }
 
         .modal-content {
-            background: rgba(0, 0, 0, 0.9);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(40, 40, 40, 0.98);
+            border: 1px solid rgba(80, 80, 80, 0.4);
             border-radius: 20px;
             max-width: 900px;
             width: 100%;
             max-height: 90vh;
             overflow-y: auto;
             backdrop-filter: blur(15px);
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
             position: relative;
             animation: modalSlideIn 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
         }
@@ -1046,8 +1078,8 @@
 
         /* --- ESTILOS FOOTER --- */
         .footer {
-            background: linear-gradient(135deg, rgba(0, 0, 0, 0.9), rgba(26, 26, 26, 0.9));
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            background: linear-gradient(135deg, rgba(225, 220, 215, 0.95), rgba(205, 200, 195, 0.95));
+            border-top: 1px solid rgba(185, 175, 170, 0.4);
             margin-top: 60px;
             backdrop-filter: blur(15px);
         }
@@ -1066,7 +1098,7 @@
         }
 
         .footer-section {
-            color: white;
+            color: #333333;
         }
 
         .footer-logo-container {
@@ -1079,22 +1111,22 @@
         .footer-logo {
             height: 50px;
             width: auto;
-            filter: drop-shadow(0 2px 4px rgba(255, 255, 255, 0.1));
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
         }
 
         .footer-title {
             font-size: 2rem;
             font-weight: 800;
-            color: #ffffff;
+            color: #333333;
             margin: 0;
             text-transform: uppercase;
             letter-spacing: 2px;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.5);
         }
 
         .footer-description {
             font-size: 1rem;
-            color: #cccccc;
+            color: #555555;
             line-height: 1.6;
             margin: 0;
         }
@@ -1102,9 +1134,9 @@
         .footer-section-title {
             font-size: 1.3rem;
             font-weight: 700;
-            color: #ffffff;
+            color: #333333;
             margin-bottom: 20px;
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+            text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.5);
         }
 
         .footer-contact, .footer-schedule {
@@ -1115,32 +1147,32 @@
 
         .footer-contact-item, .footer-schedule-item {
             font-size: 0.95rem;
-            color: #cccccc;
+            color: #555555;
             margin: 0;
             padding: 8px 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
             transition: color 0.3s ease;
         }
 
         .footer-contact-item:hover, .footer-schedule-item:hover {
-            color: #ffffff;
+            color: #333333;
         }
 
         .footer-bottom {
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
             padding-top: 20px;
             text-align: center;
         }
 
         .footer-copyright {
             font-size: 0.9rem;
-            color: #cccccc;
+            color: #555555;
             margin: 0 0 10px 0;
         }
 
         .footer-version {
             font-size: 0.8rem;
-            color: #999999;
+            color: #666666;
             margin: 0;
             font-style: italic;
         }
@@ -1185,10 +1217,13 @@
             .nav-tabs {
                 flex-direction: column;
                 align-items: center;
+                gap: 15px;
             }
 
             .tab-button {
-                width: 200px;
+                min-width: 250px;
+                width: 90%;
+                max-width: 350px;
             }
 
             .filters-grid {
@@ -1238,7 +1273,11 @@
    <section id="promotion-section" class="hidden">
     <div id="promotion-content" class="promotion-banner fade-in"></div>
    </section><!-- 📋 NAVEGACIÓN DE PESTAÑAS -->
-   <nav class="nav-tabs"><button class="tab-button active" onclick="switchTab('merch')"> <span>👕</span> Merch </button> <button class="tab-button" onclick="switchTab('gift')"> <span>🎁</span> Gifts </button>
+   <nav class="nav-tabs"><button class="tab-button active" onclick="switchTab('merch')">
+     <div class="tab-content"><span class="tab-icon">🏢</span> <span class="tab-title">Merch Empresarial</span> <span class="tab-subtitle">Uniformes, promocionales y branding corporativo</span>
+     </div></button> <button class="tab-button" onclick="switchTab('gift')">
+     <div class="tab-content"><span class="tab-icon">🎁</span> <span class="tab-title">Gifts Personalizados</span> <span class="tab-subtitle">Regalos únicos para ocasiones especiales</span>
+     </div></button>
    </nav><!-- 🔧 FILTROS -->
    <section class="filters-container">
     <h3 class="filters-title">🔍 Filtros Avanzados</h3>
@@ -2137,5 +2176,5 @@ Me gustaría obtener más información sobre:
         // Recargar promociones cada 5 minutos
         setInterval(loadActivePromotion, 5 * 60 * 1000);
     </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9954ac95c716116a',t:'MTc2MTU5NDEyMC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9955593172281168',t:'MTc2MTYwMTE5MC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
