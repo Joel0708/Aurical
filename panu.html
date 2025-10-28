@@ -262,46 +262,46 @@
 
         .filters-container {
             background: rgba(225, 220, 215, 0.95);
-            border-radius: 20px;
-            padding: 25px;
-            margin-bottom: 40px;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            border-radius: 15px;
+            padding: 15px 20px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
             border: 1px solid rgba(205, 200, 195, 0.3);
         }
 
         .filters-title {
-            font-size: 1.2rem;
-            font-weight: 700;
+            font-size: 1rem;
+            font-weight: 600;
             color: #333333;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             text-align: center;
         }
 
         .filters-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 12px;
             align-items: end;
         }
 
         .filter-group {
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: 5px;
         }
 
         .filter-label {
-            font-size: 0.9rem;
+            font-size: 0.8rem;
             font-weight: 600;
             color: #555555;
-            margin-bottom: 5px;
+            margin-bottom: 3px;
         }
 
         .filter-select, .filter-input {
-            padding: 12px 15px;
-            border: 2px solid rgba(165, 155, 150, 0.4);
-            border-radius: 12px;
-            font-size: 0.95rem;
+            padding: 8px 12px;
+            border: 1px solid rgba(165, 155, 150, 0.4);
+            border-radius: 8px;
+            font-size: 0.85rem;
             color: #333333;
             background: rgba(245, 240, 235, 0.8);
             outline: none;
@@ -319,10 +319,10 @@
         }
 
         .filter-btn {
-            padding: 12px 20px;
+            padding: 8px 15px;
             border: none;
-            border-radius: 12px;
-            font-size: 0.9rem;
+            border-radius: 8px;
+            font-size: 0.8rem;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
@@ -1222,6 +1222,7 @@
                 flex-direction: column;
                 align-items: center;
                 gap: 15px;
+                margin-bottom: 20px;
             }
 
             .tab-button {
@@ -1230,17 +1231,25 @@
                 max-width: 350px;
             }
 
+            .filters-container {
+                padding: 12px 15px;
+                margin-bottom: 20px;
+            }
+
             .filters-grid {
                 grid-template-columns: 1fr;
+                gap: 10px;
             }
 
             .filter-buttons {
                 justify-content: center;
+                gap: 8px;
             }
 
             .products-grid {
                 grid-template-columns: repeat(2, 1fr);
                 gap: 10px;
+                margin-top: 15px;
             }
 
             .promotion-title { 
@@ -1253,6 +1262,23 @@
             
             .promotion-media { 
                 height: 200px; 
+            }
+
+            /* Hacer más visible el cambio de pestañas en móvil */
+            .tab-button.active {
+                background: rgba(165, 155, 150, 0.95);
+                border: 2px solid rgba(145, 135, 130, 0.8);
+                box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
+            }
+
+            .tab-button.active .tab-title {
+                color: #111111;
+                font-weight: 800;
+            }
+
+            .tab-button.active .tab-subtitle {
+                color: #333333;
+                font-weight: 500;
             }
         }
     </style>
@@ -1381,7 +1407,7 @@
      </div>
     </div><!-- Copyright -->
     <div class="footer-bottom">
-     <p class="footer-copyright">© 2026 Panu - Sublimaciones Premium. Todos los derechos reservados.</p>
+     <p class="footer-copyright">© 2024 Panu - Sublimaciones Premium. Todos los derechos reservados.</p>
      <p class="footer-version">v1.041 - Construido por Joel Páez y Ren_q (Alexa Ferreira)</p>
     </div>
    </div>
@@ -2180,5 +2206,5 @@ Me gustaría obtener más información sobre:
         // Recargar promociones cada 5 minutos
         setInterval(loadActivePromotion, 5 * 60 * 1000);
     </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'99555d93130b1168',t:'MTc2MTYwMTM3MC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'995a3ac1f3a3116e',t:'MTc2MTY1MjM3My4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
