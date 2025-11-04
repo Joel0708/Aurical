@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Radio en Vivo 🎧</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #111, #333);
+      color: #fff;
+      text-align: center;
+      padding: 50px 20px;
+    }
+
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 10px;
+    }
+
+    .radio-info {
+      margin-bottom: 20px;
+      font-size: 1.1rem;
+      opacity: 0.9;
+    }
+
+    audio {
+      width: 100%;
+      max-width: 400px;
+      margin: 20px auto;
+      display: block;
+      border-radius: 10px;
+    }
+
+    .listeners {
+      margin-top: 15px;
+      font-size: 0.9rem;
+      color: #bbb;
+    }
+
+    .limit {
+      color: #f44336;
+      font-weight: bold;
+    }
+
+    .now-playing {
+      font-size: 1rem;
+      margin-top: 10px;
+    }
+
+    footer {
+      margin-top: 50px;
+      font-size: 0.8rem;
+      color: #888;
+    }
+  </style>
+</head>
+<body>
+  <h1>🎙️ Radio Aurora FM</h1>
+  <p class="radio-info">Transmisión en vivo - 24 horas de música</p>
+
+  <!-- Aquí se coloca tu stream de radio (ejemplo: Icecast o Shoutcast URL) -->
+  <audio id="radioPlayer" controls autoplay>
+    <source src="https://tuservidor.com/stream.mp3" type="audio/mpeg" />
+    Tu navegador no soporta audio HTML5.
+  </audio>
+
+  <div class="now-playing" id="nowPlaying">Canción actual: Cargando...</div>
+  <div class="listeners" id="listenersCount">Oyentes conectados: 0 / <span class="limit">5</span></div>
+
+  <footer>© 2025 Radio Aurora FM | Todos los derechos reservados</footer>
+
+  <script>
+    // Simulación de oyentes conectados (más adelante se puede conectar con backend)
+    let listeners = Math.floor(Math.random() * 5) + 1;
+    document.getElementById("listenersCount").innerHTML =
+      `Oyentes conectados: ${listeners} / <span class="limit">5</span>`;
+
+    // Simulación de canción actual
+    const songs = [
+      "Imagine Dragons - Believer",
+      "Adele - Easy On Me",
+      "Coldplay - Yellow",
+      "Dua Lipa - Levitating",
+      "Queen - Don't Stop Me Now"
+    ];
+    document.getElementById("nowPlaying").innerText =
+      "Canción actual: " + songs[Math.floor(Math.random() * songs.length)];
+  </script>
+</body>
+</html>
