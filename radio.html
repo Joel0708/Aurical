@@ -59,7 +59,6 @@
   <h1>🎙️ Radio Aurora FM</h1>
   <p class="radio-info">Transmisión en vivo - 24 horas de música</p>
 
-  <!-- Aquí se coloca tu stream de radio (ejemplo: Icecast o Shoutcast URL) -->
   <audio id="radioPlayer" controls autoplay>
     <source src="https://tuservidor.com/stream.mp3" type="audio/mpeg" />
     Tu navegador no soporta audio HTML5.
@@ -70,22 +69,92 @@
 
   <footer>© 2025 Radio Aurora FM | Todos los derechos reservados</footer>
 
-  <script>
-    // Simulación de oyentes conectados (más adelante se puede conectar con backend)
-    let listeners = Math.floor(Math.random() * 5) + 1;
-    document.getElementById("listenersCount").innerHTML =
-      `Oyentes conectados: ${listeners} / <span class="limit">5</span>`;
+  <!-- Script de Supabase -->
+  <script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
 
-    // Simulación de canción actual
-    const songs = [
-      "Imagine Dragons - Believer",
-      "Adele - Easy On Me",
-      "Coldplay - Yellow",
-      "Dua Lipa - Levitating",
-      "Queen - Don't Stop Me Now"
-    ];
-    document.getElementById("nowPlaying").innerText =
-      "Canción actual: " + songs[Math.floor(Math.random() * songs.length)];
+    // Tus credenciales Supabase
+    const SUPABASE_URL = 'https://lbatdowtivytktgltmig.supabase.co'
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxiYXRkb3d0aXZ5dGt0Z2x0bWlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIyNzY5NjksImV4cCI6MjA3Nzg1Mjk2OX0.8UZALMSFX-Vh5ErjeoyIQlSTLTEIZr0iHeRW4Glzots'
+
+    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+    const MAX_LISTENERS = 5
+
+    const listenersEl = document.getElementById('listenersCount')
+    const nowPlayingEl = document.getElementById('nowPlaying')
+    const audio = document.getElementById('radioPlayer')
+
+    const sessionId = crypto.randomUUID?.() || (Date.now() + '-' + Math.random())
+
+    // Registrar oyente
+    async function registerListener() {
+      const { count } = await supabase
+        .from('listeners')
+        .select('id', { count: 'exact', head: true })
+
+      if (count >= MAX_LISTENERS) {
+        listenersEl.innerHTML = `Oyentes conectados: ${count} / <span class="limit">${MAX_LISTENERS}</span> — <strong>Capacidad completa</strong>`
+        if (!audio.paused) audio.pause()
+        return false
+      }
+
+      await supabase.from('listeners').insert({
+        session_id: sessionId,
+        user_agent: navigator.userAgent
+      })
+
+      return true
+    }
+
+    // Eliminar oyente al cerrar pestaña
+    async function removeListener() {
+      await supabase.from('listeners').delete().eq('session_id', sessionId)
+    }
+
+    // Actualizar datos desde la base
+    async function refreshInfo() {
+      const { count } = await supabase
+        .from('listeners')
+        .select('id', { count: 'exact', head: true })
+
+      listenersEl.innerHTML = `Oyentes conectados: ${count} / <span class="limit">${MAX_LISTENERS}</span>`
+
+      const { data: np } = await supabase
+        .from('now_playing')
+        .select('*')
+        .order('started_at', { ascending: false })
+        .limit(1)
+
+      if (np && np.length > 0) {
+        const track = np[0]
+        nowPlayingEl.innerText =
+          `Canción actual: ${track.title}${track.artist ? ' — ' + track.artist : ''}${track.presenter ? ' (' + track.presenter + ')' : ''}`
+      } else {
+        nowPlayingEl.innerText = 'Canción actual: No disponible'
+      }
+    }
+
+    // Realtime (actualización automática)
+    const channel = supabase.channel('radio-realtime')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'listeners' }, payload => {
+        refreshInfo()
+      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'now_playing' }, payload => {
+        refreshInfo()
+      })
+
+    async function init() {
+      const ok = await registerListener()
+      await refreshInfo()
+      await channel.subscribe()
+
+      if (!ok) return
+    }
+
+    init()
+
+    window.addEventListener('beforeunload', removeListener)
+    window.addEventListener('unload', removeListener)
   </script>
 </body>
 </html>
