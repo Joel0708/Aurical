@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Panel de Control - Radio Aurora FM</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #111;
+      color: #fff;
+      margin: 0;
+      padding: 0;
+    }
+
+    header {
+      background: #222;
+      padding: 20px;
+      text-align: center;
+      font-size: 1.5rem;
+      font-weight: bold;
+    }
+
+    section {
+      padding: 20px;
+      border-bottom: 1px solid #333;
+    }
+
+    h2 {
+      color: #00bcd4;
+    }
+
+    label {
+      display: block;
+      margin-top: 10px;
+    }
+
+    input, textarea {
+      width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+      border: none;
+      border-radius: 5px;
+    }
+
+    button {
+      margin-top: 15px;
+      padding: 10px 20px;
+      border: none;
+      background: #00bcd4;
+      color: #fff;
+      font-weight: bold;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #0097a7;
+    }
+
+    table {
+      width: 100%;
+      margin-top: 15px;
+      border-collapse: collapse;
+      color: #ddd;
+    }
+
+    th, td {
+      border: 1px solid #333;
+      padding: 8px;
+      text-align: left;
+    }
+
+    th {
+      background: #222;
+    }
+
+    .delete-btn {
+      background: #f44336;
+    }
+
+    .delete-btn:hover {
+      background: #d32f2f;
+    }
+  </style>
+</head>
+<body>
+  <header>🎚️ Panel de Control - Radio Aurora FM</header>
+
+  <section id="nowPlayingSection">
+    <h2>🎵 Canción Actual</h2>
+    <label>Título</label>
+    <input type="text" id="songTitle" placeholder="Ej: Shape of You" />
+    <label>Artista</label>
+    <input type="text" id="songArtist" placeholder="Ej: Ed Sheeran" />
+    <label>Locutor / Presentador</label>
+    <input type="text" id="songPresenter" placeholder="Ej: DJ Aurora" />
+    <button id="updateSong">Actualizar Canción</button>
+
+    <p id="currentSongText"></p>
+  </section>
+
+  <section id="listenersSection">
+    <h2>👂 Oyentes Conectados</h2>
+    <table id="listenersTable">
+      <thead>
+        <tr>
+          <th>Session ID</th>
+          <th>Agente</th>
+          <th>Conectado</th>
+          <th>Acción</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </section>
+
+  <section id="programacionSection">
+    <h2>📅 Programación</h2>
+    <label>Título</label>
+    <input type="text" id="progTitle" />
+    <label>Descripción</label>
+    <textarea id="progDesc"></textarea>
+    <label>Locutor</label>
+    <input type="text" id="progPresenter" />
+    <label>Inicio</label>
+    <input type="datetime-local" id="progStart" />
+    <label>Fin</label>
+    <input type="datetime-local" id="progEnd" />
+    <button id="addProgram">Agregar Programa</button>
+
+    <table id="programTable">
+      <thead>
+        <tr>
+          <th>Título</th>
+          <th>Locutor</th>
+          <th>Inicio</th>
+          <th>Fin</th>
+          <th>Acción</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </section>
+
+  <!-- Supabase -->
+  <script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+
+    const SUPABASE_URL = 'https://lbatdowtivytktgltmig.supabase.co'
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxiYXRkb3d0aXZ5dGt0Z2x0bWlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIyNzY5NjksImV4cCI6MjA3Nzg1Mjk2OX0.8UZALMSFX-Vh5ErjeoyIQlSTLTEIZr0iHeRW4Glzots'
+    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+
+    // ELEMENTOS HTML
+    const songTitle = document.getElementById('songTitle')
+    const songArtist = document.getElementById('songArtist')
+    const songPresenter = document.getElementById('songPresenter')
+    const updateSongBtn = document.getElementById('updateSong')
+    const currentSongText = document.getElementById('currentSongText')
+
+    const listenersTableBody = document.querySelector('#listenersTable tbody')
+    const programTableBody = document.querySelector('#programTable tbody')
+
+    // Función: cargar canción actual
+    async function loadNowPlaying() {
+      const { data, error } = await supabase
+        .from('now_playing')
+        .select('*')
+        .order('started_at', { ascending: false })
+        .limit(1)
+      if (data && data.length > 0) {
+        const np = data[0]
+        currentSongText.innerText = `Actual: ${np.title} — ${np.artist || ''} (${np.presenter || 'Locutor'})`
+      } else {
+        currentSongText.innerText = 'Sin canción en reproducción'
+      }
+    }
+
+    // Función: actualizar canción actual
+    updateSongBtn.addEventListener('click', async () => {
+      const title = songTitle.value.trim()
+      if (!title) return alert('Debe ingresar un título')
+
+      await supabase.from('now_playing').insert({
+        title,
+        artist: songArtist.value.trim(),
+        presenter: songPresenter.value.trim()
+      })
+      await loadNowPlaying()
+      songTitle.value = songArtist.value = songPresenter.value = ''
+      alert('🎶 Canción actualizada correctamente.')
+    })
+
+    // Función: cargar oyentes conectados
+    async function loadListeners() {
+      const { data } = await supabase
+        .from('listeners')
+        .select('*')
+        .order('connected_at', { ascending: false })
+      listenersTableBody.innerHTML = ''
+      data.forEach(l => {
+        const tr = document.createElement('tr')
+        tr.innerHTML = `
+          <td>${l.session_id}</td>
+          <td>${l.user_agent?.substring(0, 50) || '-'}</td>
+          <td>${new Date(l.connected_at).toLocaleString()}</td>
+          <td><button class="delete-btn" data-id="${l.session_id}">🗑️</button></td>
+        `
+        listenersTableBody.appendChild(tr)
+      })
+    }
+
+    // Borrar oyente
+    listenersTableBody.addEventListener('click', async e => {
+      if (e.target.classList.contains('delete-btn')) {
+        const id = e.target.dataset.id
+        await supabase.from('listeners').delete().eq('session_id', id)
+        await loadListeners()
+      }
+    })
+
+    // Cargar programación
+    async function loadProgramacion() {
+      const { data } = await supabase
+        .from('programacion')
+        .select('*')
+        .order('start_time', { ascending: true })
+      programTableBody.innerHTML = ''
+      data.forEach(p => {
+        const tr = document.createElement('tr')
+        tr.innerHTML = `
+          <td>${p.title}</td>
+          <td>${p.presenter || '-'}</td>
+          <td>${new Date(p.start_time).toLocaleString()}</td>
+          <td>${new Date(p.end_time).toLocaleString()}</td>
+          <td><button class="delete-btn" data-id="${p.id}">🗑️</button></td>
+        `
+        programTableBody.appendChild(tr)
+      })
+    }
+
+    // Agregar programa
+    document.getElementById('addProgram').addEventListener('click', async () => {
+      const title = document.getElementById('progTitle').value.trim()
+      const desc = document.getElementById('progDesc').value.trim()
+      const presenter = document.getElementById('progPresenter').value.trim()
+      const start = document.getElementById('progStart').value
+      const end = document.getElementById('progEnd').value
+      if (!title || !start || !end) return alert('Complete al menos título, inicio y fin')
+
+      await supabase.from('programacion').insert({
+        title, description: desc, presenter, start_time: start, end_time: end
+      })
+      await loadProgramacion()
+      alert('✅ Programa agregado correctamente.')
+    })
+
+    // Borrar programa
+    programTableBody.addEventListener('click', async e => {
+      if (e.target.classList.contains('delete-btn')) {
+        const id = e.target.dataset.id
+        await supabase.from('programacion').delete().eq('id', id)
+        await loadProgramacion()
+      }
+    })
+
+    // Inicialización
+    async function init() {
+      await loadNowPlaying()
+      await loadListeners()
+      await loadProgramacion()
+    }
+    init()
+
+    // Realtime para actualizar vistas sin recargar
+    const channel = supabase.channel('admin-realtime')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'listeners' }, loadListeners)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'now_playing' }, loadNowPlaying)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'programacion' }, loadProgramacion)
+      .subscribe()
+  </script>
+</body>
+</html>
