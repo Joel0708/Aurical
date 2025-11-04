@@ -310,6 +310,15 @@
        <div><label for="product-category" class="block text-sm font-semibold text-gray-700 mb-2"> Categoría * </label> <select id="product-category" name="categoria" required class="form-select"> <option value="">Seleccionar categoría</option> <option value="tazas">☕ Tazas</option> <option value="remeras">👕 Remeras</option> <option value="gorras">🧢 Gorras</option> <option value="accesorios">🎁 Accesorios</option> <option value="bolsos">👜 Bolsos</option> <option value="termos">🍶 Termos</option> <option value="llaveros">🔑 Llaveros</option> <option value="mouse pads">🖱️ Mouse Pads</option> <option value="almohadas">🛏️ Almohadas</option> <option value="otros">📦 Otros</option> </select>
        </div>
       </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+     <div>
+      <label for="product-type" class="block text-sm font-semibold text-gray-700 mb-2"> Tipo de Producto * </label>
+      <select id="product-type" name="tipo" required class="form-select">
+       <option value="merch">🛍️ Merch</option>
+       <option value="gifts">🎁 Gifts</option>
+      </select>
+     </div>
+    </div>
       <div><label for="product-description" class="block text-sm font-semibold text-gray-700 mb-2"> Descripción </label> <textarea id="product-description" name="descripcion" rows="3" class="form-input" placeholder="Descripción detallada del producto..."></textarea>
       </div>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -348,6 +357,16 @@
      <div class="flex items-center justify-between mb-6">
       <h2 class="text-2xl font-bold text-gray-800 flex items-center">📋 Lista de Productos</h2><button onclick="loadProducts()" class="btn-secondary"> 🔄 Actualizar </button>
      </div><!-- Loading State -->
+    <div class="flex items-center justify-between mb-4">
+     <div>
+      <label class="block text-sm font-medium text-gray-700">Filtrar por Tipo</label>
+      <select id="products-type-filter" onchange="onProductsTypeFilterChange()" class="form-select mt-1">
+       <option value="all">Todos</option>
+       <option value="merch">🛍️ Merch</option>
+       <option value="gifts">🎁 Gifts</option>
+      </select>
+     </div>
+    </div>
      <div id="products-loading" class="text-center py-8">
       <div class="loading-spinner mx-auto mb-4"></div>
       <p class="text-gray-600">Cargando productos...</p>
@@ -519,6 +538,15 @@
         <div><label class="block text-sm font-semibold text-gray-700 mb-2">Categoría *</label> <select id="edit-product-category" required class="form-select"> <option value="tazas">☕ Tazas</option> <option value="remeras">👕 Remeras</option> <option value="gorras">🧢 Gorras</option> <option value="accesorios">🎁 Accesorios</option> <option value="bolsos">👜 Bolsos</option> <option value="termos">🍶 Termos</option> <option value="llaveros">🔑 Llaveros</option> <option value="mouse pads">🖱️ Mouse Pads</option> <option value="almohadas">🛏️ Almohadas</option> <option value="otros">📦 Otros</option> </select>
         </div>
        </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+     <div>
+      <label class="block text-sm font-semibold text-gray-700 mb-2">Tipo de Producto *</label>
+      <select id="edit-product-type" class="form-select">
+       <option value="merch">🛍️ Merch</option>
+       <option value="gifts">🎁 Gifts</option>
+      </select>
+     </div>
+    </div>
        <div><label class="block text-sm font-semibold text-gray-700 mb-2">Descripción</label> <textarea id="edit-product-description" rows="3" class="form-input"></textarea>
        </div>
        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -552,6 +580,7 @@ if (localStorage.getItem('panu_admin_login') !== 'true') {
         let currentProducts = [];
         let currentPromotions = [];
         let editingProductId = null;
+    let productsTypeFilter = 'all';
 
         // Initialize admin panel
         document.addEventListener('DOMContentLoaded', function() {
@@ -629,6 +658,7 @@ if (localStorage.getItem('panu_admin_login') !== 'true') {
                 const productData = {
                     nombre: formData.get('nombre'),
                     categoria: formData.get('categoria'),
+                    tipo: formData.get('tipo') || 'merch',
                     descripcion: formData.get('descripcion') || null,
                     precio: parseInt(formData.get('precio')),
                     disponible: formData.get('disponible') === 'true',
@@ -749,6 +779,9 @@ if (localStorage.getItem('panu_admin_login') !== 'true') {
                 if (error) throw error;
 
                 currentProducts = data || [];
+                // reset type filter to 'all' by default
+                const typeSelect = document.getElementById('products-type-filter');
+                if (typeSelect && !typeSelect.value) typeSelect.value = 'all';
                 displayProducts();
                 showProductsLoading(false);
                 
@@ -757,6 +790,12 @@ if (localStorage.getItem('panu_admin_login') !== 'true') {
                 showMessage('❌ Error al cargar productos', 'error');
                 showProductsLoading(false);
             }
+        }
+
+        function onProductsTypeFilterChange() {
+            const sel = document.getElementById('products-type-filter');
+            productsTypeFilter = sel ? sel.value : 'all';
+            displayProducts();
         }
 
         // Load promotions from database
@@ -787,7 +826,10 @@ if (localStorage.getItem('panu_admin_login') !== 'true') {
             const grid = document.getElementById('products-grid');
             const empty = document.getElementById('products-empty');
             
-            if (currentProducts.length === 0) {
+            // Apply type filter
+            const visibleProducts = productsTypeFilter === 'all' ? currentProducts : currentProducts.filter(p => ((p.tipo || '').toLowerCase() === productsTypeFilter));
+
+            if (visibleProducts.length === 0) {
                 grid.classList.add('hidden');
                 empty.classList.remove('hidden');
                 return;
@@ -796,7 +838,7 @@ if (localStorage.getItem('panu_admin_login') !== 'true') {
             grid.classList.remove('hidden');
             empty.classList.add('hidden');
             
-            grid.innerHTML = currentProducts.map(product => `
+            grid.innerHTML = visibleProducts.map(product => `
                 <div class="product-card fade-in">
                     <div class="relative">
                         <img src="${product.imagen_principal || getPlaceholderImage()}" 
@@ -931,6 +973,7 @@ if (localStorage.getItem('panu_admin_login') !== 'true') {
             document.getElementById('edit-product-description').value = product.descripcion || '';
             document.getElementById('edit-product-price').value = product.precio;
             document.getElementById('edit-product-available').value = product.disponible.toString();
+            document.getElementById('edit-product-type').value = product.tipo || 'merch';
             
             // Show modal
             document.getElementById('edit-product-modal').classList.remove('hidden');
@@ -946,6 +989,7 @@ if (localStorage.getItem('panu_admin_login') !== 'true') {
                 const updateData = {
                     nombre: formData.get('nombre') || document.getElementById('edit-product-name').value,
                     categoria: formData.get('categoria') || document.getElementById('edit-product-category').value,
+                    tipo: formData.get('tipo') || document.getElementById('edit-product-type').value || 'merch',
                     descripcion: formData.get('descripcion') || document.getElementById('edit-product-description').value || null,
                     precio: parseInt(formData.get('precio') || document.getElementById('edit-product-price').value),
                     disponible: (formData.get('disponible') || document.getElementById('edit-product-available').value) === 'true'
